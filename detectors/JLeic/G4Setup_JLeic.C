@@ -4,6 +4,7 @@
 #include "GlobalVariables.C"
 
 #include "G4_BlackHole.C"
+#include "G4_Magnet_JLeic.C"
 #include "G4_Pipe_EIC.C"
 #include "G4_User.C"
 #include "G4_World.C"
@@ -11,7 +12,6 @@
 
 #include "G4_VTX.C"
 #include "G4_CTD.C"
-#include "G4_Magnet.C"
 #include "G4_Gem.C"
 #include "G4_JLDIRC.C"
 #include "G4_Barrel_Hcal.C"
@@ -38,7 +38,6 @@ R__LOAD_LIBRARY(libg4detectors.so)
 
 void G4Init(const bool do_ctd = true,
             const bool do_vtx = true,
-	    const bool do_magnet = true,
             const bool do_gem = true,
             const bool do_jldirc = true,
             const bool do_barrel_hcal = true,
@@ -61,11 +60,11 @@ void G4Init(const bool do_ctd = true,
       gROOT->LoadMacro("G4_CTD.C");
       CTDInit();
     }  
-  if (do_magnet)
-    {
-      gROOT->LoadMacro("G4_Magnet.C");
-      MagnetInit();
-    }
+  //----------------------------------------
+  // MAGNET
+
+  if (Enable::MAGNET) MagnetInit();
+
   if (do_gem)
     {
       gROOT->LoadMacro("G4_Gem.C");
@@ -113,7 +112,6 @@ int G4Setup(const int absorberactive = 0,
 	    const string &field ="2.0",
 	    const bool do_ctd = true,
 	    const bool do_vtx = true,
-	    const bool do_magnet = true,
             const bool do_gem = true,
             const bool do_jldirc = true,
             const bool do_barrel_hcal = true,
@@ -182,7 +180,7 @@ int G4Setup(const int absorberactive = 0,
   //----------------------------------------
   // MAGNET
   
-  if (do_magnet) radius = Magnet(g4Reco, radius, 0, absorberactive);
+  if (Enable::MAGNET) radius = Magnet(g4Reco, radius);
 
   //----------------------------------------
   // Barrel Hcal
