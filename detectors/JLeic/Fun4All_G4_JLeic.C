@@ -232,7 +232,6 @@ int Fun4All_G4_JLeic(
   //---------------
 
   // establish the geometry and reconstruction setup
-  gROOT->LoadMacro("G4Setup_JLeic.C");
   G4Init(do_ctd, do_vtx, do_magnet, do_gem, do_jldirc, do_barrel_hcal, do_drich, do_endcap_electron, do_endcap_hadron, do_beamline);
 
   int absorberactive = 1;  // set to 1 to make all absorbers active volumes
@@ -247,7 +246,7 @@ int Fun4All_G4_JLeic(
     // Detector description
     //---------------------
 
-    G4Setup(absorberactive, magfield, EDecayType::kAll,
+    G4Setup(absorberactive, magfield,
             do_ctd, do_vtx, do_magnet, do_gem, do_jldirc, do_barrel_hcal, do_drich, do_endcap_electron, do_endcap_hadron, do_beamline, magfield_rescale);
   }
 

@@ -3,7 +3,11 @@
 
 #include "GlobalVariables.C"
 
+#include "G4_BlackHole.C"
 #include "G4_Pipe_EIC.C"
+#include "G4_User.C"
+#include "G4_World.C"
+
 
 #include "G4_VTX.C"
 #include "G4_CTD.C"
@@ -16,11 +20,13 @@
 #include "G4_EndCap_Electron.C"
 #include "G4_EndCap_Hadron.C"
 
+#include <g4decayer/EDecayType.hh>
+
 #include <g4eval/PHG4DstCompressReco.h>
 #include <fun4all/Fun4AllServer.h>
 #include <fun4all/Fun4AllInputManager.h>
 #include <fun4all/Fun4AllDstOutputManager.h>
-#include <g4decayer/EDecayType.hh>
+
 #include <g4detectors/PHG4CylinderSubsystem.h>
 #include <g4main/PHG4TruthSubsystem.h>
 #include <g4main/PHG4Reco.h>
@@ -29,10 +35,6 @@
 class SubsysReco;
 R__LOAD_LIBRARY(libg4decayer.so)
 R__LOAD_LIBRARY(libg4detectors.so)
-
-// This function is only used to test if we can load this as root6 macro
-// without running into unresolved libraries and include files
-void RunLoadTest() {}
 
 void G4Init(const bool do_ctd = true,
             const bool do_vtx = true,
@@ -109,11 +111,6 @@ void G4Init(const bool do_ctd = true,
 
 int G4Setup(const int absorberactive = 0,
 	    const string &field ="2.0",
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6,00,0)
-	    const EDecayType decayType = EDecayType::kAll,
-#else
-	    const EDecayType decayType = TPythia6Decayer::kAll,
-#endif
 	    const bool do_ctd = true,
 	    const bool do_vtx = true,
 	    const bool do_magnet = true,
@@ -127,37 +124,26 @@ int G4Setup(const int absorberactive = 0,
 	    const float magfield_rescale = 1.0) {
   
   //---------------
-  // Load libraries
-  //---------------
-
-  gSystem->Load("libg4detectors.so");
-  gSystem->Load("libg4testbench.so");
-
-  //---------------
   // Fun4All server
   //---------------
 
   Fun4AllServer *se = Fun4AllServer::instance();
 
-  // read-in HepMC events to Geant4 if there is any
-  HepMCNodeReader *hr = new HepMCNodeReader();
-  se->registerSubsystem(hr);
 
   PHG4Reco* g4Reco = new PHG4Reco();
-  g4Reco->set_rapidity_coverage(1.1); // according to drawings
-// uncomment to set QGSP_BERT_HP physics list for productions 
-// (default is QGSP_BERT for speed)
-  //  g4Reco->SetPhysicsList("QGSP_BERT_HP"); 
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6,00,0)
-  if (decayType != EDecayType::kAll) 
-#else
-  if (decayType != TPythia6Decayer::kAll) 
-#endif
+
+  WorldInit(g4Reco);
+
+// global coverage used for length of cylinders if lengthviarapidity is set
+// probably needs to be adjusted for JLeic
+  g4Reco->set_rapidity_coverage(1.1);
+
+  if (G4P6DECAYER::decayType != EDecayType::kAll)
   {
-    g4Reco->set_force_decay(decayType);
+    g4Reco->set_force_decay(G4P6DECAYER::decayType);
   }
-  
-  double fieldstrength;
+
+    double fieldstrength;
   istringstream stringline(field);
   stringline >> fieldstrength;
   if (stringline.fail()) { // conversion to double fails -> we have a string
@@ -217,53 +203,25 @@ int G4Setup(const int absorberactive = 0,
 
   if (do_beamline) double tmp = BeamLine(g4Reco, radius, 0, absorberactive);
   radius = 200.;
+
+  if (Enable::USER)
+  {
+    UserDetector(g4Reco);
+  }
+
   //----------------------------------------
   // BLACKHOLE
   
-  // swallow all particles coming out of the backend of sPHENIX
-  PHG4CylinderSubsystem *blackhole = new PHG4CylinderSubsystem("BH", 0);
-blackhole->set_double_param("radius",radius + 10); // add 10 cm
-
-  blackhole->set_int_param("lengthviarapidity",0);
-  blackhole->set_double_param("length",g4Reco->GetWorldSizeZ() - no_overlapp); // make it cover the world in length
-  blackhole->BlackHole();
-  blackhole->set_double_param("thickness",0.1); // it needs some thickness
-  blackhole->SetActive(); // always see what leaks out
-  blackhole->OverlapCheck(overlapcheck);
-  blackhole->SuperDetector("BLACKHOLE");
-  g4Reco->registerSubsystem(blackhole);
-
-  //----------------------------------------
-  // FORWARD BLACKHOLEs
-  // +Z
-  blackhole = new PHG4CylinderSubsystem("BH_FORWARD_PLUS", 1);
-  blackhole->SuperDetector("BLACKHOLE");
-//  blackhole->SuperDetector("BH_FORWARD_PLUS");
-  blackhole->set_double_param("radius",0); // add 10 cm
-  blackhole->set_int_param("lengthviarapidity",0);
-  blackhole->set_double_param("length",0.1); // make it cover the world in length
-  blackhole->set_double_param("place_z",g4Reco->GetWorldSizeZ()/2. - 0.1  - no_overlapp);
-  blackhole->BlackHole();
-  blackhole->set_double_param("thickness",radius - no_overlapp); // it needs some thickness
-  blackhole->SetActive(); // always see what leaks out
-  blackhole->OverlapCheck(overlapcheck);
-  g4Reco->registerSubsystem(blackhole);
-
-  blackhole = new PHG4CylinderSubsystem("BH_FORWARD_NEG", 2);
-  blackhole->SuperDetector("BLACKHOLE");
-//  blackhole->SuperDetector("BH_FORWARD_NEG");
-  blackhole->set_double_param("radius",0); // add 10 cm
-  blackhole->set_int_param("lengthviarapidity",0);
-  blackhole->set_double_param("length",0.1); // make it cover the world in length
-  blackhole->set_double_param("place_z", - g4Reco->GetWorldSizeZ()/2. +0.1  + no_overlapp);
-  blackhole->BlackHole();
-  blackhole->set_double_param("thickness",radius - no_overlapp); // it needs some thickness
-  blackhole->SetActive(); // always see what leaks out
-  blackhole->OverlapCheck(overlapcheck);
-  g4Reco->registerSubsystem(blackhole);
+  if (Enable::BLACKHOLE)
+  {
+    BlackHole(g4Reco, radius);
+  }
 
   PHG4TruthSubsystem *truth = new PHG4TruthSubsystem();
   g4Reco->registerSubsystem(truth);
+  // finally adjust the world size in case the default is too small
+  WorldSize(g4Reco, radius);
+
   se->registerSubsystem( g4Reco );
   return 0;
 }
