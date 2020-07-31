@@ -8,10 +8,9 @@
 #include "G4_Pipe_EIC.C"
 #include "G4_User.C"
 #include "G4_World.C"
+#include "G4_VTX_JLeic.C"
+#include "G4_CTD_JLeic.C"
 
-
-#include "G4_VTX.C"
-#include "G4_CTD.C"
 #include "G4_Gem.C"
 #include "G4_JLDIRC.C"
 #include "G4_Barrel_Hcal.C"
@@ -36,9 +35,7 @@ class SubsysReco;
 R__LOAD_LIBRARY(libg4decayer.so)
 R__LOAD_LIBRARY(libg4detectors.so)
 
-void G4Init(const bool do_ctd = true,
-            const bool do_vtx = true,
-            const bool do_gem = true,
+void G4Init(const bool do_gem = true,
             const bool do_jldirc = true,
             const bool do_barrel_hcal = true,
             const bool do_drich = true,
@@ -50,16 +47,12 @@ void G4Init(const bool do_ctd = true,
 
   // load detector/material macros and execute Init() function
 
-  if (Enable::PIPE)
-  {
-    PipeInit();
-  }
+  if (Enable::PIPE) PipeInit();
 
-  if (do_ctd)
-    {
-      gROOT->LoadMacro("G4_CTD.C");
-      CTDInit();
-    }  
+  if (Enable::VTX) VTXInit();
+
+  if (Enable::CTD) CTDInit();
+
   //----------------------------------------
   // MAGNET
 
@@ -109,17 +102,14 @@ void G4Init(const bool do_ctd = true,
 
 
 int G4Setup(const int absorberactive = 0,
-	    const string &field ="2.0",
-	    const bool do_ctd = true,
-	    const bool do_vtx = true,
             const bool do_gem = true,
             const bool do_jldirc = true,
             const bool do_barrel_hcal = true,
             const bool do_drich = true,
             const bool do_endcap_electron = true,
             const bool do_endcap_hadron = true,
-            const bool do_beamline = true,
-	    const float magfield_rescale = 1.0) {
+            const bool do_beamline = true)
+ {
   
   //---------------
   // Fun4All server
@@ -142,19 +132,15 @@ int G4Setup(const int absorberactive = 0,
   }
 
     double fieldstrength;
-  istringstream stringline(field);
+    istringstream stringline(G4MAGNET::magfield);
   stringline >> fieldstrength;
   if (stringline.fail()) { // conversion to double fails -> we have a string
 
-    if (field.find("sPHENIX.root") != string::npos) {
-      g4Reco->set_field_map(field, PHFieldConfig::Field3DCartesian);
-    } else {
-      g4Reco->set_field_map(field, PHFieldConfig::kField2D);
-    }
+      g4Reco->set_field_map(G4MAGNET::magfield, PHFieldConfig::kFieldCleo);
   } else {
     g4Reco->set_field(fieldstrength); // use const soleniodal field
   }
-  g4Reco->set_field_rescale(magfield_rescale);
+  g4Reco->set_field_rescale(G4MAGNET::magfield_rescale);
   
   double radius = 0.;
 
@@ -167,11 +153,11 @@ int G4Setup(const int absorberactive = 0,
 
   //----------------------------------------
   // VTX
-  if (do_vtx) radius = VTX(g4Reco, radius, absorberactive);
+  if (Enable::VTX) radius = VTX(g4Reco, radius);
 
   //----------------------------------------
   // CTD
-  if (do_ctd) radius = CTD(g4Reco, radius, absorberactive);
+  if (Enable::CTD) radius = CTD(g4Reco, radius);
   
   //----------------------------------------
   // DIRC
@@ -200,7 +186,6 @@ int G4Setup(const int absorberactive = 0,
   if (do_endcap_hadron) double tmp =  EndCap_Hadron(g4Reco, radius, 0, absorberactive);
 
   if (do_beamline) double tmp = BeamLine(g4Reco, radius, 0, absorberactive);
-  radius = 200.;
 
   if (Enable::USER)
   {

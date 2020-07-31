@@ -202,43 +202,41 @@ int Fun4All_G4_JLeic(
   //======================
 
   // whether to simulate the Be section of the beam pipe
-  Enable::PIPE = true;
+//  Enable::PIPE = true;
   // EIC beam pipe extension beyond the Be-section:
   //G4PIPE::use_forward_pipes = true;
 
-  bool do_ctd = true;
+  Enable::CTD = true;
 
-  bool do_vtx = true;
+//  Enable::VTX = true;
 
-  bool do_jldirc = true;
+  bool do_jldirc = false;
 
-  Enable::MAGNET = true;
+//  Enable::MAGNET = true;
 
-  bool do_barrel_hcal = true;
+  bool do_barrel_hcal = false;
 
-  bool do_gem = true;
+  bool do_gem = false;
 
-  bool do_drich = true;
+  bool do_drich = false;
 
-  bool do_endcap_electron = true;
+  bool do_endcap_electron = false;
 
   bool do_endcap_hadron = false;
 
-  bool do_beamline = true;
+  bool do_beamline = false;
 
-  bool do_tracking = true;
-  //---------------
-  // Load libraries
-  //---------------
+  bool do_tracking = false;
+
+  // new settings using Enable namespace in GlobalVariables.C
+  Enable::BLACKHOLE = true;
+  //Enable::BLACKHOLE_SAVEHITS = false; // turn off saving of bh hits
+  // BlackHoleGeometry::visible = true;
 
   // establish the geometry and reconstruction setup
-  G4Init(do_ctd, do_vtx, do_gem, do_jldirc, do_barrel_hcal, do_drich, do_endcap_electron, do_endcap_hadron, do_beamline);
+  G4Init(do_gem, do_jldirc, do_barrel_hcal, do_drich, do_endcap_electron, do_endcap_hadron, do_beamline);
 
   int absorberactive = 1;  // set to 1 to make all absorbers active volumes
-
-//  const string magfield = string(getenv("CALIBRATIONROOT")) + string("/Field/Map/sPHENIX.2d.root"); // default map from the calibration database
-  const string magfield = "2.0"; // alternatively to specify a constant magnetic field, give a float number, which will be translated to solenoidal field in T, if string use as fieldmap name (including path)
-  const float magfield_rescale = 1; // scale map if needed
 
   if (!Input::READHITS)
   {
@@ -246,8 +244,8 @@ int Fun4All_G4_JLeic(
     // Detector description
     //---------------------
 
-    G4Setup(absorberactive, magfield,
-            do_ctd, do_vtx, do_gem, do_jldirc, do_barrel_hcal, do_drich, do_endcap_electron, do_endcap_hadron, do_beamline, magfield_rescale);
+    G4Setup(absorberactive,
+            do_gem, do_jldirc, do_barrel_hcal, do_drich, do_endcap_electron, do_endcap_hadron, do_beamline);
   }
 
 
