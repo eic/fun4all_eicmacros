@@ -58,11 +58,11 @@ void G4DSTreader(const string &outputFile = "G4JLeic.root")
 
   if (G4DSTREADER::save_g4_raw)
   {
-  if (Enable::PIPE)
-  {
-    if (Enable::ABSORBER || Enable::PIPE_ABSORBER)
-      ana->AddNode("PIPE");
-  }
+    if (Enable::PIPE)
+    {
+      if (Enable::ABSORBER || Enable::PIPE_ABSORBER)
+        ana->AddNode("PIPE");
+    }
     if (Enable::VTX)
     {
       ana->AddNode("JLVTX");
@@ -76,53 +76,53 @@ void G4DSTreader(const string &outputFile = "G4JLeic.root")
       ana->AddNode("JLDIRC");
     }
 
-  if (Enable::MAGNET)
-  {
-    if (Enable::ABSORBER || Enable::MAGNET_ABSORBER)
-      ana->AddNode("MAGNET");
-  }
-
-  if (Enable::BARREL_HCAL)
-  {
-    ana->AddNode("BARRELHCAL");
-  }
-
-  if (Enable::GEM)
-  {
-    ana->AddNode("GEMHADRON");
-    ana->AddNode("GEMELECTRON");
-  }
-
-  if (Enable::DRICH)
-  {
-    ana->AddNode("DRICH");
-  }
-
-  if (Enable::ENDCAP_ELECTRON)
-  {
-    ana->AddNode("ECELECTRON");
-  }
-
-  if (Enable::ENDCAP_HADRON)
-  {
-    ana->AddNode("ECHADRON");
-  }
-  if (Enable::BEAMLINE)
-  {
-    ana->AddNode("BEAMLINE");
-    if (Enable::BEAMLINE_ABSORBER)
+    if (Enable::MAGNET)
     {
-       ana->AddNode("ABSORBER_BEAMLINE");
+      if (Enable::ABSORBER || Enable::MAGNET_ABSORBER)
+        ana->AddNode("MAGNET");
     }
-  }
-  if (Enable::BLACKHOLE)
-  {
-    ana->AddNode("BH_1");
-    ana->AddNode("BH_FORWARD_PLUS");
-    ana->AddNode("BH_FORWARD_NEG");
-  }
+
+    if (Enable::BARREL_HCAL)
+    {
+      ana->AddNode("BARRELHCAL");
+    }
+
+    if (Enable::GEM)
+    {
+      ana->AddNode("GEMHADRON");
+      ana->AddNode("GEMELECTRON");
+    }
+
+    if (Enable::DRICH)
+    {
+      ana->AddNode("DRICH");
+    }
+
+    if (Enable::ENDCAP_ELECTRON)
+    {
+      ana->AddNode("ECELECTRON");
+    }
+
+    if (Enable::ENDCAP_HADRON)
+    {
+      ana->AddNode("ECHADRON");
+    }
+    if (Enable::BEAMLINE)
+    {
+      ana->AddNode("BEAMLINE");
+      if (Enable::BEAMLINE_ABSORBER)
+      {
+        ana->AddNode("ABSORBER_BEAMLINE");
+      }
+    }
+    if (Enable::BLACKHOLE)
+    {
+      ana->AddNode("BH_1");
+      ana->AddNode("BH_FORWARD_PLUS");
+      ana->AddNode("BH_FORWARD_NEG");
+    }
   }
   Fun4AllServer *se = Fun4AllServer::instance();
   se->registerSubsystem(ana);
 }
-#endif // MACRO_G4DSTREADERJLEIC_C
+#endif  // MACRO_G4DSTREADERJLEIC_C

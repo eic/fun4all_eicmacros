@@ -5,9 +5,10 @@
 
 #include "DisplayOn.C"
 #include "G4Setup_JLeic.C"
+#include "G4_DSTReader_JLeic.C"
 #include "G4_Input.C"
 #include "G4_Tracking_JLeic.C"
-
+#
 #include <fun4all/Fun4AllDstOutputManager.h>
 #include <fun4all/Fun4AllOutputManager.h>
 #include <fun4all/Fun4AllServer.h>
@@ -163,7 +164,7 @@ int Fun4All_G4_JLeic(
   DstOut::OutputFile = outputFile;
 
   //Option to convert DST to human command readable TTree for quick poke around the outputs
-  //  Enable::DSTREADER = true;
+  Enable::DSTREADER = true;
 
   // turn the display on (default off)
   Enable::DISPLAY = false;
@@ -174,6 +175,7 @@ int Fun4All_G4_JLeic(
 
   // whether to simulate the Be section of the beam pipe
   Enable::PIPE = true;
+  Enable::PIPE_ABSORBER = true;
   // EIC beam pipe extension beyond the Be-section:
   G4PIPE::use_forward_pipes = true;
 
@@ -197,7 +199,7 @@ int Fun4All_G4_JLeic(
   Enable::ENDCAP_HADRON = true;
 
   // The old JLeic beamline - probably irrelevant by now
-  //Enable::BEAMLINE = true;
+  //  Enable::BEAMLINE = true;
   //  Enable::BEAMLINE_ABSORBER = true;
 
   Enable::TRACKING = true;
@@ -220,12 +222,22 @@ int Fun4All_G4_JLeic(
     G4Setup();
   }
 
+  string outputroot = outputFile;
+  string remove_this = ".root";
+  size_t pos = outputroot.find(remove_this);
+  if (pos != string::npos)
+  {
+    outputroot.erase(pos, remove_this.length());
+  }
+
   if (Enable::TRACKING)
   {
     TrackingInit();
     Tracking_Reco();
-    Tracking_Eval("trkeval.root");
+    Tracking_Eval(outputroot + "_trkeval.root");
   }
+
+  if (Enable::DSTREADER) G4DSTreader(outputroot + "_DSTReader.root");
 
   //--------------
   // Set up Input Managers
