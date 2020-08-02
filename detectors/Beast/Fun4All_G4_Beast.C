@@ -4,11 +4,10 @@
 #include "GlobalVariables.C"
 
 #include "DisplayOn.C"
-#include "G4Setup_JLeic.C"
-#include "G4_DSTReader_JLeic.C"
+#include "G4Setup_Beast.C"
+#include "G4_DSTReader_Beast.C"
 #include "G4_Input.C"
-#include "G4_Tracking_JLeic.C"
-#
+
 #include <fun4all/Fun4AllDstOutputManager.h>
 #include <fun4all/Fun4AllOutputManager.h>
 #include <fun4all/Fun4AllServer.h>
@@ -19,10 +18,10 @@
 R__LOAD_LIBRARY(libfun4all.so)
 R__LOAD_LIBRARY(libg4testbench.so)
 
-int Fun4All_G4_JLeic(
+int Fun4All_G4_Beast(
     const int nEvents = 1,
     const string &inputFile = "/sphenix/data/data02/review_2017-08-02/single_particle/spacal2d/fieldmap/G4Hits_sPHENIX_e-_eta0_8GeV-0002.root",
-    const string &outputFile = "G4JLeic.root",
+    const string &outputFile = "G4Beast.root",
     const string &embed_input_file = "/sphenix/data/data02/review_2017-08-02/sHijing/fm_0-4.list",
     const int skip = 0,
     const string &outdir = ".")
@@ -182,14 +181,10 @@ int Fun4All_G4_JLeic(
   Enable::MAGNET = true;
   Enable::MAGNET_ABSORBER = true;
 
-  // The old JLeic beamline - probably irrelevant by now
-  //  Enable::BEAMLINE = true;
-  //  Enable::BEAMLINE_ABSORBER = true;
-
   // new settings using Enable namespace in GlobalVariables.C
   Enable::BLACKHOLE = true;
   //Enable::BLACKHOLE_SAVEHITS = false; // turn off saving of bh hits
-  BlackHoleGeometry::visible = true;
+  //BlackHoleGeometry::visible = true;
 
   // establish the geometry and reconstruction setup
   G4Init();
