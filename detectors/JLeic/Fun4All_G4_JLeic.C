@@ -12,8 +12,8 @@
 #include <fun4all/Fun4AllOutputManager.h>
 #include <fun4all/Fun4AllServer.h>
 
-#include <phool/recoConsts.h>
 #include <phool/PHRandomSeed.h>
+#include <phool/recoConsts.h>
 
 R__LOAD_LIBRARY(libfun4all.so)
 R__LOAD_LIBRARY(libg4testbench.so)
@@ -173,35 +173,35 @@ int Fun4All_G4_JLeic(
   //======================
 
   // whether to simulate the Be section of the beam pipe
-    Enable::PIPE = true;
+  Enable::PIPE = true;
   // EIC beam pipe extension beyond the Be-section:
   G4PIPE::use_forward_pipes = true;
 
-    Enable::VTX = true;
+  Enable::VTX = true;
 
-    Enable::CTD = true;
+  Enable::CTD = true;
 
-    Enable::DIRC = true;
+  Enable::DIRC = true;
 
-    Enable::MAGNET = true;
+  Enable::MAGNET = true;
   Enable::MAGNET_ABSORBER = true;
 
-    Enable::BARREL_HCAL = true;
+  Enable::BARREL_HCAL = true;
 
   Enable::GEM = true;
 
-    Enable::DRICH = true;
+  Enable::DRICH = true;
 
-    Enable::ENDCAP_ELECTRON = true;
+  Enable::ENDCAP_ELECTRON = true;
 
-   Enable::ENDCAP_HADRON = true;
+  Enable::ENDCAP_HADRON = true;
 
-// The old JLeic beamline - probably irrelevant by now
-   //Enable::BEAMLINE = true;
+  // The old JLeic beamline - probably irrelevant by now
+  //Enable::BEAMLINE = true;
   //  Enable::BEAMLINE_ABSORBER = true;
 
-    Enable::TRACKING = true;
-    G4TRACKING::PROJECTION_JLDIRC = true;
+  Enable::TRACKING = true;
+  G4TRACKING::PROJECTION_JLDIRC = true;
 
   // new settings using Enable namespace in GlobalVariables.C
   Enable::BLACKHOLE = true;
