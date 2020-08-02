@@ -3,24 +3,22 @@
 
 #include "GlobalVariables.C"
 
-#include <g4detectors/PHG4CylinderSubsystem.h>
+#include <eicdetectors/BeastMagnetSubsystem.h>
 
 #include <g4main/PHG4Reco.h>
 
-R__LOAD_LIBRARY(libg4detectors.so)
+R__LOAD_LIBRARY(libeicdetectors.so)
 
 namespace Enable
 {
   bool MAGNET = false;
   bool MAGNET_ABSORBER = false;
-  bool MAGNET_OVERLAPCHECK = false;
-  int MAGNET_VERBOSITY = 0;
 }  // namespace Enable
 
 namespace G4MAGNET
 {
-  double magnet_outer_radius = 143.;
-  double magnet_length = 400.;
+  double magnet_outer_radius = 300.;
+  double magnet_length = 500.;
   double magfield_rescale = 1;
   string magfield = string(getenv("CALIBRATIONROOT")) + string("/Field/Map/mfield.4col.dat");
 
