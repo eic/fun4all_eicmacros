@@ -4,34 +4,34 @@
 #include "GlobalVariables.C"
 #include "GlobalVariables_JLEIC.C"
 
-#include "G4Setup_JLeic.C"
 #include "DisplayOn.C"
-#include "G4_Tracking_EIC.C"
+#include "G4Setup_JLeic.C"
 #include "G4_Input.C"
+#include "G4_Tracking_EIC.C"
 
 #include <phool/PHRandomSeed.h>
 
-#include <fun4all/SubsysReco.h>
-#include <fun4all/Fun4AllServer.h>
-#include <fun4all/Fun4AllInputManager.h>
-#include <fun4all/Fun4AllDummyInputManager.h>
-#include <fun4all/Fun4AllOutputManager.h>
 #include <fun4all/Fun4AllDstInputManager.h>
-#include <fun4all/Fun4AllNoSyncDstInputManager.h>
 #include <fun4all/Fun4AllDstOutputManager.h>
+#include <fun4all/Fun4AllDummyInputManager.h>
+#include <fun4all/Fun4AllInputManager.h>
+#include <fun4all/Fun4AllNoSyncDstInputManager.h>
+#include <fun4all/Fun4AllOutputManager.h>
+#include <fun4all/Fun4AllServer.h>
+#include <fun4all/SubsysReco.h>
+#include <g4detectors/PHG4DetectorSubsystem.h>
 #include <g4histos/G4HitNtuple.h>
-#include <g4main/PHG4ParticleGeneratorBase.h>
+#include <g4main/HepMCNodeReader.h>
 #include <g4main/PHG4ParticleGenerator.h>
-#include <g4main/PHG4SimpleEventGenerator.h>
+#include <g4main/PHG4ParticleGeneratorBase.h>
 #include <g4main/PHG4ParticleGeneratorVectorMeson.h>
 #include <g4main/PHG4ParticleGun.h>
-#include <g4main/HepMCNodeReader.h>
-#include <g4detectors/PHG4DetectorSubsystem.h>
+#include <g4main/PHG4SimpleEventGenerator.h>
+#include <phhepmc/Fun4AllHepMCInputManager.h>
+#include <phhepmc/Fun4AllHepMCPileupInputManager.h>
 #include <phool/recoConsts.h>
 #include <phpythia6/PHPythia6.h>
 #include <phpythia8/PHPythia8.h>
-#include <phhepmc/Fun4AllHepMCPileupInputManager.h>
-#include <phhepmc/Fun4AllHepMCInputManager.h>
 
 R__LOAD_LIBRARY(libfun4all.so)
 R__LOAD_LIBRARY(libg4testbench.so)
@@ -42,7 +42,6 @@ R__LOAD_LIBRARY(libg4histos.so)
 
 using namespace std;
 
-
 int Fun4All_G4_JLeic(
     const int nEvents = 1,
     const string &inputFile = "/sphenix/data/data02/review_2017-08-02/single_particle/spacal2d/fieldmap/G4Hits_sPHENIX_e-_eta0_8GeV-0002.root",
@@ -51,7 +50,6 @@ int Fun4All_G4_JLeic(
     const int skip = 0,
     const string &outdir = ".")
 {
-
   Fun4AllServer *se = Fun4AllServer::instance();
   se->Verbosity(0);
 
@@ -104,7 +102,7 @@ int Fun4All_G4_JLeic(
   //  Input::UPSILON = true;
   Input::UPSILON_VERBOSITY = 0;
 
-//  Input::HEPMC = true;
+  //  Input::HEPMC = true;
   Input::VERBOSITY = 0;
   INPUTHEPMC::filename = inputFile;
 
@@ -166,10 +164,10 @@ int Fun4All_G4_JLeic(
 
   if (Input::HEPMC)
   {
-    INPUTMANAGER::HepMCInputManager->set_vertex_distribution_width(100e-4,100e-4,30,0);//optional collision smear in space, time
-//    INPUTMANAGER::HepMCInputManager->set_vertex_distribution_mean(0,0,0,0);//optional collision central position shift in space, time
+    INPUTMANAGER::HepMCInputManager->set_vertex_distribution_width(100e-4, 100e-4, 30, 0);  //optional collision smear in space, time
+                                                                                            //    INPUTMANAGER::HepMCInputManager->set_vertex_distribution_mean(0,0,0,0);//optional collision central position shift in space, time
     // //optional choice of vertex distribution function in space, time
-    INPUTMANAGER::HepMCInputManager->set_vertex_distribution_function(PHHepMCGenHelper::Gaus,PHHepMCGenHelper::Gaus,PHHepMCGenHelper::Gaus,PHHepMCGenHelper::Gaus);
+    INPUTMANAGER::HepMCInputManager->set_vertex_distribution_function(PHHepMCGenHelper::Gaus, PHHepMCGenHelper::Gaus, PHHepMCGenHelper::Gaus, PHHepMCGenHelper::Gaus);
     //! embedding ID for the event
     //! positive ID is the embedded event of interest, e.g. jetty event from pythia
     //! negative IDs are backgrounds, .e.g out of time pile up collisions
@@ -179,14 +177,14 @@ int Fun4All_G4_JLeic(
   // register all input generators with Fun4All
   InputRegister();
 
-// set up production relatedstuff
-//   Enable::PRODUCTION = true;
+  // set up production relatedstuff
+  //   Enable::PRODUCTION = true;
 
   //======================
   // Write the DST
   //======================
 
-//  Enable::DSTOUT = true;
+  //  Enable::DSTOUT = true;
   Enable::DSTOUT_COMPRESS = false;
   DstOut::OutputDir = outdir;
   DstOut::OutputFile = outputFile;
@@ -202,41 +200,41 @@ int Fun4All_G4_JLeic(
   //======================
 
   // whether to simulate the Be section of the beam pipe
-//  Enable::PIPE = true;
+  //  Enable::PIPE = true;
   // EIC beam pipe extension beyond the Be-section:
   //G4PIPE::use_forward_pipes = true;
 
-  Enable::CTD = true;
+  //  Enable::VTX = true;
 
-//  Enable::VTX = true;
+  //  Enable::CTD = true;
 
-  bool do_jldirc = false;
+  //  Enable::DIRC = true;
 
-//  Enable::MAGNET = true;
+  //  Enable::MAGNET = true;
+  Enable::MAGNET_ABSORBER = true;
 
-  bool do_barrel_hcal = false;
+  //  Enable::BARREL_HCAL = true;
 
-  bool do_gem = false;
+  //Enable::GEM = true;
 
-  bool do_drich = false;
+  //  Enable::DRICH = true;
 
-  bool do_endcap_electron = false;
+  //  Enable::ENDCAP_ELECTRON = true;
 
-  bool do_endcap_hadron = false;
+  //  Enable::ENDCAP_HADRON = true;
 
-  bool do_beamline = false;
+  Enable::BEAMLINE = true;
+  //  Enable::BEAMLINE_ABSORBER = true;
 
   bool do_tracking = false;
 
   // new settings using Enable namespace in GlobalVariables.C
   Enable::BLACKHOLE = true;
   //Enable::BLACKHOLE_SAVEHITS = false; // turn off saving of bh hits
-  // BlackHoleGeometry::visible = true;
+  BlackHoleGeometry::visible = true;
 
   // establish the geometry and reconstruction setup
-  G4Init(do_gem, do_jldirc, do_barrel_hcal, do_drich, do_endcap_electron, do_endcap_hadron, do_beamline);
-
-  int absorberactive = 1;  // set to 1 to make all absorbers active volumes
+  G4Init();
 
   if (!Input::READHITS)
   {
@@ -244,24 +242,22 @@ int Fun4All_G4_JLeic(
     // Detector description
     //---------------------
 
-    G4Setup(absorberactive,
-            do_gem, do_jldirc, do_barrel_hcal, do_drich, do_endcap_electron, do_endcap_hadron, do_beamline);
+    G4Setup();
   }
-
 
   if (do_tracking)
   {
     Tracking_Reco();
     Tracking_Eval("trkeval.root");
   }
-   G4HitNtuple *g4h = new G4HitNtuple("G4HitNtuple","/phenix/scratch/pinkenbu/g4hitntuple.root");
-   g4h->AddNode("PIPE", 0);
-   g4h->AddNode("JLVTX",1);
-   g4h->AddNode("JLCTD",2);
-   g4h->AddNode("JLDIRC",3);
-   g4h->AddNode("MAGNET",4);
-   g4h->AddNode("BARRELHCAL",5);
-   se->registerSubsystem(g4h);
+  G4HitNtuple *g4h = new G4HitNtuple("G4HitNtuple", "/phenix/scratch/pinkenbu/g4hitntuple.root");
+  g4h->AddNode("PIPE", 0);
+  g4h->AddNode("JLVTX", 1);
+  g4h->AddNode("JLCTD", 2);
+  g4h->AddNode("JLDIRC", 3);
+  g4h->AddNode("MAGNET", 4);
+  g4h->AddNode("BARRELHCAL", 5);
+  se->registerSubsystem(g4h);
 
   //--------------
   // Set up Input Managers
@@ -293,20 +289,19 @@ int Fun4All_G4_JLeic(
   }
 
   if (Enable::DISPLAY)
-    {
-      DisplayOn();
-      // prevent macro from finishing so can see display
-      int i;
-      cout << "***** Enter any integer to proceed" << endl;
-      cin >> i;
-    }
+  {
+    DisplayOn();
+    // prevent macro from finishing so can see display
+    int i;
+    cout << "***** Enter any integer to proceed" << endl;
+    cin >> i;
+  }
 
   se->run(nEvents);
 
   //-----
   // Exit
   //-----
-
 
   se->End();
   std::cout << "All done" << std::endl;
@@ -315,4 +310,4 @@ int Fun4All_G4_JLeic(
   return 0;
 }
 
-#endif // MACRO_FUN4ALLG4JLEIC_C
+#endif  // MACRO_FUN4ALLG4JLEIC_C
