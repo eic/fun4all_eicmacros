@@ -208,7 +208,7 @@ int Fun4All_G4_JLeic(
   // new settings using Enable namespace in GlobalVariables.C
   Enable::BLACKHOLE = true;
   //Enable::BLACKHOLE_SAVEHITS = false; // turn off saving of bh hits
-  BlackHoleGeometry::visible = true;
+  //BlackHoleGeometry::visible = true;
 
   // establish the geometry and reconstruction setup
   G4Init();
