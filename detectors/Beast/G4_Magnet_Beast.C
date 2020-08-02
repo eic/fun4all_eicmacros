@@ -42,13 +42,13 @@ double Magnet(PHG4Reco* g4Reco, double radius)
     cout << "previous outer radius " << radius << " larger then magnet inner radius " << G4MAGNET::magnet_inner_radius << endl;
     gSystem->Exit(1);
   }
-    BeastMagnetSubsystem *beast = new BeastMagnetSubsystem();
-    beast->set_string_param("GDMPath",(string(getenv("CALIBRATIONROOT")) + string("/Magnet/BeastSolenoid.gdml")));
-    beast->set_string_param("TopVolName","SOLENOID");
-    beast->SetActive(AbsorberActive);
-    beast->SuperDetector("MAGNET");
-    g4Reco->registerSubsystem(beast);
-    return  G4MAGNET::magnet_outer_radius;
+  BeastMagnetSubsystem* beast = new BeastMagnetSubsystem();
+  beast->set_string_param("GDMPath", (string(getenv("CALIBRATIONROOT")) + string("/Magnet/BeastSolenoid.gdml")));
+  beast->set_string_param("TopVolName", "SOLENOID");
+  beast->SetActive(AbsorberActive);
+  beast->SuperDetector("MAGNET");
+  g4Reco->registerSubsystem(beast);
+  return G4MAGNET::magnet_outer_radius;
 }
 
 #endif  // MACRO_G4MAGNETBEAST_C
