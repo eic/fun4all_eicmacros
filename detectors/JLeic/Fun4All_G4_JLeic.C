@@ -2,45 +2,21 @@
 #define MACRO_FUN4ALLG4JLEIC_C
 
 #include "GlobalVariables.C"
-#include "GlobalVariables_JLEIC.C"
 
 #include "DisplayOn.C"
 #include "G4Setup_JLeic.C"
 #include "G4_Input.C"
-#include "G4_Tracking_EIC.C"
+#include "G4_Tracking_JLeic.C"
 
-#include <phool/PHRandomSeed.h>
-
-#include <fun4all/Fun4AllDstInputManager.h>
 #include <fun4all/Fun4AllDstOutputManager.h>
-#include <fun4all/Fun4AllDummyInputManager.h>
-#include <fun4all/Fun4AllInputManager.h>
-#include <fun4all/Fun4AllNoSyncDstInputManager.h>
 #include <fun4all/Fun4AllOutputManager.h>
 #include <fun4all/Fun4AllServer.h>
-#include <fun4all/SubsysReco.h>
-#include <g4detectors/PHG4DetectorSubsystem.h>
-#include <g4histos/G4HitNtuple.h>
-#include <g4main/HepMCNodeReader.h>
-#include <g4main/PHG4ParticleGenerator.h>
-#include <g4main/PHG4ParticleGeneratorBase.h>
-#include <g4main/PHG4ParticleGeneratorVectorMeson.h>
-#include <g4main/PHG4ParticleGun.h>
-#include <g4main/PHG4SimpleEventGenerator.h>
-#include <phhepmc/Fun4AllHepMCInputManager.h>
-#include <phhepmc/Fun4AllHepMCPileupInputManager.h>
+
 #include <phool/recoConsts.h>
-#include <phpythia6/PHPythia6.h>
-#include <phpythia8/PHPythia8.h>
+#include <phool/PHRandomSeed.h>
 
 R__LOAD_LIBRARY(libfun4all.so)
 R__LOAD_LIBRARY(libg4testbench.so)
-R__LOAD_LIBRARY(libphhepmc.so)
-R__LOAD_LIBRARY(libPHPythia6.so)
-R__LOAD_LIBRARY(libPHPythia8.so)
-R__LOAD_LIBRARY(libg4histos.so)
-
-using namespace std;
 
 int Fun4All_G4_JLeic(
     const int nEvents = 1,
@@ -177,9 +153,6 @@ int Fun4All_G4_JLeic(
   // register all input generators with Fun4All
   InputRegister();
 
-  // set up production relatedstuff
-  //   Enable::PRODUCTION = true;
-
   //======================
   // Write the DST
   //======================
@@ -200,33 +173,35 @@ int Fun4All_G4_JLeic(
   //======================
 
   // whether to simulate the Be section of the beam pipe
-  //  Enable::PIPE = true;
+    Enable::PIPE = true;
   // EIC beam pipe extension beyond the Be-section:
-  //G4PIPE::use_forward_pipes = true;
+  G4PIPE::use_forward_pipes = true;
 
-  //  Enable::VTX = true;
+    Enable::VTX = true;
 
-  //  Enable::CTD = true;
+    Enable::CTD = true;
 
-  //  Enable::DIRC = true;
+    Enable::DIRC = true;
 
-  //  Enable::MAGNET = true;
+    Enable::MAGNET = true;
   Enable::MAGNET_ABSORBER = true;
 
-  //  Enable::BARREL_HCAL = true;
+    Enable::BARREL_HCAL = true;
 
-  //Enable::GEM = true;
+  Enable::GEM = true;
 
-  //  Enable::DRICH = true;
+    Enable::DRICH = true;
 
-  //  Enable::ENDCAP_ELECTRON = true;
+    Enable::ENDCAP_ELECTRON = true;
 
-  //  Enable::ENDCAP_HADRON = true;
+   Enable::ENDCAP_HADRON = true;
 
-  Enable::BEAMLINE = true;
+// The old JLeic beamline - probably irrelevant by now
+   //Enable::BEAMLINE = true;
   //  Enable::BEAMLINE_ABSORBER = true;
 
-  bool do_tracking = false;
+    Enable::TRACKING = true;
+    G4TRACKING::PROJECTION_JLDIRC = true;
 
   // new settings using Enable namespace in GlobalVariables.C
   Enable::BLACKHOLE = true;
@@ -245,19 +220,12 @@ int Fun4All_G4_JLeic(
     G4Setup();
   }
 
-  if (do_tracking)
+  if (Enable::TRACKING)
   {
+    TrackingInit();
     Tracking_Reco();
     Tracking_Eval("trkeval.root");
   }
-  G4HitNtuple *g4h = new G4HitNtuple("G4HitNtuple", "/phenix/scratch/pinkenbu/g4hitntuple.root");
-  g4h->AddNode("PIPE", 0);
-  g4h->AddNode("JLVTX", 1);
-  g4h->AddNode("JLCTD", 2);
-  g4h->AddNode("JLDIRC", 3);
-  g4h->AddNode("MAGNET", 4);
-  g4h->AddNode("BARRELHCAL", 5);
-  se->registerSubsystem(g4h);
 
   //--------------
   // Set up Input Managers

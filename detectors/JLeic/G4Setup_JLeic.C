@@ -20,19 +20,15 @@
 
 #include <g4decayer/EDecayType.hh>
 
-#include <fun4all/Fun4AllDstOutputManager.h>
-#include <fun4all/Fun4AllInputManager.h>
-#include <fun4all/Fun4AllServer.h>
-#include <g4eval/PHG4DstCompressReco.h>
-
-#include <g4detectors/PHG4CylinderSubsystem.h>
-#include <g4main/HepMCNodeReader.h>
 #include <g4main/PHG4Reco.h>
 #include <g4main/PHG4TruthSubsystem.h>
+
 #include <phfield/PHFieldConfig.h>
-class SubsysReco;
+
+#include <fun4all/Fun4AllDstOutputManager.h>
+#include <fun4all/Fun4AllServer.h>
+
 R__LOAD_LIBRARY(libg4decayer.so)
-R__LOAD_LIBRARY(libg4detectors.so)
 
 void G4Init()
 {
@@ -64,7 +60,7 @@ void G4Init()
   if (Enable::BEAMLINE) BeamLineInit();
 }
 
-int G4Setup()
+void G4Setup()
 {
   //---------------
   // Fun4All server
@@ -153,8 +149,9 @@ int G4Setup()
   WorldSize(g4Reco, radius);
 
   se->registerSubsystem(g4Reco);
-  return 0;
+  return;
 }
+
 void DstCompress(Fun4AllDstOutputManager *out)
 {
   if (out)
