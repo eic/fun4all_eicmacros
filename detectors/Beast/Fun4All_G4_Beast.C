@@ -1,14 +1,13 @@
-#ifndef MACRO_FUN4ALLG4JLEIC_C
-#define MACRO_FUN4ALLG4JLEIC_C
+#ifndef MACRO_FUN4ALLG4BEAST_C
+#define MACRO_FUN4ALLG4BEAST_C
 
 #include "GlobalVariables.C"
 
 #include "DisplayOn.C"
-#include "G4Setup_JLeic.C"
-#include "G4_DSTReader_JLeic.C"
+#include "G4Setup_Beast.C"
+#include "G4_DSTReader_Beast.C"
 #include "G4_Input.C"
-#include "G4_Tracking_JLeic.C"
-#
+
 #include <fun4all/Fun4AllDstOutputManager.h>
 #include <fun4all/Fun4AllOutputManager.h>
 #include <fun4all/Fun4AllServer.h>
@@ -19,10 +18,10 @@
 R__LOAD_LIBRARY(libfun4all.so)
 R__LOAD_LIBRARY(libg4testbench.so)
 
-int Fun4All_G4_JLeic(
+int Fun4All_G4_Beast(
     const int nEvents = 1,
     const string &inputFile = "/sphenix/data/data02/review_2017-08-02/single_particle/spacal2d/fieldmap/G4Hits_sPHENIX_e-_eta0_8GeV-0002.root",
-    const string &outputFile = "G4JLeic.root",
+    const string &outputFile = "G4Beast.root",
     const string &embed_input_file = "/sphenix/data/data02/review_2017-08-02/sHijing/fm_0-4.list",
     const int skip = 0,
     const string &outdir = ".")
@@ -179,31 +178,8 @@ int Fun4All_G4_JLeic(
   // EIC beam pipe extension beyond the Be-section:
   G4PIPE::use_forward_pipes = true;
 
-  Enable::VTX = true;
-
-  Enable::CTD = true;
-
-  Enable::DIRC = true;
-
   Enable::MAGNET = true;
   Enable::MAGNET_ABSORBER = true;
-
-  Enable::BARREL_HCAL = true;
-
-  Enable::GEM = true;
-
-  Enable::DRICH = true;
-
-  Enable::ENDCAP_ELECTRON = true;
-
-  Enable::ENDCAP_HADRON = true;
-
-  // The old JLeic beamline - probably irrelevant by now
-  //  Enable::BEAMLINE = true;
-  //  Enable::BEAMLINE_ABSORBER = true;
-
-  Enable::TRACKING = true;
-  G4TRACKING::PROJECTION_JLDIRC = true;
 
   // new settings using Enable namespace in GlobalVariables.C
   Enable::BLACKHOLE = true;
@@ -228,13 +204,6 @@ int Fun4All_G4_JLeic(
   if (pos != string::npos)
   {
     outputroot.erase(pos, remove_this.length());
-  }
-
-  if (Enable::TRACKING)
-  {
-    TrackingInit();
-    Tracking_Reco();
-    Tracking_Eval(outputroot + "_trkeval.root");
   }
 
   if (Enable::DSTREADER) G4DSTreader(outputroot + "_DSTReader.root");
@@ -290,4 +259,4 @@ int Fun4All_G4_JLeic(
   return 0;
 }
 
-#endif  // MACRO_FUN4ALLG4JLEIC_C
+#endif  // MACRO_FUN4ALLG4BEAST_C
