@@ -18,6 +18,7 @@ namespace Enable
 namespace G4MAGNET
 {
   double magnet_outer_radius = 300.;
+  double magnet_inner_radius = 135.;
   double magnet_length = 500.;
   double magfield_rescale = 1;
   string magfield = string(getenv("CALIBRATIONROOT")) + string("/Field/Map/mfield.4col.dat");
@@ -31,18 +32,23 @@ void MagnetInit()
   BlackHoleGeometry::min_z = std::min(BlackHoleGeometry::min_z, -G4MAGNET::magnet_length / 2.);
 }
 
-void Magnet(PHG4Reco* g4Reco)
+double Magnet(PHG4Reco* g4Reco, double radius)
 
 {
   bool AbsorberActive = Enable::ABSORBER || Enable::MAGNET_ABSORBER;
 
+  if (radius > G4MAGNET::magnet_inner_radius)
+  {
+    cout << "previous outer radius " << radius << " larger then magnet inner radius " << G4MAGNET::magnet_inner_radius << endl;
+    gSystem->Exit(1);
+  }
     BeastMagnetSubsystem *beast = new BeastMagnetSubsystem();
     beast->set_string_param("GDMPath",(string(getenv("CALIBRATIONROOT")) + string("/Magnet/BeastSolenoid.gdml")));
     beast->set_string_param("TopVolName","SOLENOID");
     beast->SetActive(AbsorberActive);
     beast->SuperDetector("MAGNET");
     g4Reco->registerSubsystem(beast);
-  return;
+    return  G4MAGNET::magnet_outer_radius;
 }
 
 #endif  // MACRO_G4MAGNETBEAST_C
