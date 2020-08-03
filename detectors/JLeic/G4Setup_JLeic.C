@@ -12,7 +12,7 @@
 #include "G4_EndCap_Electron_JLeic.C"
 #include "G4_EndCap_Hadron_JLeic.C"
 #include "G4_Gem_JLeic.C"
-#include "G4_Magnet_JLeic.C"
+#include "G4_Magnet_Cleo.C"
 #include "G4_Pipe_EIC.C"
 #include "G4_User.C"
 #include "G4_VTX_JLeic.C"
