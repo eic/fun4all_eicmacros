@@ -20,7 +20,7 @@ void AllSiliconSetup(PHG4Reco *g4Reco)
   bool AbsorberActive = Enable::ABSORBER || Enable::ALLSILICON_ABSORBER;
 
   AllSiliconTrackerSubsystem *allsili = new AllSiliconTrackerSubsystem();
-  allsili->set_string_param("GDMPath", string(getenv("CALIBRATIONROOT")) + "/AllSiliconTracker/FAIRGeom.gdml");
+  allsili->set_string_param("GDMPath", string(getenv("CALIBRATIONROOT")) + "/AllSiliconTracker/genfitGeom_AllSi_v2.gdml");
 
   allsili->AddAssemblyVolume("VST");	// Barrel
   allsili->AddAssemblyVolume("FST");	// Forward disks
