@@ -7,7 +7,7 @@
 #include "G4Setup_LBLDetector.C"
 #include "G4_Bbc.C"
 #include "G4_CaloTrigger.C"
-#include "G4_DSTReader_EICDetector.C"
+#include "G4_DSTReader_LBLDetector.C"
 #include "G4_FwdJets.C"
 #include "G4_Global.C"
 #include "G4_HIJetReco.C"
@@ -63,7 +63,7 @@ int Fun4All_G4_LBLDetector(
   // Use one or more particle generators
   // It is run if Input::<generator> is set to true
   // all other options only play a role if it is active
-  // In case embedding into a production output, please double check your G4Setup_EICDetector.C and G4_*.C consistent with those in the production macro folder
+  // In case embedding into a production output, please double check your G4Setup_LBLDetector.C and G4_*.C consistent with those in the production macro folder
   //  Input::EMBED = true;
   INPUTEMBED::filename = embed_input_file;
   // Use Pythia 8
@@ -165,7 +165,7 @@ int Fun4All_G4_LBLDetector(
   Enable::DSTOUT_COMPRESS = false;  // Compress DST files
 
   //Option to convert DST to human command readable TTree for quick poke around the outputs
-  //Enable::DSTREADER = true;
+//  Enable::DSTREADER = true;
 
   //======================
   // What to run
@@ -211,10 +211,10 @@ int Fun4All_G4_LBLDetector(
   Enable::HCALOUT_CLUSTER = Enable::HCALOUT_TOWER && true;
   Enable::HCALOUT_EVAL = Enable::HCALOUT_CLUSTER && true;
 
-  // EICDetector geometry - barrel
+  // LBLDetector geometry - barrel
   Enable::DIRC = true;
 
-  // EICDetector geometry - 'hadron' direction
+  // LBLDetector geometry - 'hadron' direction
   Enable::RICH = true;
   Enable::AEROGEL = true;
 
@@ -232,7 +232,7 @@ int Fun4All_G4_LBLDetector(
   Enable::FHCAL_CLUSTER = Enable::FHCAL_TOWER && true;
   Enable::FHCAL_EVAL = Enable::FHCAL_CLUSTER && true;
 
-  // EICDetector geometry - 'electron' direction
+  // LBLDetector geometry - 'electron' direction
   Enable::EEMC = true;
   Enable::EEMC_CELL = Enable::EEMC && true;
   Enable::EEMC_TOWER = Enable::EEMC_CELL && true;
@@ -401,7 +401,7 @@ int Fun4All_G4_LBLDetector(
     outputroot.erase(pos, remove_this.length());
   }
 
-  if (Enable::DSTREADER) G4DSTreader_EICDetector(outputroot + "_DSTReader.root");
+  if (Enable::DSTREADER) G4DSTreader_LBLDetector(outputroot + "_DSTReader.root");
 
   //----------------------
   // Simulation evaluation
