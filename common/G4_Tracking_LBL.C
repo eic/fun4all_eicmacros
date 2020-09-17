@@ -3,10 +3,10 @@
 
 #include "GlobalVariables.C"
 
+#include "G4_AllSilicon.C"
 #include "G4_CEmc_EIC.C"
 #include "G4_FEMC_EIC.C"
 #include "G4_FHCAL.C"
-#include "G4_AllSilicon.C"
 
 #include <g4trackfastsim/PHG4TrackFastSim.h>
 
@@ -44,7 +44,6 @@ void TrackingInit()
 //-----------------------------------------------------------------------------//
 void Tracking_Reco()
 {
-
   int verbosity = std::max(Enable::VERBOSITY, Enable::TRACKING_VERBOSITY);
   //---------------
   // Fun4All server
@@ -61,9 +60,9 @@ void Tracking_Reco()
     // which would lead to worse momentum resolution for prompt tracks
     // but this allows displaced track analysis including DCA and vertex finding
     kalman->set_use_vertex_in_fitting(false);
-    kalman->set_vertex_xy_resolution(0);// do not smear the vertex used in the built-in DCA calculation
-    kalman->set_vertex_z_resolution(0); // do not smear the vertex used in the built-in DCA calculation
-    kalman->enable_vertexing(true);     // enable vertex finding and fitting
+    kalman->set_vertex_xy_resolution(0);  // do not smear the vertex used in the built-in DCA calculation
+    kalman->set_vertex_z_resolution(0);   // do not smear the vertex used in the built-in DCA calculation
+    kalman->enable_vertexing(true);       // enable vertex finding and fitting
   }
   else
   {
@@ -77,47 +76,53 @@ void Tracking_Reco()
   kalman->set_sub_top_node_name("TRACKS");
   kalman->set_trackmap_out_name(TRACKING::TrackNodeName);
 
-	char nodename[100];
+  char nodename[100];
   //-------------------------
   // Barrel
   //-------------------------
   if (Enable::ALLSILICON)
   {
-    for (int i=10; i<16; i++){ // CENTRAL BARREL
-      sprintf(nodename,"G4HIT_LBLVTX_CENTRAL_%d", i);
+    // CENTRAL BARREL
+    for (int i = 10; i < 16; i++)
+    {
+      sprintf(nodename, "G4HIT_LBLVTX_CENTRAL_%d", i);
       kalman->add_phg4hits(
-	nodename,				// const std::string& phg4hitsNames
-	PHG4TrackFastSim::Cylinder,		// const DETECTOR_TYPE phg4dettype
-	999.,					// radial-resolution [cm] (this number is not used in cylindrical geometry)
-	5.8e-4,					// azimuthal (arc-length) resolution [cm]
-	5.8e-4,					// longitudinal (z) resolution [cm]
-	1,					// efficiency (fraction)
-	0					// hit noise
-	);
+          nodename,                    // const std::string& phg4hitsNames
+          PHG4TrackFastSim::Cylinder,  // const DETECTOR_TYPE phg4dettype
+          999.,                        // radial-resolution [cm] (this number is not used in cylindrical geometry)
+          5.8e-4,                      // azimuthal (arc-length) resolution [cm]
+          5.8e-4,                      // longitudinal (z) resolution [cm]
+          1,                           // efficiency (fraction)
+          0                            // hit noise
+      );
     }
-    for (int i=20; i<25; i++){ // FORWARD DISKS
-      sprintf(nodename,"G4HIT_LBLVTX_FORWARD_%d", i);
+    // FORWARD DISKS
+    for (int i = 20; i < 25; i++)
+    {
+      sprintf(nodename, "G4HIT_LBLVTX_FORWARD_%d", i);
       kalman->add_phg4hits(
-	nodename,                          	// const std::string& phg4hitsNames
-	PHG4TrackFastSim::Vertical_Plane,  	// const DETECTOR_TYPE phg4dettype
-	5.8e-4,                            	// radial-resolution [cm]
-	5.8e-4,                            	// azimuthal (arc-length) resolution [cm]
-	999.,                              	// longitudinal (z) resolution [cm] (this number is not used in vertical plane geometry)
-	1,                                 	// efficiency (fraction)
-	0                                  	// hit noise
-	);
+          nodename,                          // const std::string& phg4hitsNames
+          PHG4TrackFastSim::Vertical_Plane,  // const DETECTOR_TYPE phg4dettype
+          5.8e-4,                            // radial-resolution [cm]
+          5.8e-4,                            // azimuthal (arc-length) resolution [cm]
+          999.,                              // longitudinal (z) resolution [cm] (this number is not used in vertical plane geometry)
+          1,                                 // efficiency (fraction)
+          0                                  // hit noise
+      );
     }
-    for (int i=30; i<35; i++){ // BACKWARD DISKS
-      sprintf(nodename,"G4HIT_LBLVTX_BACKWARD_%d", i);
+    // BACKWARD DISKS
+    for (int i = 30; i < 35; i++)
+    {
+      sprintf(nodename, "G4HIT_LBLVTX_BACKWARD_%d", i);
       kalman->add_phg4hits(
-	nodename,                          	// const std::string& phg4hitsNames
-	PHG4TrackFastSim::Vertical_Plane,  	// const DETECTOR_TYPE phg4dettype
-	5.8e-4,                            	// radial-resolution [cm]
-	5.8e-4,                            	// azimuthal (arc-length) resolution [cm]
-	999.,                              	// longitudinal (z) resolution [cm] (this number is not used in vertical plane geometry)
-	1,                                 	// efficiency (fraction)
-	0                                  	// hit noise
-	);
+          nodename,                          // const std::string& phg4hitsNames
+          PHG4TrackFastSim::Vertical_Plane,  // const DETECTOR_TYPE phg4dettype
+          5.8e-4,                            // radial-resolution [cm]
+          5.8e-4,                            // azimuthal (arc-length) resolution [cm]
+          999.,                              // longitudinal (z) resolution [cm] (this number is not used in vertical plane geometry)
+          1,                                 // efficiency (fraction)
+          0                                  // hit noise
+      );
     }
   }
   //-------------------------
