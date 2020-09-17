@@ -179,6 +179,7 @@ int Fun4All_G4_LBLDetector(
 
   Enable::ALLSILICON = true;
   Enable::ALLSILICON_ABSORBER = true;
+//  Enable::ALLSILICON_OVERLAPCHECK = true;
 
   Enable::TRACKING = true;
   Enable::TRACKING_EVAL = Enable::TRACKING && true;
