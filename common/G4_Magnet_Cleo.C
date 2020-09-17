@@ -48,9 +48,9 @@ double Magnet(PHG4Reco* g4Reco,
     gSystem->Exit(-1);
   }
 
-// right now Cleo is a massive Al cylinder which is likely not correct
-// need to know the radiation length and adjust the material for that
-// or get an idea about the actual cleo magnet design
+  // right now Cleo is a massive Al cylinder which is likely not correct
+  // need to know the radiation length and adjust the material for that
+  // or get an idea about the actual cleo magnet design
   radius = G4MAGNET::magnet_inner_radius;
   PHG4CylinderSubsystem* cyl = new PHG4CylinderSubsystem("MAGNET", 0);
   cyl->set_double_param("radius", G4MAGNET::magnet_inner_radius);
