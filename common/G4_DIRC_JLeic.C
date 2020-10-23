@@ -1,7 +1,7 @@
 #ifndef MACRO_G4DIRCJLEIC
 #define MACRO_G4DIRCJLEIC
 
-#include "GlobalVariables.C"
+#include <GlobalVariables.C>
 
 #include <g4jleic/G4JLeicDIRCSubsystem.h>
 #include <g4main/PHG4Reco.h>

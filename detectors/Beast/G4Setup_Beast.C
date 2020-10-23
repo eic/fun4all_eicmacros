@@ -1,13 +1,13 @@
 #ifndef MACRO_G4SETUPBEAST_C
 #define MACRO_G4SETUPBEAST_C
 
-#include "GlobalVariables.C"
+#include <GlobalVariables.C>
 
-#include "G4_BlackHole.C"
-#include "G4_Magnet_Beast.C"
-#include "G4_Pipe_EIC.C"
-#include "G4_User.C"
-#include "G4_World.C"
+#include <G4_BlackHole.C>
+#include <G4_Magnet_Beast.C>
+#include <G4_Pipe_EIC.C>
+#include <G4_User.C>
+#include <G4_World.C>
 
 #include <g4decayer/EDecayType.hh>
 

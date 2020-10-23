@@ -1,7 +1,7 @@
 #ifndef MACRO_G4VTXJLEIC_C
 #define MACRO_G4VTXJLEIC_C
 
-#include "GlobalVariables.C"
+#include <GlobalVariables.C>
 
 #include <g4jleic/G4JLeicVTXSubsystem.h>
 #include <g4main/PHG4Reco.h>

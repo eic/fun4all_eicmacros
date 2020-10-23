@@ -1,7 +1,7 @@
 #ifndef MACRO_G4GEMJLEIC
 #define MACRO_G4GEMJLEIC
 
-#include "GlobalVariables.C"
+#include <GlobalVariables.C>
 
 #include <g4detectors/PHG4CylinderSubsystem.h>
 #include <g4main/PHG4Reco.h>

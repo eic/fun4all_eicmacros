@@ -1,7 +1,7 @@
 #ifndef MACRO_G4MAGNETBEAST_C
 #define MACRO_G4MAGNETBEAST_C
 
-#include "GlobalVariables.C"
+#include <GlobalVariables.C>
 
 #include <eicdetectors/BeastMagnetSubsystem.h>
 
@@ -20,13 +20,18 @@ namespace G4MAGNET
   double magnet_outer_radius = 300.;
   double magnet_inner_radius = 135.;
   double magnet_length = 500.;
-  double magfield_rescale = 1;
-  string magfield = string(getenv("CALIBRATIONROOT")) + string("/Field/Map/mfield.4col.dat");
-
 }  // namespace G4MAGNET
 
 void MagnetInit()
 {
+  if (!isfinite(G4MAGNET::magfield_rescale))
+  {
+    G4MAGNET::magfield_rescale = 1.;
+  }
+  if (G4MAGNET::magfield.empty())
+  {
+    G4MAGNET::magfield = string(getenv("CALIBRATIONROOT")) + string("/Field/Map/mfield.4col.dat");
+  }
   BlackHoleGeometry::max_radius = std::max(BlackHoleGeometry::max_radius, G4MAGNET::magnet_outer_radius);
   BlackHoleGeometry::max_z = std::max(BlackHoleGeometry::max_z, G4MAGNET::magnet_length / 2.);
   BlackHoleGeometry::min_z = std::min(BlackHoleGeometry::min_z, -G4MAGNET::magnet_length / 2.);

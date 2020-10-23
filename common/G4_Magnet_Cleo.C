@@ -1,7 +1,7 @@
 #ifndef MACRO_G4MAGNETJLEIC_C
 #define MACRO_G4MAGNETJLEIC_C
 
-#include "GlobalVariables.C"
+#include <GlobalVariables.C>
 
 #include <g4detectors/PHG4CylinderSubsystem.h>
 
@@ -22,13 +22,18 @@ namespace G4MAGNET
   double magnet_inner_radius = 130.;
   double magnet_outer_radius = 143.;
   double magnet_length = 400.;
-  double magfield_rescale = 1;
-  string magfield = string(getenv("CALIBRATIONROOT")) + string("/Field/Map/SolenoidMag3D.TABLE");
-
 }  // namespace G4MAGNET
 
 void MagnetInit()
 {
+  if (!isfinite(G4MAGNET::magfield_rescale))
+  {
+    G4MAGNET::magfield_rescale = 1.;
+  }
+  if (G4MAGNET::magfield.empty())
+  {
+    G4MAGNET::magfield = string(getenv("CALIBRATIONROOT")) + string("/Field/Map/SolenoidMag3D.TABLE");
+  }
   BlackHoleGeometry::max_radius = std::max(BlackHoleGeometry::max_radius, G4MAGNET::magnet_outer_radius);
   BlackHoleGeometry::max_z = std::max(BlackHoleGeometry::max_z, G4MAGNET::magnet_length / 2.);
   BlackHoleGeometry::min_z = std::min(BlackHoleGeometry::min_z, -G4MAGNET::magnet_length / 2.);

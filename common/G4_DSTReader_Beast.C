@@ -1,10 +1,10 @@
 #ifndef MACRO_G4DSTREADERBEAST_C
 #define MACRO_G4DSTREADERBEAST_C
 
-#include "GlobalVariables.C"
+#include <GlobalVariables.C>
 
-#include "G4_Magnet_Beast.C"
-#include "G4_Pipe_EIC.C"
+#include <G4_Magnet_Beast.C>
+#include <G4_Pipe_EIC.C>
 
 #include <g4eval/PHG4DSTReader.h>
 

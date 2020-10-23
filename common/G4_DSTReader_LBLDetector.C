@@ -1,16 +1,16 @@
 #ifndef MACRO_G4DSTREADERLBLDETECTOR_C
 #define MACRO_G4DSTREADERLBLDETECTOR_C
 
-#include "GlobalVariables.C"
+#include <GlobalVariables.C>
 
-#include "G4_AllSilicon.C"
-#include "G4_CEmc_EIC.C"
-#include "G4_EEMC.C"
-#include "G4_FEMC_EIC.C"
-#include "G4_FHCAL.C"
-#include "G4_HcalIn_ref.C"
-#include "G4_HcalOut_ref.C"
-#include "G4_Magnet.C"
+#include <G4_AllSilicon.C>
+#include <G4_CEmc_EIC.C>
+#include <G4_EEMC.C>
+#include <G4_FEMC_EIC.C>
+#include <G4_FHCAL.C>
+#include <G4_HcalIn_ref.C>
+#include <G4_HcalOut_ref.C>
+#include <G4_Magnet.C>
 
 #include <g4eval/PHG4DSTReader.h>
 

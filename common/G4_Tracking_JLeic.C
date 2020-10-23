@@ -1,9 +1,9 @@
 #ifndef MACRO_G4TRACKINGJLEIC_C
 #define MACRO_G4TRACKINGJLEIC_C
 
-#include "GlobalVariables.C"
+#include <GlobalVariables.C>
 
-#include "G4_VTX_JLeic.C"
+#include <G4_VTX_JLeic.C>
 
 #include <fun4all/Fun4AllServer.h>
 
@@ -107,12 +107,6 @@ void Tracking_Reco()
         1,                                 //      const float eff,
         0                                  //      const float noise
     );
-  }
-
-  // Saved track states (projections)
-  if (G4TRACKING::PROJECTION_JLDIRC)
-  {
-    kalman->add_state_name("JLDIRC");
   }
 
   se->registerSubsystem(kalman);

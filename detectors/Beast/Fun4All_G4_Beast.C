@@ -1,12 +1,12 @@
 #ifndef MACRO_FUN4ALLG4BEAST_C
 #define MACRO_FUN4ALLG4BEAST_C
 
-#include "GlobalVariables.C"
+#include <GlobalVariables.C>
 
-#include "DisplayOn.C"
-#include "G4Setup_Beast.C"
-#include "G4_DSTReader_Beast.C"
-#include "G4_Input.C"
+#include <DisplayOn.C>
+#include <G4Setup_Beast.C>
+#include <G4_DSTReader_Beast.C>
+#include <G4_Input.C>
 
 #include <fun4all/Fun4AllDstOutputManager.h>
 #include <fun4all/Fun4AllOutputManager.h>
@@ -97,40 +97,46 @@ int Fun4All_G4_Beast(
   // can only be set after InputInit() is called
 
   // Simple Input generator:
+  // if you run more than one of these Input::SIMPLE_NUMBER > 1
+  // add the settings for other with [1], next with [2]...
   if (Input::SIMPLE)
   {
-    INPUTGENERATOR::SimpleEventGenerator->add_particles("pi-", 5);
+    INPUTGENERATOR::SimpleEventGenerator[0]->add_particles("pi-", 5);
     if (Input::HEPMC || Input::EMBED)
     {
-      INPUTGENERATOR::SimpleEventGenerator->set_reuse_existing_vertex(true);
-      INPUTGENERATOR::SimpleEventGenerator->set_existing_vertex_offset_vector(0.0, 0.0, 0.0);
+      INPUTGENERATOR::SimpleEventGenerator[0]->set_reuse_existing_vertex(true);
+      INPUTGENERATOR::SimpleEventGenerator[0]->set_existing_vertex_offset_vector(0.0, 0.0, 0.0);
     }
     else
     {
-      INPUTGENERATOR::SimpleEventGenerator->set_vertex_distribution_function(PHG4SimpleEventGenerator::Uniform,
-                                                                             PHG4SimpleEventGenerator::Uniform,
-                                                                             PHG4SimpleEventGenerator::Uniform);
-      INPUTGENERATOR::SimpleEventGenerator->set_vertex_distribution_mean(0., 0., 0.);
-      INPUTGENERATOR::SimpleEventGenerator->set_vertex_distribution_width(0., 0., 5.);
+      INPUTGENERATOR::SimpleEventGenerator[0]->set_vertex_distribution_function(PHG4SimpleEventGenerator::Uniform,
+                                                                                PHG4SimpleEventGenerator::Uniform,
+                                                                                PHG4SimpleEventGenerator::Uniform);
+      INPUTGENERATOR::SimpleEventGenerator[0]->set_vertex_distribution_mean(0., 0., 0.);
+      INPUTGENERATOR::SimpleEventGenerator[0]->set_vertex_distribution_width(0., 0., 5.);
     }
-    INPUTGENERATOR::SimpleEventGenerator->set_eta_range(-1, 1);
-    INPUTGENERATOR::SimpleEventGenerator->set_phi_range(-M_PI, M_PI);
-    INPUTGENERATOR::SimpleEventGenerator->set_pt_range(0.1, 20.);
+    INPUTGENERATOR::SimpleEventGenerator[0]->set_eta_range(-1, 1);
+    INPUTGENERATOR::SimpleEventGenerator[0]->set_phi_range(-M_PI, M_PI);
+    INPUTGENERATOR::SimpleEventGenerator[0]->set_pt_range(0.1, 20.);
   }
   // Upsilons
+  // if you run more than one of these Input::UPSILON_NUMBER > 1
+  // add the settings for other with [1], next with [2]...
   if (Input::UPSILON)
   {
-    INPUTGENERATOR::VectorMesonGenerator->add_decay_particles("e", 0);
-    INPUTGENERATOR::VectorMesonGenerator->set_rapidity_range(-1, 1);
-    INPUTGENERATOR::VectorMesonGenerator->set_pt_range(0., 10.);
+    INPUTGENERATOR::VectorMesonGenerator[0]->add_decay_particles("e", 0);
+    INPUTGENERATOR::VectorMesonGenerator[0]->set_rapidity_range(-1, 1);
+    INPUTGENERATOR::VectorMesonGenerator[0]->set_pt_range(0., 10.);
     // Y species - select only one, last one wins
-    INPUTGENERATOR::VectorMesonGenerator->set_upsilon_1s();
+    INPUTGENERATOR::VectorMesonGenerator[0]->set_upsilon_1s();
   }
   // particle gun
+  // if you run more than one of these Input::GUN_NUMBER > 1
+  // add the settings for other with [1], next with [2]...
   if (Input::GUN)
   {
-    INPUTGENERATOR::Gun->AddParticle("pi-", 0, 1, 0);
-    INPUTGENERATOR::Gun->set_vtx(0, 0, 0);
+    INPUTGENERATOR::Gun[0]->AddParticle("pi-", 0, 1, 0);
+    INPUTGENERATOR::Gun[0]->set_vtx(0, 0, 0);
   }
 
   //--------------
