@@ -5,6 +5,7 @@
 
 #include <G4_Aerogel.C>
 #include <G4_AllSilicon.C>
+#include <G4_Bbc.C>
 #include <G4_BlackHole.C>
 #include <G4_CEmc_EIC.C>
 #include <G4_DIRC.C>
@@ -49,6 +50,8 @@ void G4Init()
   {
     TrackingInit();
   }
+
+  if (Enable::BBC) BbcInit();
 
   if (Enable::CEMC)
   {
@@ -164,6 +167,11 @@ int G4Setup()
   {
     AllSiliconSetup(g4Reco);
   }
+
+  //----------------------------------------
+  // BBC
+
+  if (Enable::BBC) Bbc(g4Reco);
 
   //----------------------------------------
   // CEMC
