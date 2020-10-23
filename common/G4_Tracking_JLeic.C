@@ -109,12 +109,6 @@ void Tracking_Reco()
     );
   }
 
-  // Saved track states (projections)
-  if (G4TRACKING::PROJECTION_JLDIRC)
-  {
-    kalman->add_state_name("JLDIRC");
-  }
-
   se->registerSubsystem(kalman);
 
   return;
