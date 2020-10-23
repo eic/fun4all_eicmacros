@@ -184,7 +184,8 @@ int Fun4All_G4_LBLDetector(
   //  Enable::OVERLAPCHECK = true;
   //  Enable::VERBOSITY = 1;
 
-  Enable::BBC = true;
+  //  Enable::BBC = true;
+  Enable::BBCFAKE = true; // Smeared vtx and t0, use if you don't want real BBC in simulation
 
   Enable::ALLSILICON = true;
   Enable::ALLSILICON_ABSORBER = true;
@@ -310,19 +311,11 @@ int Fun4All_G4_LBLDetector(
     G4Setup();
   }
 
-  //---------
-  // BBC Reco
-  //---------
-
-  if (Enable::BBC)
-  {
-    BbcInit();
-    Bbc_Reco();
-  }
-
   //------------------
   // Detector Division
   //------------------
+
+  if (Enable::BBC || Enable::BBCFAKE) Bbc_Reco();
 
   if (Enable::CEMC_CELL) CEMC_Cells();
 
