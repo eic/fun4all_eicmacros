@@ -1,9 +1,9 @@
 #ifndef MACRO_G4TRACKINGJLEIC_C
 #define MACRO_G4TRACKINGJLEIC_C
 
-#include "GlobalVariables.C"
+#include <GlobalVariables.C>
 
-#include "G4_VTX_JLeic.C"
+#include <G4_VTX_JLeic.C>
 
 #include <fun4all/Fun4AllServer.h>
 

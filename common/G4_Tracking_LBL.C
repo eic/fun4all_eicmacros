@@ -1,12 +1,12 @@
 #ifndef MACRO_G4TRACKINGLBL_C
 #define MACRO_G4TRACKINGLBL_C
 
-#include "GlobalVariables.C"
+#include <GlobalVariables.C>
 
-#include "G4_AllSilicon.C"
-#include "G4_CEmc_EIC.C"
-#include "G4_FEMC_EIC.C"
-#include "G4_FHCAL.C"
+#include <G4_AllSilicon.C>
+#include <G4_CEmc_EIC.C>
+#include <G4_FEMC_EIC.C>
+#include <G4_FHCAL.C>
 
 #include <g4trackfastsim/PHG4TrackFastSim.h>
 

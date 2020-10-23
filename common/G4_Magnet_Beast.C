@@ -1,7 +1,7 @@
 #ifndef MACRO_G4MAGNETBEAST_C
 #define MACRO_G4MAGNETBEAST_C
 
-#include "GlobalVariables.C"
+#include <GlobalVariables.C>
 
 #include <eicdetectors/BeastMagnetSubsystem.h>
 

@@ -1,20 +1,20 @@
 #ifndef MACRO_G4DSTREADERJLEIC_C
 #define MACRO_G4DSTREADERJLEIC_C
 
-#include "GlobalVariables.C"
+#include <GlobalVariables.C>
 
-#include "G4_Barrel_Hcal_JLeic.C"
-#include "G4_BeamLine_JLeic.C"
-#include "G4_BlackHole.C"
-#include "G4_CTD_JLeic.C"
-#include "G4_DIRC_JLeic.C"
-#include "G4_DRich_JLeic.C"
-#include "G4_EndCap_Electron_JLeic.C"
-#include "G4_EndCap_Hadron_JLeic.C"
-#include "G4_Gem_JLeic.C"
-#include "G4_Magnet_Cleo.C"
-#include "G4_Pipe_EIC.C"
-#include "G4_VTX_JLeic.C"
+#include <G4_Barrel_Hcal_JLeic.C>
+#include <G4_BeamLine_JLeic.C>
+#include <G4_BlackHole.C>
+#include <G4_CTD_JLeic.C>
+#include <G4_DIRC_JLeic.C>
+#include <G4_DRich_JLeic.C>
+#include <G4_EndCap_Electron_JLeic.C>
+#include <G4_EndCap_Hadron_JLeic.C>
+#include <G4_Gem_JLeic.C>
+#include <G4_Magnet_Cleo.C>
+#include <G4_Pipe_EIC.C>
+#include <G4_VTX_JLeic.C>
 
 #include <g4eval/PHG4DSTReader.h>
 

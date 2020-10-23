@@ -1,7 +1,7 @@
 #ifndef MACRO_G4ENDCAPHADRON
 #define MACRO_G4ENDCAPHADRON
 
-#include "GlobalVariables.C"
+#include <GlobalVariables.C>
 
 #include <g4detectors/PHG4CylinderSubsystem.h>
 #include <g4main/PHG4Reco.h>

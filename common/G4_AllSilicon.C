@@ -1,7 +1,7 @@
 #ifndef MACRO_G4ALLSILICON_C
 #define MACRO_G4ALLSILICON_C
 
-#include "GlobalVariables.C"
+#include <GlobalVariables.C>
 
 #include <g4lblvtx/AllSiliconTrackerSubsystem.h>
 

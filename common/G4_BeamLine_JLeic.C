@@ -1,7 +1,7 @@
 #ifndef MACRO_G4BEAMLINEJLEIC
 #define MACRO_G4BEAMLINEJLEIC
 
-#include "GlobalVariables.C"
+#include <GlobalVariables.C>
 
 #include <g4jleic/G4JLeicBeamLineMagnetSubsystem.h>
 #include <g4main/PHG4Reco.h>
