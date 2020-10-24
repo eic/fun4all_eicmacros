@@ -26,11 +26,8 @@ void G4Init()
   // load detector/material macros and execute Init() function
 
   if (Enable::PIPE) PipeInit();
-
-  //----------------------------------------
-  // MAGNET
-
   if (Enable::MAGNET) MagnetInit();
+  MagnetFieldInit(); // We want the field - even if the magnet volume is disabled
 }
 
 void G4Setup()
@@ -69,19 +66,12 @@ void G4Setup()
 
   double radius = 0.;
 
-  //----------------------------------------
-  // PIPE
   if (Enable::PIPE) radius = Pipe(g4Reco, radius);
-
-  //----------------------------------------
-  // MAGNET
-
   if (Enable::MAGNET) radius = Magnet(g4Reco, radius);
-
   if (Enable::USER) UserDetector(g4Reco);
 
   //----------------------------------------
-  // BLACKHOLE
+  // BLACKHOLE needs to be last
 
   if (Enable::BLACKHOLE) BlackHole(g4Reco, radius);
 

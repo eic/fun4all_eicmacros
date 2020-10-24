@@ -22,7 +22,7 @@ namespace G4MAGNET
   double magnet_length = 500.;
 }  // namespace G4MAGNET
 
-void MagnetInit()
+void MagnetFieldInit()
 {
   if (!isfinite(G4MAGNET::magfield_rescale))
   {
@@ -32,6 +32,11 @@ void MagnetInit()
   {
     G4MAGNET::magfield = string(getenv("CALIBRATIONROOT")) + string("/Field/Map/mfield.4col.dat");
   }
+}
+
+void MagnetInit()
+{
+  MagnetFieldInit();
   BlackHoleGeometry::max_radius = std::max(BlackHoleGeometry::max_radius, G4MAGNET::magnet_outer_radius);
   BlackHoleGeometry::max_z = std::max(BlackHoleGeometry::max_z, G4MAGNET::magnet_length / 2.);
   BlackHoleGeometry::min_z = std::min(BlackHoleGeometry::min_z, -G4MAGNET::magnet_length / 2.);
