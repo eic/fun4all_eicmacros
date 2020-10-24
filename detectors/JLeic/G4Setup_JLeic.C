@@ -35,28 +35,16 @@ void G4Init()
   // load detector/material macros and execute Init() function
 
   if (Enable::PIPE) PipeInit();
-
   if (Enable::VTX) VTXInit();
-
   if (Enable::CTD) CTDInit();
-
-  //----------------------------------------
-  // MAGNET
-
   if (Enable::MAGNET) MagnetInit();
-
+  MagnetFieldInit(); // We want the field - even if the magnet volume is disabled
   if (Enable::GEM) GemInit();
-
   if (Enable::DIRC) JLDIRCInit();
-
   if (Enable::BARREL_HCAL) Barrel_HcalInit();
-
   if (Enable::DRICH) DRichInit();
-
   if (Enable::ENDCAP_ELECTRON) EndCap_ElectronInit();
-
   if (Enable::ENDCAP_HADRON) EndCap_HadronInit();
-
   if (Enable::BEAMLINE) BeamLineInit();
 }
 
@@ -97,49 +85,21 @@ void G4Setup()
 
   double radius = 0.;
 
-  //----------------------------------------
-  // PIPE
   if (Enable::PIPE) radius = Pipe(g4Reco, radius);
-
-  //----------------------------------------
-  // VTX
   if (Enable::VTX) radius = VTX(g4Reco, radius);
-
-  //----------------------------------------
-  // CTD
   if (Enable::CTD) radius = CTD(g4Reco, radius);
-
-  //----------------------------------------
-  // DIRC
   if (Enable::DIRC) radius = JLDIRC(g4Reco, radius);
-
-  //----------------------------------------
-  // MAGNET
-
   if (Enable::MAGNET) radius = Magnet(g4Reco, radius);
-
-  //----------------------------------------
-  // Barrel Hcal
-
   if (Enable::BARREL_HCAL) radius = Barrel_Hcal(g4Reco, radius);
-
-  //----------------------------------------
-  // Gem (hadron and electron going side
-
   if (Enable::GEM) Gem(g4Reco);
-
   if (Enable::DRICH) DRich(g4Reco);
-
   if (Enable::ENDCAP_ELECTRON) EndCap_Electron(g4Reco);
-
   if (Enable::ENDCAP_HADRON) EndCap_Hadron(g4Reco);
-
   if (Enable::BEAMLINE) BeamLine(g4Reco);
-
   if (Enable::USER) UserDetector(g4Reco);
 
   //----------------------------------------
-  // BLACKHOLE
+  // BLACKHOLE needs to be last
 
   if (Enable::BLACKHOLE) BlackHole(g4Reco, radius);
 

@@ -42,80 +42,23 @@ R__LOAD_LIBRARY(libg4detectors.so)
 
 void G4Init()
 {
-  if (Enable::ALLSILICON)
-  {
-    AllSiliconInit();
-  }
-  if (Enable::TRACKING)
-  {
-    TrackingInit();
-  }
-
+  if (Enable::ALLSILICON) AllSiliconInit();
+  if (Enable::TRACKING) TrackingInit();
   if (Enable::BBC) BbcInit();
-
-  if (Enable::CEMC)
-  {
-    CEmcInit(72);  // make it 2*2*2*3*3 so we can try other combinations
-  }
-
-  if (Enable::HCALIN)
-  {
-    HCalInnerInit(1);
-  }
-
-  if (Enable::MAGNET)
-  {
-    MagnetInit();
-  }
-  if (Enable::HCALOUT)
-  {
-    HCalOuterInit();
-  }
-
-  if (Enable::FEMC)
-  {
-    FEMCInit();
-  }
-
-  if (Enable::FHCAL)
-  {
-    FHCALInit();
-  }
-
-  if (Enable::EEMC)
-  {
-    EEMCInit();
-  }
-
-  if (Enable::DIRC)
-  {
-    DIRCInit();
-  }
-
-  if (Enable::RICH)
-  {
-    RICHInit();
-  }
-
-  if (Enable::AEROGEL)
-  {
-    AerogelInit();
-  }
-
-  if (Enable::PLUGDOOR)
-  {
-    PlugDoorInit();
-  }
-
-  if (Enable::USER)
-  {
-    UserInit();
-  }
-
-  if (Enable::BLACKHOLE)
-  {
-    BlackHoleInit();
-  }
+  if (Enable::CEMC) CEmcInit(72);  // make it 2*2*2*3*3 so we can try other combinations
+  if (Enable::HCALIN) HCalInnerInit(1);
+  if (Enable::MAGNET) MagnetInit();
+  MagnetFieldInit(); // We want the field - even if the magnet volume is disabled
+  if (Enable::HCALOUT) HCalOuterInit();
+  if (Enable::FEMC) FEMCInit();
+  if (Enable::FHCAL) FHCALInit();
+  if (Enable::EEMC) EEMCInit();
+  if (Enable::DIRC) DIRCInit();
+  if (Enable::RICH) RICHInit();
+  if (Enable::AEROGEL) AerogelInit();
+  if (Enable::PLUGDOOR) PlugDoorInit();
+  if (Enable::USER) UserInit();
+  if (Enable::BLACKHOLE) BlackHoleInit();
 }
 
 int G4Setup()
@@ -163,101 +106,30 @@ int G4Setup()
 
   double radius = 0.;
 
-  if (Enable::ALLSILICON)
-  {
-    AllSiliconSetup(g4Reco);
-  }
-
-  //----------------------------------------
-  // BBC
-
+  if (Enable::ALLSILICON) AllSiliconSetup(g4Reco);
   if (Enable::BBC) Bbc(g4Reco);
-
-  //----------------------------------------
-  // CEMC
-  //
-  if (Enable::CEMC)
-  {
-    radius = CEmc(g4Reco, radius);
-  }
-
-  //----------------------------------------
-  // HCALIN
-
-  if (Enable::HCALIN)
-  {
-    radius = HCalInner(g4Reco, radius, 4);
-  }
-  //----------------------------------------
-  // MAGNET
-
-  if (Enable::MAGNET)
-  {
-    radius = Magnet(g4Reco, radius);
-  }
-  //----------------------------------------
-  // HCALOUT
-
-  if (Enable::HCALOUT)
-  {
-    radius = HCalOuter(g4Reco, radius, 4);
-  }
-  //----------------------------------------
-  // FEMC
-
-  if (Enable::FEMC)
-  {
-    FEMCSetup(g4Reco);
-  }
-
-  //----------------------------------------
-  // FHCAL
-
-  if (Enable::FHCAL)
-  {
-    FHCALSetup(g4Reco);
-  }
-  //----------------------------------------
-  // EEMC
-
-  if (Enable::EEMC)
-  {
-    EEMCSetup(g4Reco);
-  }
+  if (Enable::CEMC) radius = CEmc(g4Reco, radius);
+  if (Enable::HCALIN) radius = HCalInner(g4Reco, radius, 4);
+  if (Enable::MAGNET) radius = Magnet(g4Reco, radius);
+  if (Enable::HCALOUT) radius = HCalOuter(g4Reco, radius, 4);
+  if (Enable::FEMC) FEMCSetup(g4Reco);
+  if (Enable::FHCAL) FHCALSetup(g4Reco);
+  if (Enable::EEMC) EEMCSetup(g4Reco);
 
   //----------------------------------------
   // PID
 
-  if (Enable::DIRC)
-  {
-    DIRCSetup(g4Reco);
-  }
+  if (Enable::DIRC) DIRCSetup(g4Reco);
+  if (Enable::RICH) RICHSetup(g4Reco);
+  if (Enable::AEROGEL) AerogelSetup(g4Reco);
 
-  if (Enable::RICH)
-  {
-    RICHSetup(g4Reco);
-  }
-
-  if (Enable::AEROGEL)
-  {
-    AerogelSetup(g4Reco);
-  }
   //----------------------------------------
-  // sPHENIX forward flux return door
-  if (Enable::PLUGDOOR)
-  {
-    PlugDoor(g4Reco);
-  }
-  if (Enable::USER)
-  {
-    UserDetector(g4Reco);
-  }
+  // Babar-EIC  forward flux return door
+  if (Enable::PLUGDOOR) PlugDoor(g4Reco);
+  if (Enable::USER) UserDetector(g4Reco);
   //----------------------------------------
   // BLACKHOLE if enabled, needs info from all previous sub detectors for dimensions
-  if (Enable::BLACKHOLE)
-  {
-    BlackHole(g4Reco, radius);
-  }
+  if (Enable::BLACKHOLE) BlackHole(g4Reco, radius);
 
   PHG4TruthSubsystem *truth = new PHG4TruthSubsystem();
   g4Reco->registerSubsystem(truth);
