@@ -54,7 +54,7 @@ int Fun4All_G4_JLeic(
   // the simulations step completely. The G4Setup macro is only loaded to get information
   // about the number of layers used for the cell reco code
   //  Input::READHITS = true;
-  INPUTREADHITS::filename = inputFile;
+  INPUTREADHITS::filename[0] = inputFile;
 
   // Or:
   // Use particle generator
@@ -63,7 +63,7 @@ int Fun4All_G4_JLeic(
   // In case embedding into a production output, please double check your G4Setup_sPHENIX.C and G4_*.C consistent with those in the production macro folder
   // E.g. /sphenix/sim//sim01/production/2016-07-21/single_particle/spacal2d/
   //  Input::EMBED = true;
-  INPUTEMBED::filename = embed_input_file;
+  INPUTEMBED::filename[0] = embed_input_file;
 
   Input::SIMPLE = true;
   //Input::SIMPLE_VERBOSITY = 1;
