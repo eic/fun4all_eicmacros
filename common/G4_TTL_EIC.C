@@ -20,9 +20,9 @@ int make_barrel_layer(string name, PHG4Reco *g4Reco,
 //-----------------------------------------------------------------------------------//
 namespace Enable
 {
-  static bool FTTL = false;
-  static bool ETTL = false;
-  static bool CTTL = false;
+  bool FTTL = false;
+  bool ETTL = false;
+  bool CTTL = false;
 }
 //-----------------------------------------------------------------------------------//
 void TTL_Init()
