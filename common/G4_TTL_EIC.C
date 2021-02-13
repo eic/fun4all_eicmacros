@@ -1,4 +1,5 @@
-#pragma once
+#ifndef MACRO_G4TTLEIC_C
+#define MACRO_G4TTLEIC_C
 
 #include "GlobalVariables.C"
 
@@ -190,5 +191,7 @@ int make_barrel_layer(string name, PHG4Reco *g4Reco,
 
   return 0;
 }
+
+#endif
 
 //-----------------------------------------------------------------------------------//
