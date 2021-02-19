@@ -77,31 +77,67 @@ void Tracking_Reco(TString specialSetting = "")
   //-------------------------
   // Barrel upgrade (LANL)
   //-------------------------
+  // Different Barrel versions documented in arXiv:2009.0288
   if (Enable::BARREL){
-    kalman->add_phg4hits("G4HIT_BARREL",              //      const std::string& phg4hitsNames,
-                         PHG4TrackFastSim::Cylinder,  //      const DETECTOR_TYPE phg4dettype,
-                         5e-4,                        //      const float radres,
-                         5e-4,                        //      const float phires,
-                         5e-4,                        //      const float lonres,
-                         1,                           //      const float eff,
-                         0);                          //      const float noise
+    int nLayer            = 5;
+    float_t pitch         = 20e-4;                    // default pitch size
+    double r[6]           = { 3.64, 4.81, 5.98, 16.0, 22.0, -1};  //cm
+    if (specialSetting.Contains("BARRELV4")){
+      nLayer  = 6;
+      r[3]    = 9.2;
+      r[4]    = 17.;
+      r[5]    = 27.;
+    }
+
+    for (Int_t i = 0; i < nLayer; i++){
+      kalman->add_phg4hits(Form("G4HIT_BARREL_%d", i),              //      const std::string& phg4hitsNames,
+                          PHG4TrackFastSim::Cylinder,  //      const DETECTOR_TYPE phg4dettype,
+                          999.,                        //      const float radres, (not used in cylindrical geom)
+                          pitch/sqrt(12),              //      const float phires,
+                          pitch/sqrt(12),              //      const float lonres,
+                          1,                           //      const float eff,
+                          0);                          //      const float noise
+      if (Enable::TRACKING_EVAL_DETAILED){
+        kalman -> add_cylinder_state(Form("BARREL_%d", i), r[i]);
+      }
+    }
   }
   
   //-------------------------
   // FST (LANL)
   //-------------------------
+  // Different FST versions documented in arXiv:2009.0288
   if (Enable::FST) {
-    for (int i = 0; i < 5; i++) {
+    // FORWARD DISKS
+    Int_t nDisks        = 5;  
+    float zFWDdisks[6]  = {35, 53, 77, 101, 125, 270};
+    if (specialSetting.Contains("FSTV4"))
+      nDisks        = 6;
+    if (specialSetting.Contains("FSTV2"))
+      zFWDdisks[4]  = 270;
+    Float_t pitch       = 20e-4;          // default pitch size
+    Int_t llargerPitch  = -1;             // layer number above which pitch size is higher, if -1 all initialized with small pitch
+    if (specialSetting.Contains("FSTV3") || specialSetting.Contains("FSTV41"))        
+      llargerPitch  = 3;
+    if (specialSetting.Contains("FSTV42"))        
+      llargerPitch  = 4;
+    
+    // intializing hits for different layers
+    for (int i = 0; i < nDisks; i++) {
+      if (llargerPitch != -1 && i >= llargerPitch)
+        pitch           = 36.4e-4;
       kalman->add_phg4hits(Form("G4HIT_FST_%d", i),           //      const std::string& phg4hitsNames,
                            PHG4TrackFastSim::Vertical_Plane,  //      const DETECTOR_TYPE phg4dettype,
-                           5e-4,                              //      const float radres,
-                           5e-4,                              //      const float phires,
-                           50e-4 / sqrt(12.),                 //      const float lonres,
+                           pitch/sqrt(12),                    //      const float radres,
+                           pitch/sqrt(12),                    //      const float phires,
+                           999.,                              //      const float lonres, number not used in vertical plane geometry
                            1,                                 //      const float eff,
                            0);                                //      const float noise
+      if (Enable::TRACKING_EVAL_DETAILED){
+        kalman -> add_zplane_state(Form("FST_%d", i), zFWDdisks[i]);
+      }
     }
   }
-
   
   //-------------------------
   // Barrel ALLSILICON version (LBL)
@@ -109,58 +145,78 @@ void Tracking_Reco(TString specialSetting = "")
   char nodename[100];
   if (Enable::ALLSILICON){
     // CENTRAL BARREL
+    float_t pitch = 10e-4;
+    float rBarrel[6]  = {3.3, 5.7, 21.0, 22.68, 39.30, 43.23};
     for (int i = 10; i < 16; i++) {
       sprintf(nodename, "G4HIT_LBLVTX_CENTRAL_%d", i);
       kalman->add_phg4hits(
           nodename,                    // const std::string& phg4hitsNames
           PHG4TrackFastSim::Cylinder,  // const DETECTOR_TYPE phg4dettype
           999.,                        // radial-resolution [cm] (this number is not used in cylindrical geometry)
-          5.8e-4,                      // azimuthal (arc-length) resolution [cm]
-          5.8e-4,                      // longitudinal (z) resolution [cm]
+          pitch/sqrt(12),                      // azimuthal (arc-length) resolution [cm]
+          pitch/sqrt(12),                      // longitudinal (z) resolution [cm]
           1,                           // efficiency (fraction)
           0                            // hit noise
       );
+      if (Enable::TRACKING_EVAL_DETAILED){
+        kalman -> add_cylinder_state(Form("LBLVTX_CENTRAL_%d", i), rBarrel[i-10]);
+      }
     }
     // FORWARD DISKS
+    float zFWDdisks[5]  = {25, 49, 73, 97, 121};
     for (int i = 20; i < 25; i++) {
       sprintf(nodename, "G4HIT_LBLVTX_FORWARD_%d", i);
       kalman->add_phg4hits(
           nodename,                          // const std::string& phg4hitsNames
           PHG4TrackFastSim::Vertical_Plane,  // const DETECTOR_TYPE phg4dettype
-          5.8e-4,                            // radial-resolution [cm]
-          5.8e-4,                            // azimuthal (arc-length) resolution [cm]
+          pitch/sqrt(12),                            // radial-resolution [cm]
+          pitch/sqrt(12),                            // azimuthal (arc-length) resolution [cm]
           999.,                              // longitudinal (z) resolution [cm] (this number is not used in vertical plane geometry)
           1,                                 // efficiency (fraction)
           0                                  // hit noise
       );
+      if (Enable::TRACKING_EVAL_DETAILED){
+        kalman -> add_zplane_state(Form("LBLVTX_FORWARD_%d", i), zFWDdisks[i-20]);
+      }
     }
+    
+    
     // BACKWARD DISKS
+    float zBWDdisks[5]  = {-25, -49, -73, -97, -121};
     for (int i = 30; i < 35; i++) {
       sprintf(nodename, "G4HIT_LBLVTX_BACKWARD_%d", i);
       kalman->add_phg4hits(
           nodename,                          // const std::string& phg4hitsNames
           PHG4TrackFastSim::Vertical_Plane,  // const DETECTOR_TYPE phg4dettype
-          5.8e-4,                            // radial-resolution [cm]
-          5.8e-4,                            // azimuthal (arc-length) resolution [cm]
+          pitch/sqrt(12),                            // radial-resolution [cm]
+          pitch/sqrt(12),                            // azimuthal (arc-length) resolution [cm]
           999.,                              // longitudinal (z) resolution [cm] (this number is not used in vertical plane geometry)
           1,                                 // efficiency (fraction)
           0                                  // hit noise
       );
+      if (Enable::TRACKING_EVAL_DETAILED){
+        kalman -> add_zplane_state(Form("LBLVTX_BACKWARD_%d", i), zBWDdisks[i-30]);
+      }
     }
   }
   
   //-------------------------
   // Timing tracking Layer (TTL - ORNL/Rice)
   //-------------------------
+  // position resol improvement 
+  float posResImp = sqrt(12);
+  if (specialSetting.Contains("ACLGAD"))
+    posResImp = sqrt(256);
   // central barrel 
   if (Enable::CTTL){
-    Float_t pitch=500e-4;
+    float pitch=500e-4;
+    float res   = pitch/posResImp;
     for (int i = 0; i < 2; i++){
       kalman->add_phg4hits(Form("G4HIT_CTTL_%d", i),           //      const std::string& phg4hitsNames,
                           PHG4TrackFastSim::Cylinder,  //      const DETECTOR_TYPE phg4dettype,
                           999,                               //      const float radres,
-                          pitch/sqrt(12),                    //      const float phires,
-                          pitch/sqrt(12),                    //      const float lonres, *ignored in plane detector*
+                          res,                    //      const float phires,
+                          res,                    //      const float lonres, *ignored in plane detector*
                           0.95,                              //      const float eff,
                           0);                                //      const float noise
     }
@@ -170,12 +226,13 @@ void Tracking_Reco(TString specialSetting = "")
   
   // electron going direction
   if (Enable::ETTL){
-    Float_t pitch=500e-4;
+    float pitch=500e-4;
+    float res   = pitch/posResImp; 
     for (int i = 0; i < 2; i++){
       kalman->add_phg4hits(Form("G4HIT_ETTL_%d", i),           //      const std::string& phg4hitsNames,
                           PHG4TrackFastSim::Vertical_Plane,  //      const DETECTOR_TYPE phg4dettype,
-                          pitch/sqrt(12),                    //      const float radres,
-                          pitch/sqrt(12),                    //      const float phires,
+                          res,                    //      const float radres,
+                          res,                    //      const float phires,
                           999.,                              //      const float lonres, *ignored in plane detector*
                           0.95,                              //      const float eff,
                           0);                                //      const float noise
@@ -186,14 +243,16 @@ void Tracking_Reco(TString specialSetting = "")
 
   // forward hadron going direction
   if (Enable::FTTL){
-    float pitch=200e-4;
+    float pitch = 200e-4;
+    float res   = 200e-4;
     if (specialSetting.Contains("FTTLS3LC")){
-      pitch=500e-4;
+      pitch = 500e-4;
+      res   = pitch/posResImp; 
       for (int i = 0; i < 3; i++){
         kalman->add_phg4hits(Form("G4HIT_FTTL_%d", i),           //      const std::string& phg4hitsNames,
                             PHG4TrackFastSim::Vertical_Plane,  //      const DETECTOR_TYPE phg4dettype,
-                            pitch/sqrt(12),                    //      const float radres,
-                            pitch/sqrt(12),                    //      const float phires,
+                            res,                    //      const float radres,
+                            res,                    //      const float phires,
                             999.,                              //      const float lonres, *ignored in plane detector*
                             0.95,                              //      const float eff,
                             0);                                //      const float noise
@@ -207,11 +266,12 @@ void Tracking_Reco(TString specialSetting = "")
       for (int i = 0; i < 4; i++){
         if (i==0 || i==2 )      pitch=200e-4;   // inner rings with higher granualrity
         else           pitch=500e-4;
-
+        res   = pitch/posResImp; 
+        
         kalman->add_phg4hits(Form("G4HIT_FTTL_%d", i),           //      const std::string& phg4hitsNames,
                             PHG4TrackFastSim::Vertical_Plane,  //      const DETECTOR_TYPE phg4dettype,
-                            pitch/sqrt(12),                    //      const float radres,
-                            pitch/sqrt(12),                    //      const float phires,
+                            res,                    //      const float radres,
+                            res,                    //      const float phires,
                             999.,                              //      const float lonres, *ignored in plane detector*
                             0.95,                              //      const float eff,
                             0);                                //      const float noise
@@ -226,11 +286,12 @@ void Tracking_Reco(TString specialSetting = "")
     
     } else if (specialSetting.Contains("FTTLS2LC")){
       pitch=500e-4;
+      res   = pitch/posResImp; 
       for (int i = 0; i < 2; i++){
         kalman->add_phg4hits(Form("G4HIT_FTTL_%d", i),           //      const std::string& phg4hitsNames,
                             PHG4TrackFastSim::Vertical_Plane,  //      const DETECTOR_TYPE phg4dettype,
-                            pitch/sqrt(12),                    //      const float radres,
-                            pitch/sqrt(12),                    //      const float phires,
+                            res,                    //      const float radres,
+                            res,                    //      const float phires,
                             999.,                              //      const float lonres, *ignored in plane detector*
                             0.95,                              //      const float eff,
                             0);                                //      const float noise
@@ -243,11 +304,11 @@ void Tracking_Reco(TString specialSetting = "")
       for (int i = 0; i < 4; i++){
         if (i==0 || i==2 )      pitch=200e-4;   // inner rings with higher granualrity
         else           pitch=500e-4;
-
+        res   = pitch/posResImp; 
         kalman->add_phg4hits(Form("G4HIT_FTTL_%d", i),           //      const std::string& phg4hitsNames,
                             PHG4TrackFastSim::Vertical_Plane,  //      const DETECTOR_TYPE phg4dettype,
-                            pitch/sqrt(12),                    //      const float radres,
-                            pitch/sqrt(12),                    //      const float phires,
+                            res,                    //      const float radres,
+                            res,                    //      const float phires,
                             999.,                              //      const float lonres, *ignored in plane detector*
                             0.95,                              //      const float eff,
                             0);                                //      const float noise
@@ -261,11 +322,12 @@ void Tracking_Reco(TString specialSetting = "")
 
     } else if (specialSetting.Contains("FTTLSE2LC")){
       pitch=500e-4;
+      res   = pitch/posResImp; 
       for (int i = 0; i < 2; i++){
         kalman->add_phg4hits(Form("G4HIT_FTTL_%d", i),           //      const std::string& phg4hitsNames,
                             PHG4TrackFastSim::Vertical_Plane,  //      const DETECTOR_TYPE phg4dettype,
-                            pitch/sqrt(12),                    //      const float radres,
-                            pitch/sqrt(12),                    //      const float phires,
+                            res,                    //      const float radres,
+                            res,                    //      const float phires,
                             999.,                              //      const float lonres, *ignored in plane detector*
                             0.95,                              //      const float eff,
                             0);                                //      const float noise
@@ -278,11 +340,11 @@ void Tracking_Reco(TString specialSetting = "")
       for (int i = 0; i < 6; i++){
         if (i==0 || i==2 || i ==4)      pitch=200e-4;   // inner rings with higher granualrity
         else           pitch=500e-4;
-
+        res   = pitch/posResImp; 
         kalman->add_phg4hits(Form("G4HIT_FTTL_%d", i),           //      const std::string& phg4hitsNames,
                             PHG4TrackFastSim::Vertical_Plane,  //      const DETECTOR_TYPE phg4dettype,
-                            pitch/sqrt(12),                    //      const float radres,
-                            pitch/sqrt(12),                    //      const float phires,
+                            res,                    //      const float radres,
+                            res,                    //      const float phires,
                             999.,                              //      const float lonres, *ignored in plane detector*
                             0.95,                              //      const float eff,
                             0);                                //      const float noise
@@ -408,55 +470,58 @@ void Tracking_Eval(const std::string &outputfile, TString specialSetting = "")
   // save tracking planes in forward direction for single layer studies
   if (Enable::TRACKING_EVAL_DETAILED){
     if (Enable::FST){
-      for (Int_t i = 0; i < 5; i++){
+      Int_t nDisks        = 5;  
+      if (specialSetting.Contains("FSTV4"))
+        nDisks        = 6;
+      for (Int_t i = 0; i < nDisks; i++){
         fast_sim_eval->AddProjection(Form("FST_%d",i));
       }
     } 
+    if (Enable::BARREL){    
+      Int_t nLayer  = 5;
+      if (specialSetting.Contains("BARRELV4"))
+        nLayer  = 6;
+
+      for (Int_t i = 0; i < nLayer; i++){
+        fast_sim_eval->AddProjection(Form("BARREL_%d",i));
+      }
+    }
+    
     if (Enable::ALLSILICON){
+      for (int i = 10; i < 16; i++) {
+        fast_sim_eval->AddProjection(Form("LBLVTX_CENTRAL_%d", i));
+      }
       for (int i = 20; i < 25; i++) {
         fast_sim_eval->AddProjection(Form("LBLVTX_FORWARD_%d", i));
+      }
+      for (int i = 30; i < 35; i++) {
+        fast_sim_eval->AddProjection(Form("LBLVTX_BACKWARD_%d", i));
       }
     }
   }
   
   // create projections on timing layers to read t and spacial coordinates
   if (Enable::FTTL){
-    if (specialSetting.Contains("FTTLS3LC")){
-      fast_sim_eval->AddProjection("FTTL_0");
-      fast_sim_eval->AddProjection("FTTL_1");
-      fast_sim_eval->AddProjection("FTTL_2");
-    } else if (specialSetting.Contains("FTTLS2LF")){
-      fast_sim_eval->AddProjection("FTTL_0");
-      fast_sim_eval->AddProjection("FTTL_1");
-      fast_sim_eval->AddProjection("FTTL_2");
-      fast_sim_eval->AddProjection("FTTL_3");
-    } else if (specialSetting.Contains("FTTLS2LC")){
-      fast_sim_eval->AddProjection("FTTL_0");
-      fast_sim_eval->AddProjection("FTTL_1");
-    } else if (specialSetting.Contains("FTTLSE2LF")){
-      fast_sim_eval->AddProjection("FTTL_0");
-      fast_sim_eval->AddProjection("FTTL_1");
-      fast_sim_eval->AddProjection("FTTL_2");
-      fast_sim_eval->AddProjection("FTTL_3");
-    } else if (specialSetting.Contains("FTTLSE2LC")){
-      fast_sim_eval->AddProjection("FTTL_0");
-      fast_sim_eval->AddProjection("FTTL_1");
-   } else {
-      fast_sim_eval->AddProjection("FTTL_0");
-      fast_sim_eval->AddProjection("FTTL_1");
-      fast_sim_eval->AddProjection("FTTL_2");
-      fast_sim_eval->AddProjection("FTTL_3");
-      fast_sim_eval->AddProjection("FTTL_4");
-      fast_sim_eval->AddProjection("FTTL_5");
-    }  
+    int layerMax = 6;
+    if (specialSetting.Contains("FTTLS3LC") )
+      layerMax = 3;
+    else if (specialSetting.Contains("FTTLS2LF") || specialSetting.Contains("FTTLSE2LF"))
+      layerMax = 4;
+    else if (specialSetting.Contains("FTTLS2LC") || specialSetting.Contains("FTTLSE2LC"))
+      layerMax = 2;
+    else 
+      layerMax = 6;
+    
+    for (int l = 0; l < layerMax; l++)
+      fast_sim_eval->AddProjection(Form("FTTL_%d",l));
   }
   if (Enable::ETTL){
-    fast_sim_eval->AddProjection("ETTL_0");
-    fast_sim_eval->AddProjection("ETTL_1");
+    for (int l = 0; l < 2; l++)
+      fast_sim_eval->AddProjection(Form("ETTL_%d",l));
   }
   if (Enable::CTTL){
-    fast_sim_eval->AddProjection("CTTL_0");
-    fast_sim_eval->AddProjection("CTTL_1");
+    for (int l = 0; l < 2; l++)
+      fast_sim_eval->AddProjection(Form("CTTL_%d",l));
   }
   
   // write to output file

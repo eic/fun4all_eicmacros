@@ -170,12 +170,12 @@ int make_barrel_layer(string name, PHG4Reco *g4Reco,
 
   double max_bh_radius = 0.;
   PHG4CylinderSubsystem* cyl;
-  cout << "started to create cylinder layer: " << name << endl;
+//   cout << "started to create cylinder layer: " << name << endl;
   
   double currRadius = radius;
-  cout << currRadius << endl;
+//   cout << currRadius << endl;
   for (int l = 0; l < nSubLayer; l++) {
-    cout << name <<"_"<< layerName[l] << endl;
+//     cout << name <<"_"<< layerName[l] << endl;
     cyl = new PHG4CylinderSubsystem(name + "_" + layerName[l],l);
     cyl->SuperDetector(name);
     cyl->set_double_param("radius", currRadius);
@@ -186,7 +186,7 @@ int make_barrel_layer(string name, PHG4Reco *g4Reco,
     cyl->OverlapCheck(true);
     g4Reco->registerSubsystem(cyl);
     currRadius = currRadius+thickness[l];
-    cout << currRadius << endl;
+//     cout << currRadius << endl;
   }
 
   return 0;

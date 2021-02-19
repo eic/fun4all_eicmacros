@@ -157,9 +157,9 @@ int G4Setup(TString specialSetting = "")
   // trackers
   if (Enable::EGEM) EGEMSetup(g4Reco);
   if (Enable::FGEM) FGEMSetup(g4Reco);
-  if (Enable::FST) FSTSetup(g4Reco);
+  if (Enable::FST) FSTSetup(g4Reco, 1.2, specialSetting);
   if (Enable::ALLSILICON) AllSiliconSetup(g4Reco);
-  if (Enable::BARREL) Barrel(g4Reco, radius);
+  if (Enable::BARREL) Barrel(g4Reco, radius, specialSetting);
   if (Enable::MVTX) radius = Mvtx(g4Reco, radius);
   if (Enable::TPC) radius = TPC(g4Reco, radius);
   if (Enable::FTTL) FTTLSetup(g4Reco,specialSetting);
