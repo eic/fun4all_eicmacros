@@ -37,33 +37,35 @@ void FTTLSetup(PHG4Reco *g4Reco, TString fttloption = "")
   const double mm = .1 * cm;
   const double um = 1e-3 * mm;
 
-  if (fttloption.Contains("FTTLS3LC")){
+  if (fttloption.Contains("FTTLS3LC") || fttloption.Contains("FTTLS3LVC") ){
     make_forward_station("FTTL_0", g4Reco, 287,  3.9,  1.3, 85*um);
     make_forward_station("FTTL_1", g4Reco, 289,  3.9,  1.3, 85*um);
     make_forward_station("FTTL_2", g4Reco, 340,  3.9,  1.1, 85*um);    
   } else if (fttloption.Contains("FTTLS2LF")){
     make_forward_station("FTTL_0", g4Reco, 289,  3.9,  2.5, 85*um);
-    make_forward_station("FTTL_1", g4Reco, 289,  2.5,  1.3, 85*um);
-    make_forward_station("FTTL_2", g4Reco, 340,  3.9,  2.5, 85*um);
+    make_forward_station("FTTL_1", g4Reco, 340,  3.9,  2.5, 85*um);
+    make_forward_station("FTTL_2", g4Reco, 289,  2.5,  1.3, 85*um);
     make_forward_station("FTTL_3", g4Reco, 340,  2.5,  1.1, 85*um);
-  } else if (fttloption.Contains("FTTLS2LC")){
-    make_forward_station("FTTL_0", g4Reco, 289,  3.9,  1.3, 85*um);
-    make_forward_station("FTTL_1", g4Reco, 340,  3.9,  1.1, 85*um);    
   } else if (fttloption.Contains("FTTLSE2LF")){
     make_forward_station("FTTL_0", g4Reco, 287,  3.9,  2.5, 85*um);
-    make_forward_station("FTTL_1", g4Reco, 287,  2.5,  1.3, 85*um);
-    make_forward_station("FTTL_2", g4Reco, 289,  3.9,  2.5, 85*um);
+    make_forward_station("FTTL_1", g4Reco, 289,  3.9,  2.5, 85*um);
+    make_forward_station("FTTL_2", g4Reco, 287,  2.5,  1.3, 85*um);
     make_forward_station("FTTL_3", g4Reco, 289,  2.5,  1.3, 85*um);
-  } else if (fttloption.Contains("FTTLSE2LC")){
+  } else if (fttloption.Contains("FTTLS2LC") || fttloption.Contains("FTTLS2LVC")){
+    make_forward_station("FTTL_0", g4Reco, 289,  3.9,  1.3, 85*um);
+    make_forward_station("FTTL_1", g4Reco, 340,  3.9,  1.1, 85*um);    
+  } else if (fttloption.Contains("FTTLSE2LC") || fttloption.Contains("FTTLSE2LVC")){
     make_forward_station("FTTL_0", g4Reco, 287,  3.9,  1.3, 85*um);
     make_forward_station("FTTL_1", g4Reco, 289,  3.9,  1.3, 85*um);
+  } else if (fttloption.Contains("FTTLSE1LC") || fttloption.Contains("FTTLSE1LVC")){
+    make_forward_station("FTTL_0", g4Reco, 289,  3.9,  1.3, 85*um);
   } else {
     make_forward_station("FTTL_0", g4Reco, 287,  3.9,  2.5, 85*um);
-    make_forward_station("FTTL_1", g4Reco, 287,  2.5,  1.3, 85*um);
-    make_forward_station("FTTL_2", g4Reco, 289,  3.9,  2.5, 85*um);
-    make_forward_station("FTTL_3", g4Reco, 289,  2.5,  1.3, 85*um);
-    make_forward_station("FTTL_4", g4Reco, 340,  3.9,  2.5, 85*um);
-    make_forward_station("FTTL_5", g4Reco, 340,  2.5,  1.1, 85*um);    
+    make_forward_station("FTTL_1", g4Reco, 289,  3.9,  2.5, 85*um);
+    make_forward_station("FTTL_2", g4Reco, 340,  3.9,  2.5, 85*um);
+    make_forward_station("FTTL_3", g4Reco, 287,  2.5,  1.3, 85*um);
+    make_forward_station("FTTL_4", g4Reco, 340,  2.5,  1.1, 85*um);    
+    make_forward_station("FTTL_5", g4Reco, 289,  2.5,  1.3, 85*um);
   }
 }
 
@@ -74,9 +76,12 @@ void ETTLSetup(PHG4Reco *g4Reco, TString ettloption = "")
   const double cm = PHG4Sector::Sector_Geometry::Unit_cm();
   const double mm = .1 * cm;
   const double um = 1e-3 * mm;
-
-  make_forward_station("ETTL_0", g4Reco, -155.5,  -1.6,  -3.7, 85*um); // define wit eta 
-  make_forward_station("ETTL_1", g4Reco, -158.5,  -1.6,  -3.7, 85*um); // define wit eta 
+  if (ettloption.Contains("ETTLSE1")){
+    make_forward_station("ETTL_0", g4Reco, -158.5,  -1.6,  -3.7, 85*um); // define wit eta 
+  } else {
+    make_forward_station("ETTL_0", g4Reco, -155.5,  -1.6,  -3.7, 85*um); // define wit eta 
+    make_forward_station("ETTL_1", g4Reco, -158.5,  -1.6,  -3.7, 85*um); // define wit eta 
+  }
 }
 
 //-----------------------------------------------------------------------------------//
@@ -87,9 +92,14 @@ void CTTLSetup(PHG4Reco *g4Reco, TString cttloption = "")
   const double um = 1e-3 * mm;
   cout << "entered setup for CTTL" << endl;
   
-  make_barrel_layer("CTTL_0", g4Reco, 92,  180, 85*um); 
-  make_barrel_layer("CTTL_1", g4Reco, 114.7,  180, 85*um); 
-  
+  if (cttloption.Contains("CTTLSE1")){
+    make_barrel_layer("CTTL_0", g4Reco, 92,  180, 85*um); 
+  } else if (cttloption.Contains("CTTLSH1")){
+    make_barrel_layer("CTTL_0", g4Reco, 114.7,  180, 85*um); 
+  } else {
+    make_barrel_layer("CTTL_0", g4Reco, 92,  180, 85*um); 
+    make_barrel_layer("CTTL_1", g4Reco, 114.7,  180, 85*um); 
+  }
 }
 
 
