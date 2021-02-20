@@ -4,7 +4,7 @@
 #include <GlobalVariables.C>
 
 #include <DisplayOn.C>
-#include <G4Setup_EICDetector.C>
+#include <G4Setup_ModularDetector.C>
 #include <G4_Bbc.C>
 #include <G4_CaloTrigger.C>
 #include <G4_DSTReader_EICDetector.C>
@@ -28,6 +28,8 @@
 
 R__LOAD_LIBRARY(libfun4all.so)
 
+void ParseTString(TString &specialSetting);
+
 int Fun4All_G4_FullDetectorModular(
     const int nEvents = 1,
     const double particlemomMin = -1,
@@ -40,6 +42,8 @@ int Fun4All_G4_FullDetectorModular(
     const int skip = 0,
     const string &outdir = ".")
 {
+// translate the option TString into subsystem namespace options
+  ParseTString(specialSetting); 
   //---------------
   // Fun4All server
   //---------------
@@ -54,7 +58,7 @@ int Fun4All_G4_FullDetectorModular(
   // PHRandomSeed() which reads /dev/urandom to get its seed
   // if the RANDOMSEED flag is set its value is taken as initial seed
   // which will produce identical results so you can debug your code
-  // rc->set_IntFlag("RANDOMSEED", 12345);
+  rc->set_IntFlag("RANDOMSEED", 12345);
 
   //===============
   // Input options
@@ -159,7 +163,7 @@ int Fun4All_G4_FullDetectorModular(
   // Write the DST
   //======================
 
-  //  Enable::DSTOUT = true;
+  Enable::DSTOUT = true;
   DstOut::OutputDir = outdir;
   DstOut::OutputFile = outputFile;
   Enable::DSTOUT_COMPRESS = false;  // Compress DST files
@@ -278,6 +282,7 @@ int Fun4All_G4_FullDetectorModular(
   Enable::FEMC_EVAL = Enable::FEMC_CLUSTER && true;
 
   Enable::FHCAL = true;
+
   Enable::FHCAL_VERBOSITY = 1;
   //  Enable::FHCAL_ABSORBER = true;
   Enable::FHCAL_CELL = Enable::FHCAL && true;
@@ -361,8 +366,6 @@ int Fun4All_G4_FullDetectorModular(
   if (Enable::CEMC_CELL) CEMC_Cells();
   if (Enable::HCALIN_CELL) HCALInner_Cells();
   if (Enable::HCALOUT_CELL) HCALOuter_Cells();
-  if (Enable::FEMC_CELL) FEMC_Cells();
-  if (Enable::FHCAL_CELL) FHCAL_Cells();
   if (Enable::EEMC_CELL) EEMC_Cells();
 
   //-----------------------------
@@ -383,10 +386,10 @@ int Fun4All_G4_FullDetectorModular(
   //-----------------------------
   // e, h direction Calorimeter  towering and clustering
   //-----------------------------
-  if (Enable::FEMC_TOWER) FEMC_Towers(specialSetting);
+  if (Enable::FEMC_TOWER) FEMC_Towers();
   if (Enable::FEMC_CLUSTER) FEMC_Clusters();
 
-  if (Enable::FHCAL_TOWER) FHCAL_Towers(specialSetting);
+  if (Enable::FHCAL_TOWER) FHCAL_Towers();
   if (Enable::FHCAL_CLUSTER) FHCAL_Clusters();
 
   if (Enable::EEMC_TOWER) EEMC_Towers();
@@ -508,4 +511,60 @@ int Fun4All_G4_FullDetectorModular(
   gSystem->Exit(0);
   return 0;
 }
+
+void ParseTString(TString &specialSetting)
+{
+  if (specialSetting.Contains("BARRELV1"))
+  {
+    G4BARREL::SETTING::BARRELV1 = true;
+  }
+  else if (specialSetting.Contains("BARRELV2"))
+  {
+    G4BARREL::SETTING::BARRELV2 = true;
+  }
+  else if (specialSetting.Contains("BARRELV3"))
+  {
+    G4BARREL::SETTING::BARRELV3 = true;
+  }
+  else if (specialSetting.Contains("BARRELV4"))
+  {
+    G4BARREL::SETTING::BARRELV4 = true;
+  }
+  if (specialSetting.Contains("fsPHENIX"))
+  {
+    G4FEMC::SETTING::fsPHENIX = true;
+  }
+
+  if (specialSetting.Contains("FullEtaAcc"))
+  {
+    G4FHCAL::SETTING::FullEtaAcc = true;
+    G4FEMC::SETTING::FullEtaAcc = true;
+  }
+  else if (specialSetting.Contains("HC2x"))
+  {
+    G4FHCAL::SETTING::HC2x = true;
+  }
+  else if (specialSetting.Contains("HC4x"))
+  {
+    G4FHCAL::SETTING::HC4x = true;
+  }
+
+  if (specialSetting.Contains("towercalib1"))
+  {
+    G4FHCAL::SETTING::towercalib1 = true;
+  }
+  else if (specialSetting.Contains("towercalibSiPM"))
+  {
+    G4FHCAL::SETTING::towercalibSiPM = true;
+  }
+  else if (specialSetting.Contains("towercalibHCALIN"))
+  {
+    G4FHCAL::SETTING::towercalibHCALIN = true;
+  }
+  else if (specialSetting.Contains("towercalib3"))
+  {
+    G4FHCAL::SETTING::towercalib3 = true;
+  }
+}
+
 #endif
