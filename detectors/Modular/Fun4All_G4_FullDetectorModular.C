@@ -530,6 +530,32 @@ void ParseTString(TString &specialSetting)
   {
     G4BARREL::SETTING::BARRELV4 = true;
   }
+
+  if (specialSetting.Contains("FSTV1"))
+  {
+    G4FST::SETTING::FSTV1 = true;
+  }
+  else if (specialSetting.Contains("FSTV2"))
+  {
+    G4FST::SETTING::FSTV2 = true;
+  }
+  else if (specialSetting.Contains("FSTV3"))
+  {
+    G4FST::SETTING::FSTV3 = true;
+  }
+  else if (specialSetting.Contains("FSTV4"))
+  {
+    G4FST::SETTING::FSTV4 = true;
+  }
+  else if (specialSetting.Contains("FSTV41"))
+  {
+    G4FST::SETTING::FSTV41 = true;
+  }
+  else if (specialSetting.Contains("FSTV42"))
+  {
+    G4FST::SETTING::FSTV42 = true;
+  }
+
   if (specialSetting.Contains("fsPHENIX"))
   {
     G4FEMC::SETTING::fsPHENIX = true;
