@@ -26,7 +26,7 @@ void AllSiliconSetup(PHG4Reco *g4Reco)
   allsili->AddAssemblyVolume("VST");       // Barrel
   allsili->AddAssemblyVolume("FST");       // Forward disks
   allsili->AddAssemblyVolume("BST");       // Backward disks
-  allsili->AddAssemblyVolume("BEAMPIPE");  // Beampipe
+  //allsili->AddAssemblyVolume("BEAMPIPE");  // Beampipe
   allsili->SuperDetector("LBLVTX");
   allsili->OverlapCheck(OverlapCheck);
   allsili->SetActive();                              // this saves hits in the MimosaCore volumes

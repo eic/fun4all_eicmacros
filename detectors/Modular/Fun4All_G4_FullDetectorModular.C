@@ -32,7 +32,7 @@ int Fun4All_G4_FullDetectorModular(
     const int nEvents = 1,
     const double particlemomMin = -1,
     const double particlemomMax = -1,
-    TString specialSetting = "",
+    TString specialSetting = "ALLSILICON-FTTLS3LC-ETTL-CTTL-pTHard5",
     TString pythia6Settings = "",
     const string &inputFile = "https://www.phenix.bnl.gov/WWW/publish/phnxbld/sPHENIX/files/sPHENIX_G4Hits_sHijing_9-11fm_00000_00010.root",
     const string &outputFile = "G4EICDetector.root",
