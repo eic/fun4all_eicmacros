@@ -514,6 +514,7 @@ int Fun4All_G4_FullDetectorModular(
 
 void ParseTString(TString &specialSetting)
 {
+// Barrel settings
   if (specialSetting.Contains("BARRELV1"))
   {
     G4BARREL::SETTING::BARRELV1 = true;
@@ -531,6 +532,7 @@ void ParseTString(TString &specialSetting)
     G4BARREL::SETTING::BARRELV4 = true;
   }
 
+// FST settings
   if (specialSetting.Contains("FSTV1"))
   {
     G4FST::SETTING::FSTV1 = true;
@@ -556,12 +558,14 @@ void ParseTString(TString &specialSetting)
     G4FST::SETTING::FSTV42 = true;
   }
 
+
+// FHCAL/FEMC settings
   if (specialSetting.Contains("fsPHENIX"))
   {
     G4FEMC::SETTING::fsPHENIX = true;
   }
 
-  if (specialSetting.Contains("FullEtaAcc"))
+  if (specialSetting.Contains("FullEtaAcc")) // common for FHCAL and FEMC
   {
     G4FHCAL::SETTING::FullEtaAcc = true;
     G4FEMC::SETTING::FullEtaAcc = true;
