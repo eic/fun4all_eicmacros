@@ -238,7 +238,7 @@ int Fun4All_G4_FullDetectorModular(
   if (specialSetting.Contains("TREXTOUT"))
     Enable::TRACKING_EVAL_DETAILED = Enable::TRACKING_EVAL && true;
   
-  G4TRACKING::DISPLACED_VERTEX = false;  // this option exclude vertex in the track fitting and use RAVE to reconstruct primary and 2ndary vertexes
+  G4TRACKING::DISPLACED_VERTEX = true;  // this option exclude vertex in the track fitting and use RAVE to reconstruct primary and 2ndary vertexes
                                          // projections to calorimeters
   G4TRACKING::PROJECTION_CEMC = true;
   G4TRACKING::PROJECTION_FEMC = true;
