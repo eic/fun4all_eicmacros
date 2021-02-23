@@ -531,6 +531,10 @@ void ParseTString(TString &specialSetting)
   {
     G4BARREL::SETTING::BARRELV4 = true;
   }
+  else if (specialSetting.Contains("BARREL"))
+  {
+    G4BARREL::SETTING::BARRELV0 = true;
+  }
 
 // FST settings
   if (specialSetting.Contains("FSTV1"))
@@ -557,7 +561,10 @@ void ParseTString(TString &specialSetting)
   {
     G4FST::SETTING::FSTV42 = true;
   }
-
+  else if (specialSetting.Contains("FST"))
+  {
+    G4FST::SETTING::FSTV0 = true;
+  }
 
 // FHCAL/FEMC settings
   if (specialSetting.Contains("fsPHENIX"))
