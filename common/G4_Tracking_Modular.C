@@ -406,14 +406,16 @@ void Tracking_Reco(TString specialSetting = "")
   //-------------------------
   // Saved track states (projections)
   if (Enable::FEMC && G4TRACKING::PROJECTION_FEMC){
-    kalman->add_state_name("FEMC");
+    // kalman->add_state_name("FEMC");
+    kalman->add_zplane_state("FEMC_0", 310);
   }
 
   //-------------------------
   // FHCAL
   //-------------------------
   if (Enable::FHCAL && G4TRACKING::PROJECTION_FHCAL) {
-    kalman->add_state_name("FHCAL");
+    // kalman->add_state_name("FHCAL");
+    kalman -> add_zplane_state("FHCAL_0", 350);
   }
   //-------------------------
   // CEMC
@@ -509,7 +511,10 @@ void Tracking_Eval(const std::string &outputfile, TString specialSetting = "")
     for (int l = 0; l < nlayer; l++)
       fast_sim_eval->AddProjection(Form("CTTL_%d",l));
   }
-  
+
+  if(Enable::FHCAL) fast_sim_eval->AddProjection("FHCAL_0");
+  if(Enable::FEMC) fast_sim_eval->AddProjection("FEMC_0");
+
   // write to output file
   fast_sim_eval->set_filename(outputfile);
   se->registerSubsystem(fast_sim_eval);
