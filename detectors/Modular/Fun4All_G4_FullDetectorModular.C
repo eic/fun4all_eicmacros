@@ -26,6 +26,8 @@
 #include <PHPy6JetTrigger.h>
 #include <phool/recoConsts.h>
 
+#include <g4eval/EventEvaluator.h>
+
 R__LOAD_LIBRARY(libfun4all.so)
 
 void ParseTString(TString &specialSetting);
@@ -34,7 +36,7 @@ int Fun4All_G4_FullDetectorModular(
     const int nEvents = 1,
     const double particlemomMin = -1,
     const double particlemomMax = -1,
-    TString specialSetting = "ALLSILICON-FTTLS3LC-ETTL-CTTL-pTHard5",
+    TString specialSetting = "ALLSILICON-FTTLS3LC-ETTL-CTTL",
     TString pythia6Settings = "",
     const string &inputFile = "https://www.phenix.bnl.gov/WWW/publish/phnxbld/sPHENIX/files/sPHENIX_G4Hits_sHijing_9-11fm_00000_00010.root",
     const string &outputFile = "G4EICDetector.root",
@@ -432,6 +434,13 @@ int Fun4All_G4_FullDetectorModular(
   //----------------------
   // Simulation evaluation
   //----------------------
+  Bool_t doFullEventTree = kTRUE;
+  if(doFullEventTree){
+    EventEvaluator *eval = new EventEvaluator("EVENTEVALUATOR", "eventtree.root");
+    eval->Verbosity(1);
+    se->registerSubsystem(eval);
+  }
+
   if (Enable::TRACKING_EVAL) Tracking_Eval(outputroot + "_g4tracking_eval.root", specialSetting);
   if (Enable::CEMC_EVAL) CEMC_Eval(outputroot + "_g4cemc_eval.root");
   if (Enable::HCALIN_EVAL) HCALInner_Eval(outputroot + "_g4hcalin_eval.root");
@@ -470,7 +479,7 @@ int Fun4All_G4_FullDetectorModular(
   //-----------------
   if (Enable::DISPLAY){
     DisplayOn();
-
+    // gROOT->ProcessLine("PHG4Reco *g4 = QTGui();"); // alternative to DisplayOn
     gROOT->ProcessLine("Fun4AllServer *se = Fun4AllServer::instance();");
     gROOT->ProcessLine("PHG4Reco *g4 = (PHG4Reco *) se->getSubsysReco(\"PHG4RECO\");");
 
