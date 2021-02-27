@@ -1,13 +1,13 @@
-#ifndef MACRO_FUN4ALLG4EICDETECTOR_C
-#define MACRO_FUN4ALLG4EICDETECTOR_C
+#ifndef MACRO_FUN4ALLG4EICDETECTORMODULAR_C
+#define MACRO_FUN4ALLG4EICDETECTORMODULAR_C
 
 #include <GlobalVariables.C>
 
 #include <DisplayOn.C>
-#include <G4Setup_ModularDetector.C>
+#include "G4Setup_ModularDetectorBeast.C"
 #include <G4_Bbc.C>
 #include <G4_CaloTrigger.C>
-#include <G4_DSTReader_EICDetector.C>
+#include <G4_DSTReader_Beast.C>
 #include <G4_FwdJets.C>
 #include <G4_Global.C>
 #include <G4_HIJetReco.C>
@@ -25,14 +25,16 @@
 #include <PHPy6ParticleTrigger.h>
 #include <PHPy6JetTrigger.h>
 #include <phool/recoConsts.h>
+#include <phool/PHRandomSeed.h>
 
 #include <g4eval/EventEvaluator.h>
 
 R__LOAD_LIBRARY(libfun4all.so)
+R__LOAD_LIBRARY(libg4testbench.so)
 
 void ParseTString(TString &specialSetting);
 
-int Fun4All_G4_FullDetectorModular(
+int Fun4All_G4_FullDetectorModularBeast(
     const int nEvents = 1,
     const double particlemomMin = -1,
     const double particlemomMax = -1,
@@ -160,19 +162,19 @@ int Fun4All_G4_FullDetectorModular(
   // register all input generators with Fun4All
   InputRegister();
 
-
   //======================
   // Write the DST
   //======================
 
-//  Enable::DSTOUT = true;
+  //  Enable::DSTOUT = true;
+  Enable::DSTOUT_COMPRESS = false;
   DstOut::OutputDir = outdir;
   DstOut::OutputFile = outputFile;
-  Enable::DSTOUT_COMPRESS = false;  // Compress DST files
 
   //Option to convert DST to human command readable TTree for quick poke around the outputs
   Enable::DSTREADER = false;
 
+  // turn the display on (default off)
   // turn the display on (default off)
   if(specialSetting.Contains("display"))
     Enable::DISPLAY = true;
@@ -184,12 +186,8 @@ int Fun4All_G4_FullDetectorModular(
   //======================
   // What to run
   //======================
-  // Global options (enabled for all subsystems - if implemented)
-  //  Enable::ABSORBER = true;
-  //  Enable::OVERLAPCHECK = true;
-  //  Enable::VERBOSITY = 1;
 
-  //  Enable::BBC = true;
+ //  Enable::BBC = true;
   Enable::BBCFAKE = true; // Smeared vtx and t0, use if you don't want real BBC in simulation
 
   // whether to simulate the Be section of the beam pipe
@@ -197,7 +195,8 @@ int Fun4All_G4_FullDetectorModular(
   // EIC beam pipe extension beyond the Be-section:
   G4PIPE::use_forward_pipes = true;
 
-  if (specialSetting.Contains("EGEM"))
+  
+    if (specialSetting.Contains("EGEM"))
     Enable::EGEM = true;
   if (specialSetting.Contains("EGEMOO")) // only last 2 EGEM layers
     Enable::EGEM_FULL = false;
@@ -259,9 +258,7 @@ int Fun4All_G4_FullDetectorModular(
   Enable::HCALIN_CLUSTER = Enable::HCALIN_TOWER && true;
   Enable::HCALIN_EVAL = Enable::HCALIN_CLUSTER && false;
 
-  Enable::MAGNET = true;
-
-  Enable::HCALOUT = true;
+  Enable::HCALOUT = false;
   //  Enable::HCALOUT_ABSORBER = true;
   Enable::HCALOUT_CELL = Enable::HCALOUT && true;
   Enable::HCALOUT_TOWER = Enable::HCALOUT_CELL && true;
@@ -297,9 +294,7 @@ int Fun4All_G4_FullDetectorModular(
   Enable::EEMC_TOWER = Enable::EEMC_CELL && true;
   Enable::EEMC_CLUSTER = Enable::EEMC_TOWER && true;
   Enable::EEMC_EVAL = Enable::EEMC_CLUSTER && false;
-
-  Enable::PLUGDOOR = false;
-
+  
   // Other options
   Enable::GLOBAL_RECO = true;
   Enable::GLOBAL_FASTSIM = true;
@@ -319,43 +314,17 @@ int Fun4All_G4_FullDetectorModular(
   // don't care about jets)
   Enable::HIJETS = false && Enable::JETS && Enable::CEMC_TOWER && Enable::HCALIN_TOWER && Enable::HCALOUT_TOWER;
 
+  
+  Enable::MAGNET = true;
+  Enable::MAGNET_ABSORBER = true;
+
   // new settings using Enable namespace in GlobalVariables.C
   Enable::BLACKHOLE = true;
   //Enable::BLACKHOLE_SAVEHITS = false; // turn off saving of bh hits
   //BlackHoleGeometry::visible = true;
 
-  //Enable::USER = true;
-
-  //---------------
-  // World Settings
-  //---------------
-  //  G4WORLD::PhysicsList = "QGSP_BERT"; //FTFP_BERT_HP best for calo
-  //  G4WORLD::WorldMaterial = "G4_AIR"; // set to G4_GALACTIC for material scans
-
-  //---------------
-  // Magnet Settings
-  //---------------
-  if(specialSetting.Contains("3T")){
-    const string magfield = "3.0"; // alternatively to specify a constant magnetic field, give a float number, which will be translated to solenoidal field in T, if string use as fieldmap name (including path)
-    G4MAGNET::magfield = magfield;
-    //  G4MAGNET::magfield = string(getenv("CALIBRATIONROOT")) + string("/Field/Map/sPHENIX.2d.root");  // default map from the calibration database
-  } else {
-    G4MAGNET::magfield_rescale = -1.4 / 1.5;  // make consistent with expected Babar field strength of 1.4T
-  }
-  //---------------
-  // Pythia Decayer
-  //---------------
-  // list of decay types in
-  // $OFFLINE_MAIN/include/g4decayer/EDecayType.hh
-  // default is All:
-  // G4P6DECAYER::decayType = EDecayType::kAll;
-
-  // Initialize the selected subsystems
+  // establish the geometry and reconstruction setup
   G4Init();
-
-  //---------------------
-  // GEANT4 Detector description
-  //---------------------
 
   // If "readhepMC" is also set, the Upsilons will be embedded in Hijing events, if 'particles" is set, the Upsilons will be embedded in whatever particles are thrown
   if (!Input::READHITS) G4Setup(specialSetting);
@@ -428,7 +397,7 @@ int Fun4All_G4_FullDetectorModular(
     outputroot.erase(pos, remove_this.length());
   }
 
-  if (Enable::DSTREADER) G4DSTreader_EICDetector(outputroot + "_DSTReader.root");
+  if (Enable::DSTREADER) G4DSTreader(outputroot + "_DSTReader.root");
 
   //----------------------
   // Simulation evaluation
@@ -465,7 +434,7 @@ int Fun4All_G4_FullDetectorModular(
   if (Enable::PRODUCTION){
     Production_CreateOutputDir();
   }
-
+  
   if (Enable::DSTOUT){
     string FullOutFile = DstOut::OutputDir + "/" + DstOut::OutputFile;
     Fun4AllDstOutputManager *out = new Fun4AllDstOutputManager("DSTOUT", FullOutFile);
@@ -613,3 +582,4 @@ void ParseTString(TString &specialSetting)
 }
 
 #endif
+

@@ -1,5 +1,5 @@
-#ifndef MACRO_G4SETUPMODULARDETECTOR_C
-#define MACRO_G4SETUPMODULARDETECTOR_C
+#ifndef MACRO_G4SETUPMODULARDETECTORBEAST_C
+#define MACRO_G4SETUPMODULARDETECTORBEAST_C
 
 #include <GlobalVariables.C>
 
@@ -24,9 +24,8 @@
 #include <G4_Tracking_Modular.C>
 
 #include <G4_BlackHole.C>
-#include <G4_Magnet.C>
+#include <G4_Magnet_Beast.C>
 #include <G4_Pipe_EIC.C>
-#include <G4_PlugDoor_EIC.C>
 #include <G4_User.C>
 #include <G4_World.C>
 #include <G4_Input.C>
@@ -41,7 +40,6 @@
 
 #include <phfield/PHFieldConfig.h>
 
-
 #include <fun4all/Fun4AllDstOutputManager.h>
 #include <fun4all/Fun4AllServer.h>
 
@@ -50,8 +48,7 @@ R__LOAD_LIBRARY(libg4detectors.so)
 
 void G4Init()
 {
-  // First some check for subsystems which do not go together
-
+   // First some check for subsystems which do not go together
   if (Enable::TPC && Enable::FST){
     cout << "TPC and FST cannot be enabled together" << endl;
     gSystem->Exit(1);
@@ -75,10 +72,10 @@ void G4Init()
   }
 
   // load detector/material macros and execute Init() function
-  if (Enable::PLUGDOOR) PlugDoorInit();
   if (Enable::MAGNET) MagnetInit();
   MagnetFieldInit(); // We want the field - even if the magnet volume is disabled
   if (Enable::PIPE) PipeInit();
+
   // trackers
   if (Enable::EGEM) EGEM_Init();
   if (Enable::FGEM) FGEM_Init();
@@ -111,10 +108,10 @@ void G4Init()
   if (Enable::USER) UserInit();
   if (Enable::BLACKHOLE) BlackHoleInit();
   
-  
 }
 
-int G4Setup(TString specialSetting = ""){
+void G4Setup(TString specialSetting = "")
+{
   //---------------
   // Fun4All server
   //---------------
@@ -125,10 +122,13 @@ int G4Setup(TString specialSetting = ""){
 
   WorldInit(g4Reco);
 
-  g4Reco->set_rapidity_coverage(1.1);  // according to drawings
+  // global coverage used for length of cylinders if lengthviarapidity is set
+  // probably needs to be adjusted for JLeic
+  g4Reco->set_rapidity_coverage(1.1);// according to drawings
                                        // uncomment to set QGSP_BERT_HP physics list for productions
                                        // (default is QGSP_BERT for speed)
   //  g4Reco->SetPhysicsList("QGSP_BERT_HP");
+
 
   if (G4P6DECAYER::decayType != EDecayType::kAll){
     g4Reco->set_force_decay(G4P6DECAYER::decayType);
@@ -138,19 +138,16 @@ int G4Setup(TString specialSetting = ""){
   istringstream stringline(G4MAGNET::magfield);
   stringline >> fieldstrength;
   if (stringline.fail()){  // conversion to double fails -> we have a string
-    if (G4MAGNET::magfield.find("sPHENIX.root") != string::npos){
-      g4Reco->set_field_map(G4MAGNET::magfield, PHFieldConfig::Field3DCartesian);
-    } else {
-      g4Reco->set_field_map(G4MAGNET::magfield, PHFieldConfig::kField2D);
-    }
-  } else {
+    g4Reco->set_field_map(G4MAGNET::magfield, PHFieldConfig::kFieldBeast);
+  } else  {
     g4Reco->set_field(fieldstrength);  // use const soleniodal field
   }
   g4Reco->set_field_rescale(G4MAGNET::magfield_rescale);
 
-// the radius is an older protection against overlaps, it is not
-// clear how well this works nowadays but it doesn't hurt either
+  // the radius is an older protection against overlaps, it is not
+  // clear how well this works nowadays but it doesn't hurt either
   double radius = 0.;
+
   if (Enable::PIPE) radius = Pipe(g4Reco, radius);
   //----------------------------------------
   // trackers
@@ -186,11 +183,11 @@ int G4Setup(TString specialSetting = ""){
 
   //----------------------------------------
   // sPHENIX forward flux return door
-  if (Enable::PLUGDOOR) PlugDoor(g4Reco);
   if (Enable::USER) UserDetector(g4Reco);
-  
+
   //----------------------------------------
-  // BLACKHOLE if enabled, needs info from all previous sub detectors for dimensions
+  // BLACKHOLE needs to be last
+
   if (Enable::BLACKHOLE) BlackHole(g4Reco, radius);
 
   PHG4TruthSubsystem *truth = new PHG4TruthSubsystem();
@@ -199,10 +196,11 @@ int G4Setup(TString specialSetting = ""){
   WorldSize(g4Reco, radius);
 
   se->registerSubsystem(g4Reco);
-  return 0;
+  return;
 }
 
-void ShowerCompress(){
+void ShowerCompress()
+{
   Fun4AllServer *se = Fun4AllServer::instance();
 
   PHG4DstCompressReco *compress = new PHG4DstCompressReco("PHG4DstCompressReco");
@@ -259,8 +257,10 @@ void ShowerCompress(){
   return;
 }
 
-void DstCompress(Fun4AllDstOutputManager *out){
-  if (out) {
+void DstCompress(Fun4AllDstOutputManager *out)
+{
+  if (out)
+  {
     out->StripNode("G4HIT_PIPE");
     out->StripNode("G4HIT_SVTXSUPPORT");
     out->StripNode("G4HIT_CEMC_ELECTRONICS");
@@ -292,4 +292,5 @@ void DstCompress(Fun4AllDstOutputManager *out){
     out->StripNode("G4CELL_EEMC");
   }
 }
-#endif
+
+#endif  // MACRO_G4SETUPBEAST_C
