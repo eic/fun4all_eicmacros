@@ -251,14 +251,14 @@ int Fun4All_G4_FullDetectorModular(
   Enable::CEMC_CELL = Enable::CEMC && true;
   Enable::CEMC_TOWER = Enable::CEMC_CELL && true;
   Enable::CEMC_CLUSTER = Enable::CEMC_TOWER && true;
-  Enable::CEMC_EVAL = Enable::CEMC_CLUSTER && true;
+  Enable::CEMC_EVAL = Enable::CEMC_CLUSTER && false;
 
   Enable::HCALIN = true;
   //  Enable::HCALIN_ABSORBER = true;
   Enable::HCALIN_CELL = Enable::HCALIN && true;
   Enable::HCALIN_TOWER = Enable::HCALIN_CELL && true;
   Enable::HCALIN_CLUSTER = Enable::HCALIN_TOWER && true;
-  Enable::HCALIN_EVAL = Enable::HCALIN_CLUSTER && true;
+  Enable::HCALIN_EVAL = Enable::HCALIN_CLUSTER && false;
 
   Enable::MAGNET = true;
 
@@ -267,7 +267,7 @@ int Fun4All_G4_FullDetectorModular(
   Enable::HCALOUT_CELL = Enable::HCALOUT && true;
   Enable::HCALOUT_TOWER = Enable::HCALOUT_CELL && true;
   Enable::HCALOUT_CLUSTER = Enable::HCALOUT_TOWER && true;
-  Enable::HCALOUT_EVAL = Enable::HCALOUT_CLUSTER && true;
+  Enable::HCALOUT_EVAL = Enable::HCALOUT_CLUSTER && false;
 
   // EICDetector geometry - barrel
   Enable::DIRC = true;
@@ -281,7 +281,7 @@ int Fun4All_G4_FullDetectorModular(
   Enable::FEMC_CELL = Enable::FEMC && true;
   Enable::FEMC_TOWER = Enable::FEMC_CELL && true;
   Enable::FEMC_CLUSTER = Enable::FEMC_TOWER && true;
-  Enable::FEMC_EVAL = Enable::FEMC_CLUSTER && true;
+  Enable::FEMC_EVAL = Enable::FEMC_CLUSTER && false;
 
   Enable::FHCAL = true;
 
@@ -290,14 +290,14 @@ int Fun4All_G4_FullDetectorModular(
   Enable::FHCAL_CELL = Enable::FHCAL && true;
   Enable::FHCAL_TOWER = Enable::FHCAL_CELL && true;
   Enable::FHCAL_CLUSTER = Enable::FHCAL_TOWER && true;
-  Enable::FHCAL_EVAL = Enable::FHCAL_CLUSTER && true;
+  Enable::FHCAL_EVAL = Enable::FHCAL_CLUSTER && false;
 
   // EICDetector geometry - 'electron' direction
   Enable::EEMC = true;
   Enable::EEMC_CELL = Enable::EEMC && true;
   Enable::EEMC_TOWER = Enable::EEMC_CELL && true;
   Enable::EEMC_CLUSTER = Enable::EEMC_TOWER && true;
-  Enable::EEMC_EVAL = Enable::EEMC_CLUSTER && true;
+  Enable::EEMC_EVAL = Enable::EEMC_CLUSTER && false;
 
   Enable::PLUGDOOR = false;
 
