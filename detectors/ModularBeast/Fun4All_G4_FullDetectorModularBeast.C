@@ -404,7 +404,7 @@ int Fun4All_G4_FullDetectorModularBeast(
   //----------------------
   Bool_t doFullEventTree = kTRUE;
   if(doFullEventTree){
-    EventEvaluator *eval = new EventEvaluator("EVENTEVALUATOR", Form("%s/eventtree.root", outdir.c_str()));
+    EventEvaluator *eval = new EventEvaluator("EVENTEVALUATOR", outputroot + "_eventtree.root");
     eval->Verbosity(1);
     se->registerSubsystem(eval);
   }
