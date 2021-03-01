@@ -39,7 +39,7 @@ int Fun4All_G4_FullDetectorModularBeast(
     const double particlemomMin = -1,
     const double particlemomMax = -1,
     TString specialSetting = "ALLSILICON-FTTLS3LC-ETTL-CTTL",
-    TString pythia6Settings = "",
+    TString pythia6Settings = "epMB",
     const string &inputFile = "https://www.phenix.bnl.gov/WWW/publish/phnxbld/sPHENIX/files/sPHENIX_G4Hits_sHijing_9-11fm_00000_00010.root",
     const string &outputFile = "G4EICDetector.root",
     const string &embed_input_file = "https://www.phenix.bnl.gov/WWW/publish/phnxbld/sPHENIX/files/sPHENIX_G4Hits_sHijing_9-11fm_00000_00010.root",
@@ -85,7 +85,7 @@ int Fun4All_G4_FullDetectorModularBeast(
   INPUTHEPMC::filename = inputFile;
 
 
-  Enable::QA = true;
+  Enable::QA = false;
 
   //-----------------
   // Initialize the selected Input/Event generation
@@ -126,7 +126,7 @@ int Fun4All_G4_FullDetectorModularBeast(
   }
   // pythia6
   if (Input::PYTHIA6){
-    if (pythia6Settings.CompareTo("") == 0)
+    if (pythia6Settings.CompareTo("epMB") == 0)
       INPUTGENERATOR::Pythia6->set_config_file(string(getenv("CALIBRATIONROOT")) + "/Generators/phpythia6_ep.cfg");
     else if (pythia6Settings.CompareTo("pTHard5") == 0)
       INPUTGENERATOR::Pythia6->set_config_file(string(getenv("CALIBRATIONROOT")) + "/Generators/phpythia6_ep_MinPartonP5GeV.cfg");
@@ -306,7 +306,7 @@ int Fun4All_G4_FullDetectorModularBeast(
   Enable::JETS = false;
   Enable::JETS_EVAL = Enable::JETS && true;
 
-  Enable::FWDJETS = true;
+  Enable::FWDJETS = false;
   Enable::FWDJETS_EVAL = Enable::FWDJETS && true;
 
   // HI Jet Reco for jet simulations in Au+Au (default is false for
@@ -390,7 +390,7 @@ int Fun4All_G4_FullDetectorModularBeast(
   if (Enable::HIJETS) HIJetReco();
   if (Enable::FWDJETS) Jet_FwdReco();
 
-  string outputroot = outputFile;
+  string outputroot = outdir + "/" + outputFile;
   string remove_this = ".root";
   size_t pos = outputroot.find(remove_this);
   if (pos != string::npos){
@@ -404,7 +404,7 @@ int Fun4All_G4_FullDetectorModularBeast(
   //----------------------
   Bool_t doFullEventTree = kTRUE;
   if(doFullEventTree){
-    EventEvaluator *eval = new EventEvaluator("EVENTEVALUATOR", "eventtree.root");
+    EventEvaluator *eval = new EventEvaluator("EVENTEVALUATOR", Form("%s/eventtree.root", outdir.c_str()));
     eval->Verbosity(1);
     se->registerSubsystem(eval);
   }
