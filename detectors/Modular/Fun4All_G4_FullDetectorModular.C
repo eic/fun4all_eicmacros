@@ -436,7 +436,17 @@ int Fun4All_G4_FullDetectorModular(
   Bool_t doFullEventTree = kTRUE;
   if(doFullEventTree){
     EventEvaluator *eval = new EventEvaluator("EVENTEVALUATOR",  outputroot + "_eventtree.root");
+    eval->set_reco_tracing_energy_threshold(0.05);
     eval->Verbosity(1);
+    eval->set_do_FHCAL(true);
+    eval->set_do_FEMC(true);
+    eval->set_do_DRCALO(false);
+    eval->set_do_HITS(true);
+    eval->set_do_TRACKS(true);
+    eval->set_do_CLUSTERS(true);
+    eval->set_do_VERTEX(true);
+    eval->set_do_PROJECTIONS(true);
+    eval->set_do_MCPARTICLES(true);
     se->registerSubsystem(eval);
   }
 
