@@ -36,6 +36,7 @@ namespace G4TRACKING
   bool PROJECTION_CEMC = false;
   bool PROJECTION_FEMC = false;
   bool PROJECTION_FHCAL = false;
+  bool PROJECTION_DRCALO = false;
 }  // namespace G4TRACKING
 
 //-----------------------------------------------------------------------------//
@@ -411,6 +412,13 @@ void Tracking_Reco(TString specialSetting = "")
   }
 
   //-------------------------
+  // DRCALO
+  //-------------------------
+  // if (Enable::DRCALO && G4TRACKING::PROJECTION_DRCALO) {
+  //   kalman -> add_zplane_state("DRCALO_0", 300);
+  // }
+
+  //-------------------------
   // FHCAL
   //-------------------------
   if (Enable::FHCAL && G4TRACKING::PROJECTION_FHCAL) {
@@ -512,8 +520,9 @@ void Tracking_Eval(const std::string &outputfile, TString specialSetting = "")
       fast_sim_eval->AddProjection(Form("CTTL_%d",l));
   }
 
-  if(Enable::FHCAL) fast_sim_eval->AddProjection("FHCAL_0");
-  if(Enable::FEMC) fast_sim_eval->AddProjection("FEMC_0");
+  if(Enable::FHCAL && G4TRACKING::PROJECTION_FHCAL) fast_sim_eval->AddProjection("FHCAL_0");
+  if(Enable::FEMC && G4TRACKING::PROJECTION_FEMC) fast_sim_eval->AddProjection("FEMC_0");
+  // if(Enable::DRCALO && G4TRACKING::PROJECTION_DRCALO) fast_sim_eval->AddProjection("DRCALO_0");
 
   // write to output file
   fast_sim_eval->set_filename(outputfile);
