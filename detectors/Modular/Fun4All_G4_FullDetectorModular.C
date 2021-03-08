@@ -246,6 +246,8 @@ int Fun4All_G4_FullDetectorModular(
   G4TRACKING::PROJECTION_FHCAL = true;
 
   Enable::CEMC = true;
+  if(specialSetting.Contains("FHCALSTANDALONE") || specialSetting.Contains("FEMCSTANDALONE") || specialSetting.Contains("CALOSTANDALONE"))
+    Enable::CEMC = false;
   //  Enable::CEMC_ABSORBER = true;
   Enable::CEMC_CELL = Enable::CEMC && true;
   Enable::CEMC_TOWER = Enable::CEMC_CELL && true;
@@ -253,6 +255,8 @@ int Fun4All_G4_FullDetectorModular(
   Enable::CEMC_EVAL = Enable::CEMC_CLUSTER && false;
 
   Enable::HCALIN = true;
+  if(specialSetting.Contains("FHCALSTANDALONE") || specialSetting.Contains("FEMCSTANDALONE") || specialSetting.Contains("CALOSTANDALONE"))
+    Enable::HCALIN = false;
   //  Enable::HCALIN_ABSORBER = true;
   Enable::HCALIN_CELL = Enable::HCALIN && true;
   Enable::HCALIN_TOWER = Enable::HCALIN_CELL && true;
@@ -262,6 +266,8 @@ int Fun4All_G4_FullDetectorModular(
   Enable::MAGNET = true;
 
   Enable::HCALOUT = true;
+  if(specialSetting.Contains("FHCALSTANDALONE") || specialSetting.Contains("FEMCSTANDALONE") || specialSetting.Contains("CALOSTANDALONE"))
+    Enable::HCALOUT = false;
   //  Enable::HCALOUT_ABSORBER = true;
   Enable::HCALOUT_CELL = Enable::HCALOUT && true;
   Enable::HCALOUT_TOWER = Enable::HCALOUT_CELL && true;
@@ -276,6 +282,8 @@ int Fun4All_G4_FullDetectorModular(
   Enable::AEROGEL = true;
 
   Enable::FEMC = true;
+  if(specialSetting.Contains("FHCALSTANDALONE") )
+    Enable::FEMC = false;
   //  Enable::FEMC_ABSORBER = true;
   Enable::FEMC_CELL = Enable::FEMC && true;
   Enable::FEMC_TOWER = Enable::FEMC_CELL && true;
@@ -283,7 +291,8 @@ int Fun4All_G4_FullDetectorModular(
   Enable::FEMC_EVAL = Enable::FEMC_CLUSTER && false;
 
   Enable::FHCAL = true;
-
+  if(specialSetting.Contains("FEMCSTANDALONE") )
+    Enable::FHCAL = false;
   Enable::FHCAL_VERBOSITY = 1;
   //  Enable::FHCAL_ABSORBER = true;
   Enable::FHCAL_CELL = Enable::FHCAL && true;
@@ -293,12 +302,58 @@ int Fun4All_G4_FullDetectorModular(
 
   // EICDetector geometry - 'electron' direction
   Enable::EEMC = true;
+  if(specialSetting.Contains("FHCALSTANDALONE") || specialSetting.Contains("FEMCSTANDALONE") || specialSetting.Contains("CALOSTANDALONE"))
+    Enable::EEMC = false;
   Enable::EEMC_CELL = Enable::EEMC && true;
   Enable::EEMC_TOWER = Enable::EEMC_CELL && true;
   Enable::EEMC_CLUSTER = Enable::EEMC_TOWER && true;
   Enable::EEMC_EVAL = Enable::EEMC_CLUSTER && false;
 
   Enable::PLUGDOOR = false;
+
+  // deactivate all detector systems for FHCal standalone studies
+  if(specialSetting.Contains("FHCALSTANDALONE")){
+    Enable::PIPE = false;
+    G4PIPE::use_forward_pipes = false;
+    Enable::TPC_ENDCAP = false;
+    G4TRACKING::PROJECTION_CEMC = false;
+    G4TRACKING::PROJECTION_FEMC = false;
+    G4TRACKING::PROJECTION_FHCAL = false;
+    Enable::MAGNET = false;
+    Enable::DIRC = false;
+    Enable::RICH = false;
+    Enable::AEROGEL = false;
+    Enable::FHCAL = true;
+  }
+  // deactivate all detector systems for FHCal standalone studies
+  if(specialSetting.Contains("FEMCSTANDALONE")){
+    Enable::PIPE = false;
+    G4PIPE::use_forward_pipes = false;
+    Enable::TPC_ENDCAP = false;
+    G4TRACKING::PROJECTION_CEMC = false;
+    G4TRACKING::PROJECTION_FEMC = false;
+    G4TRACKING::PROJECTION_FHCAL = false;
+    Enable::MAGNET = false;
+    Enable::DIRC = false;
+    Enable::RICH = false;
+    Enable::AEROGEL = false;
+    Enable::FEMC = true;
+  }
+  // deactivate all detector systems for FHCal standalone studies
+  if(specialSetting.Contains("CALOSTANDALONE")){
+    Enable::PIPE = false;
+    G4PIPE::use_forward_pipes = false;
+    Enable::TPC_ENDCAP = false;
+    G4TRACKING::PROJECTION_CEMC = false;
+    G4TRACKING::PROJECTION_FEMC = false;
+    G4TRACKING::PROJECTION_FHCAL = false;
+    Enable::MAGNET = false;
+    Enable::DIRC = false;
+    Enable::RICH = false;
+    Enable::AEROGEL = false;
+    Enable::FHCAL = true;
+    Enable::FEMC = true;
+  }
 
   // Other options
   Enable::GLOBAL_RECO = true;
