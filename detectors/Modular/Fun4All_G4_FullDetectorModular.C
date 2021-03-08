@@ -246,7 +246,7 @@ int Fun4All_G4_FullDetectorModular(
   G4TRACKING::PROJECTION_FHCAL = true;
 
   Enable::CEMC = true;
-  if(specialSetting.Contains("FHCALSTANDALONE") || specialSetting.Contains("FEMCSTANDALONE") )
+  if(specialSetting.Contains("FHCALSTANDALONE") || specialSetting.Contains("FEMCSTANDALONE") || specialSetting.Contains("CALOSTANDALONE"))
     Enable::CEMC = false;
   //  Enable::CEMC_ABSORBER = true;
   Enable::CEMC_CELL = Enable::CEMC && true;
@@ -255,7 +255,7 @@ int Fun4All_G4_FullDetectorModular(
   Enable::CEMC_EVAL = Enable::CEMC_CLUSTER && false;
 
   Enable::HCALIN = true;
-  if(specialSetting.Contains("FHCALSTANDALONE") || specialSetting.Contains("FEMCSTANDALONE") )
+  if(specialSetting.Contains("FHCALSTANDALONE") || specialSetting.Contains("FEMCSTANDALONE") || specialSetting.Contains("CALOSTANDALONE"))
     Enable::HCALIN = false;
   //  Enable::HCALIN_ABSORBER = true;
   Enable::HCALIN_CELL = Enable::HCALIN && true;
@@ -266,7 +266,7 @@ int Fun4All_G4_FullDetectorModular(
   Enable::MAGNET = true;
 
   Enable::HCALOUT = true;
-  if(specialSetting.Contains("FHCALSTANDALONE") || specialSetting.Contains("FEMCSTANDALONE") )
+  if(specialSetting.Contains("FHCALSTANDALONE") || specialSetting.Contains("FEMCSTANDALONE") || specialSetting.Contains("CALOSTANDALONE"))
     Enable::HCALOUT = false;
   //  Enable::HCALOUT_ABSORBER = true;
   Enable::HCALOUT_CELL = Enable::HCALOUT && true;
@@ -302,7 +302,7 @@ int Fun4All_G4_FullDetectorModular(
 
   // EICDetector geometry - 'electron' direction
   Enable::EEMC = true;
-  if(specialSetting.Contains("FHCALSTANDALONE") || specialSetting.Contains("FEMCSTANDALONE") )
+  if(specialSetting.Contains("FHCALSTANDALONE") || specialSetting.Contains("FEMCSTANDALONE") || specialSetting.Contains("CALOSTANDALONE"))
     Enable::EEMC = false;
   Enable::EEMC_CELL = Enable::EEMC && true;
   Enable::EEMC_TOWER = Enable::EEMC_CELL && true;
@@ -337,6 +337,21 @@ int Fun4All_G4_FullDetectorModular(
     Enable::DIRC = false;
     Enable::RICH = false;
     Enable::AEROGEL = false;
+    Enable::FEMC = true;
+  }
+  // deactivate all detector systems for FHCal standalone studies
+  if(specialSetting.Contains("CALOSTANDALONE")){
+    Enable::PIPE = false;
+    G4PIPE::use_forward_pipes = false;
+    Enable::TPC_ENDCAP = false;
+    G4TRACKING::PROJECTION_CEMC = false;
+    G4TRACKING::PROJECTION_FEMC = false;
+    G4TRACKING::PROJECTION_FHCAL = false;
+    Enable::MAGNET = false;
+    Enable::DIRC = false;
+    Enable::RICH = false;
+    Enable::AEROGEL = false;
+    Enable::FHCAL = true;
     Enable::FEMC = true;
   }
 
