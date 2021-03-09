@@ -35,16 +35,16 @@ R__LOAD_LIBRARY(libg4testbench.so)
 void ParseTString(TString &specialSetting);
 
 int Fun4All_G4_FullDetectorModularBeast(
-    const int nEvents = 1,
-    const double particlemomMin = -1,
-    const double particlemomMax = -1,
-    TString specialSetting = "ALLSILICON-FTTLS3LC-ETTL-CTTL",
-    TString pythia6Settings = "epMB",
-    const string &inputFile = "https://www.phenix.bnl.gov/WWW/publish/phnxbld/sPHENIX/files/sPHENIX_G4Hits_sHijing_9-11fm_00000_00010.root",
-    const string &outputFile = "G4EICDetector.root",
-    const string &embed_input_file = "https://www.phenix.bnl.gov/WWW/publish/phnxbld/sPHENIX/files/sPHENIX_G4Hits_sHijing_9-11fm_00000_00010.root",
-    const int skip = 0,
-    const string &outdir = ".")
+    const int nEvents               = 1,
+    const double particlemomMin     = -1,
+    const double particlemomMax     = -1,
+    TString specialSetting          = "ALLSILICON-FTTLS3LC-ETTL-CTTL",
+    TString generatorSettings       = "e10p250MB",
+    const string &inputFile         = "https://www.phenix.bnl.gov/WWW/publish/phnxbld/sPHENIX/files/sPHENIX_G4Hits_sHijing_9-11fm_00000_00010.root",
+    const string &outputFile        = "G4EICDetector.root",
+    const string &embed_input_file  = "https://www.phenix.bnl.gov/WWW/publish/phnxbld/sPHENIX/files/sPHENIX_G4Hits_sHijing_9-11fm_00000_00010.root",
+    const int skip                  = 0,
+    const string &outdir            = ".")
 {
   // translate the option TString into subsystem namespace options
   ParseTString(specialSetting); 
@@ -100,13 +100,27 @@ int Fun4All_G4_FullDetectorModularBeast(
   // if you run more than one of these Input::SIMPLE_NUMBER > 1
   // add the settings for other with [1], next with [2]...
   if (Input::SIMPLE){
-    INPUTGENERATOR::SimpleEventGenerator[0]->add_particles("pi-", 1);
+    if (generatorSettings.Contains("SimplePion"))
+      INPUTGENERATOR::SimpleEventGenerator[0]->add_particles("pi-", 1);
+    else if (generatorSettings.Contains("SimpleKaon"))
+      INPUTGENERATOR::SimpleEventGenerator[0]->add_particles("kaon-", 1);
+    else if (generatorSettings.Contains("SimpleProton"))
+      INPUTGENERATOR::SimpleEventGenerator[0]->add_particles("proton", 1);
+    else if (generatorSettings.Contains("SimplePhoton"))
+      INPUTGENERATOR::SimpleEventGenerator[0]->add_particles("gamma", 1);
+    else if (generatorSettings.Contains("SimplePiZero"))
+      INPUTGENERATOR::SimpleEventGenerator[0]->add_particles("pi0", 1);
+    else {
+      std::cout << "You didn't specify which particle you wanted to generate, exiting" << std::endl;
+      return 0;
+    }
+
     INPUTGENERATOR::SimpleEventGenerator[0]->set_vertex_distribution_function(PHG4SimpleEventGenerator::Uniform,
                                                                               PHG4SimpleEventGenerator::Uniform,
                                                                               PHG4SimpleEventGenerator::Uniform);
     INPUTGENERATOR::SimpleEventGenerator[0]->set_vertex_distribution_mean(0., 0., 0.);
     INPUTGENERATOR::SimpleEventGenerator[0]->set_vertex_distribution_width(0., 0., 5.);
-    INPUTGENERATOR::SimpleEventGenerator[0]->set_eta_range(1., 4.2);
+    INPUTGENERATOR::SimpleEventGenerator[0]->set_eta_range(1., 3.7);
     INPUTGENERATOR::SimpleEventGenerator[0]->set_phi_range(-M_PI, M_PI);
     INPUTGENERATOR::SimpleEventGenerator[0]->set_pt_range(particlemomMin, particlemomMax);
  
@@ -126,17 +140,33 @@ int Fun4All_G4_FullDetectorModularBeast(
   }
   // pythia6
   if (Input::PYTHIA6){
-    if (pythia6Settings.CompareTo("epMB") == 0)
+    if (generatorSettings.CompareTo("e10p250MB") == 0)
       INPUTGENERATOR::Pythia6->set_config_file(string(getenv("CALIBRATIONROOT")) + "/Generators/phpythia6_ep.cfg");
-    else if (pythia6Settings.CompareTo("pTHard5") == 0)
+    else if (generatorSettings.CompareTo("e10p250pTHard5") == 0)
       INPUTGENERATOR::Pythia6->set_config_file(string(getenv("CALIBRATIONROOT")) + "/Generators/phpythia6_ep_MinPartonP5GeV.cfg");
-    else if (pythia6Settings.CompareTo("pTHard10") == 0)
+    else if (generatorSettings.CompareTo("e10p250pTHard10") == 0)
       INPUTGENERATOR::Pythia6->set_config_file(string(getenv("CALIBRATIONROOT")) + "/Generators/phpythia6_ep_MinPartonP10GeV.cfg");
-    else if (pythia6Settings.CompareTo("pTHard20") == 0)
+    else if (generatorSettings.CompareTo("e10p250pTHard20") == 0)
       INPUTGENERATOR::Pythia6->set_config_file(string(getenv("CALIBRATIONROOT")) + "/Generators/phpythia6_ep_MinPartonP20GeV.cfg");
+    else if (generatorSettings.CompareTo("e5p100MB") == 0)
+      INPUTGENERATOR::Pythia6->set_config_file(string(getenv("CALIBRATIONROOT")) + "/Generators/phpythia6_e5p100.cfg");
+    else if (generatorSettings.CompareTo("e5p100pTHard5") == 0)
+      INPUTGENERATOR::Pythia6->set_config_file(string(getenv("CALIBRATIONROOT")) + "/Generators/phpythia6_e5p100_MinPartonP5GeV.cfg");
+    else if (generatorSettings.CompareTo("e10p275MB") == 0)
+      INPUTGENERATOR::Pythia6->set_config_file(string(getenv("CALIBRATIONROOT")) + "/Generators/phpythia6_e10p275.cfg");
+    else if (generatorSettings.CompareTo("e10p275pTHard5") == 0)
+      INPUTGENERATOR::Pythia6->set_config_file(string(getenv("CALIBRATIONROOT")) + "/Generators/phpythia6_e10p275_MinPartonP5GeV.cfg");
+    else if (generatorSettings.CompareTo("e10p275pTHard10") == 0)
+      INPUTGENERATOR::Pythia6->set_config_file(string(getenv("CALIBRATIONROOT")) + "/Generators/phpythia6_e10p275_MinPartonP10GeV.cfg");
+    else if (generatorSettings.CompareTo("e18p275MB") == 0)
+      INPUTGENERATOR::Pythia6->set_config_file(string(getenv("CALIBRATIONROOT")) + "/Generators/phpythia6_e18p275.cfg");
+    else if (generatorSettings.CompareTo("e18p275pTHard5") == 0)
+      INPUTGENERATOR::Pythia6->set_config_file(string(getenv("CALIBRATIONROOT")) + "/Generators/phpythia6_e18p275_MinPartonP5GeV.cfg");
+    else if (generatorSettings.CompareTo("e18p275pTHard10") == 0)
+      INPUTGENERATOR::Pythia6->set_config_file(string(getenv("CALIBRATIONROOT")) + "/Generators/phpythia6_e18p275_MinPartonP10GeV.cfg");
     else 
-      INPUTGENERATOR::Pythia6->set_config_file(pythia6Settings.Data());
-
+      INPUTGENERATOR::Pythia6->set_config_file(generatorSettings.Data());
+    
     if (specialSetting.Contains("FPartTrigg")){
       PHPy6ParticleTrigger *ptrig = new PHPy6ParticleTrigger();
       ptrig->SetPtLow(1);
@@ -146,11 +176,11 @@ int Fun4All_G4_FullDetectorModularBeast(
     if (specialSetting.Contains("FJetTrigg")){
       PHPy6JetTrigger *trig = new PHPy6JetTrigger();
       trig->SetEtaHighLow(1,5);
-      if (pythia6Settings.CompareTo("pTHard5") == 0)
+      if (generatorSettings.Contains("pTHard5"))
         trig->SetMinJetPt(5);
-      else if (pythia6Settings.CompareTo("pTHard10") == 0)
+      else if (generatorSettings.Contains("pTHard10"))
         trig->SetMinJetPt(10);
-      else if (pythia6Settings.CompareTo("pTHard20") == 0)
+      else if (generatorSettings.Contains("pTHard20"))
         trig->SetMinJetPt(20);
       else 
         trig->SetMinJetPt(1);
@@ -598,25 +628,30 @@ void ParseTString(TString &specialSetting)
     G4FST::SETTING::FSTV0 = true;
   }
 
-// FHCAL/FEMC settings
+  // FHCAL/FEMC settings
   if (specialSetting.Contains("fsPHENIX"))
   {
     G4FEMC::SETTING::fsPHENIX = true;
   }
-
+  else if (specialSetting.Contains("EC2x"))
+  {
+    G4FEMC::SETTING::EC2x = true;
+  }
+  
   if (specialSetting.Contains("FullEtaAcc")) // common for FHCAL and FEMC
   {
     G4FHCAL::SETTING::FullEtaAcc = true;
     G4FEMC::SETTING::FullEtaAcc = true;
   }
-  else if (specialSetting.Contains("HC2x"))
+  if (specialSetting.Contains("HC2x"))
   {
     G4FHCAL::SETTING::HC2x = true;
-  }
+  } 
   else if (specialSetting.Contains("HC4x"))
   {
     G4FHCAL::SETTING::HC4x = true;
   }
+
 
   if (specialSetting.Contains("towercalib1"))
   {
