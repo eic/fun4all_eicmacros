@@ -668,21 +668,25 @@ void ParseTString(TString &specialSetting)
     G4FST::SETTING::FSTV0 = true;
   }
 
-// FHCAL/FEMC settings
+  // FHCAL/FEMC settings
   if (specialSetting.Contains("fsPHENIX"))
   {
     G4FEMC::SETTING::fsPHENIX = true;
   }
-
+  else if (specialSetting.Contains("EC2x"))
+  {
+    G4FEMC::SETTING::EC2x = true;
+  }
+  
   if (specialSetting.Contains("FullEtaAcc")) // common for FHCAL and FEMC
   {
     G4FHCAL::SETTING::FullEtaAcc = true;
     G4FEMC::SETTING::FullEtaAcc = true;
   }
-  else if (specialSetting.Contains("HC2x"))
+  if (specialSetting.Contains("HC2x"))
   {
     G4FHCAL::SETTING::HC2x = true;
-  }
+  } 
   else if (specialSetting.Contains("HC4x"))
   {
     G4FHCAL::SETTING::HC4x = true;
