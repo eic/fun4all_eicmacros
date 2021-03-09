@@ -33,16 +33,16 @@ R__LOAD_LIBRARY(libfun4all.so)
 void ParseTString(TString &specialSetting);
 
 int Fun4All_G4_FullDetectorModular(
-    const int nEvents = 1,
-    const double particlemomMin = -1,
-    const double particlemomMax = -1,
-    TString specialSetting = "ALLSILICON-FTTLS3LC-ETTL-CTTL",
-    TString generatorSettings = "e10p250MB",
-    const string &inputFile = "https://www.phenix.bnl.gov/WWW/publish/phnxbld/sPHENIX/files/sPHENIX_G4Hits_sHijing_9-11fm_00000_00010.root",
-    const string &outputFile = "G4EICDetector.root",
-    const string &embed_input_file = "https://www.phenix.bnl.gov/WWW/publish/phnxbld/sPHENIX/files/sPHENIX_G4Hits_sHijing_9-11fm_00000_00010.root",
-    const int skip = 0,
-    const string &outdir = ".")
+    const int nEvents                 = 1,
+    const double particlemomMin       = -1,
+    const double particlemomMax       = -1,
+    TString specialSetting            = "ALLSILICON-FTTLS3LC-ETTL-CTTL",
+    TString generatorSettings         = "e10p250MB",
+    const string &inputFile           = "https://www.phenix.bnl.gov/WWW/publish/phnxbld/sPHENIX/files/sPHENIX_G4Hits_sHijing_9-11fm_00000_00010.root",
+    const string &outputFile          = "G4EICDetector.root",
+    const string &embed_input_file    = "https://www.phenix.bnl.gov/WWW/publish/phnxbld/sPHENIX/files/sPHENIX_G4Hits_sHijing_9-11fm_00000_00010.root",
+    const int skip                    = 0,
+    const string &outdir              = ".")
 {
   // translate the option TString into subsystem namespace options
   ParseTString(specialSetting); 
@@ -117,7 +117,7 @@ int Fun4All_G4_FullDetectorModular(
                                                                               PHG4SimpleEventGenerator::Uniform);
     INPUTGENERATOR::SimpleEventGenerator[0]->set_vertex_distribution_mean(0., 0., 0.);
     INPUTGENERATOR::SimpleEventGenerator[0]->set_vertex_distribution_width(0., 0., 5.);
-    INPUTGENERATOR::SimpleEventGenerator[0]->set_eta_range(1., 4.2);
+    INPUTGENERATOR::SimpleEventGenerator[0]->set_eta_range(1., 3.7);
     INPUTGENERATOR::SimpleEventGenerator[0]->set_phi_range(-M_PI, M_PI);
     INPUTGENERATOR::SimpleEventGenerator[0]->set_pt_range(particlemomMin, particlemomMax);
  

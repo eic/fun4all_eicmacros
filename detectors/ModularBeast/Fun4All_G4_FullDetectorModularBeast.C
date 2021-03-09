@@ -35,16 +35,16 @@ R__LOAD_LIBRARY(libg4testbench.so)
 void ParseTString(TString &specialSetting);
 
 int Fun4All_G4_FullDetectorModularBeast(
-    const int nEvents = 1,
-    const double particlemomMin = -1,
-    const double particlemomMax = -1,
-    TString specialSetting = "ALLSILICON-FTTLS3LC-ETTL-CTTL",
-    TString generatorSettings = "e10p250MB",
-    const string &inputFile = "https://www.phenix.bnl.gov/WWW/publish/phnxbld/sPHENIX/files/sPHENIX_G4Hits_sHijing_9-11fm_00000_00010.root",
-    const string &outputFile = "G4EICDetector.root",
-    const string &embed_input_file = "https://www.phenix.bnl.gov/WWW/publish/phnxbld/sPHENIX/files/sPHENIX_G4Hits_sHijing_9-11fm_00000_00010.root",
-    const int skip = 0,
-    const string &outdir = ".")
+    const int nEvents               = 1,
+    const double particlemomMin     = -1,
+    const double particlemomMax     = -1,
+    TString specialSetting          = "ALLSILICON-FTTLS3LC-ETTL-CTTL",
+    TString generatorSettings       = "e10p250MB",
+    const string &inputFile         = "https://www.phenix.bnl.gov/WWW/publish/phnxbld/sPHENIX/files/sPHENIX_G4Hits_sHijing_9-11fm_00000_00010.root",
+    const string &outputFile        = "G4EICDetector.root",
+    const string &embed_input_file  = "https://www.phenix.bnl.gov/WWW/publish/phnxbld/sPHENIX/files/sPHENIX_G4Hits_sHijing_9-11fm_00000_00010.root",
+    const int skip                  = 0,
+    const string &outdir            = ".")
 {
   // translate the option TString into subsystem namespace options
   ParseTString(specialSetting); 
