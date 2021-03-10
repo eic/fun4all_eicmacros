@@ -521,20 +521,32 @@ int Fun4All_G4_FullDetectorModular(
   if(doFullEventTree){
     EventEvaluator *eval = new EventEvaluator("EVENTEVALUATOR",  outputroot + "_eventtree.root");
     eval->set_reco_tracing_energy_threshold(0.05);
-    eval->Verbosity(1);
-    eval->set_do_FHCAL(true);
-    eval->set_do_FEMC(true);
-    eval->set_do_DRCALO(false);
-    eval->set_do_HITS(true);
-    eval->set_do_TRACKS(true);
-    eval->set_do_CLUSTERS(true);
-    eval->set_do_VERTEX(true);
-    eval->set_do_PROJECTIONS(true);
+    eval->Verbosity(0);
+    if(specialSetting.Contains("FHCALSTANDALONE")){
+      eval->set_do_FHCAL(true);
+      eval->set_do_CLUSTERS(true);
+    } else if(specialSetting.Contains("FEMCSTANDALONE")){
+      eval->set_do_FEMC(true);
+      eval->set_do_CLUSTERS(true);
+    } else if(specialSetting.Contains("CALOSTANDALONE")){
+      eval->set_do_FHCAL(true);
+      eval->set_do_FEMC(true);
+      eval->set_do_CLUSTERS(true);
+    } else {
+      eval->set_do_FHCAL(true);
+      eval->set_do_FEMC(true);
+      eval->set_do_CLUSTERS(true);
+      eval->set_do_DRCALO(false);
+      eval->set_do_HITS(true);
+      eval->set_do_TRACKS(true);
+      eval->set_do_VERTEX(true);
+      eval->set_do_PROJECTIONS(true);
+    }
     eval->set_do_MCPARTICLES(true);
     se->registerSubsystem(eval);
   }
 
-  if (Enable::TRACKING_EVAL) Tracking_Eval(outputroot + "_g4tracking_eval.root", specialSetting);
+//   if (Enable::TRACKING_EVAL) Tracking_Eval(outputroot + "_g4tracking_eval.root", specialSetting);
   if (Enable::CEMC_EVAL) CEMC_Eval(outputroot + "_g4cemc_eval.root");
   if (Enable::HCALIN_EVAL) HCALInner_Eval(outputroot + "_g4hcalin_eval.root");
   if (Enable::HCALOUT_EVAL) HCALOuter_Eval(outputroot + "_g4hcalout_eval.root");
