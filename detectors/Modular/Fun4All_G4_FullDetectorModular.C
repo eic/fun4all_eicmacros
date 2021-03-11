@@ -547,17 +547,17 @@ int Fun4All_G4_FullDetectorModular(
   }
 
 //   if (Enable::TRACKING_EVAL) Tracking_Eval(outputroot + "_g4tracking_eval.root", specialSetting);
-  if (Enable::CEMC_EVAL) CEMC_Eval(outputroot + "_g4cemc_eval.root");
-  if (Enable::HCALIN_EVAL) HCALInner_Eval(outputroot + "_g4hcalin_eval.root");
-  if (Enable::HCALOUT_EVAL) HCALOuter_Eval(outputroot + "_g4hcalout_eval.root");
-  if (Enable::FEMC_EVAL) FEMC_Eval(outputroot + "_g4femc_eval.root");
-  if (Enable::FHCAL_EVAL) FHCAL_Eval(outputroot + "_g4fhcal_eval.root");
-  if (Enable::EEMC_EVAL) EEMC_Eval(outputroot + "_g4eemc_eval.root");
-  if (Enable::JETS_EVAL) Jet_Eval(outputroot + "_g4jet_eval.root");
-  if (Enable::FWDJETS_EVAL) Jet_FwdEval(outputroot + "_g4fwdjet_eval.root");
-  if (Enable::USER) UserAnalysisInit();
+  // if (Enable::CEMC_EVAL) CEMC_Eval(outputroot + "_g4cemc_eval.root");
+  // if (Enable::HCALIN_EVAL) HCALInner_Eval(outputroot + "_g4hcalin_eval.root");
+  // if (Enable::HCALOUT_EVAL) HCALOuter_Eval(outputroot + "_g4hcalout_eval.root");
+  // if (Enable::FEMC_EVAL) FEMC_Eval(outputroot + "_g4femc_eval.root");
+  // if (Enable::FHCAL_EVAL) FHCAL_Eval(outputroot + "_g4fhcal_eval.root");
+  // if (Enable::EEMC_EVAL) EEMC_Eval(outputroot + "_g4eemc_eval.root");
+  // if (Enable::JETS_EVAL) Jet_Eval(outputroot + "_g4jet_eval.root");
+  // if (Enable::FWDJETS_EVAL) Jet_FwdEval(outputroot + "_g4fwdjet_eval.root");
+  // if (Enable::USER) UserAnalysisInit();
 
-  if (Enable::JETS_QA) Jet_QA();
+  // if (Enable::JETS_QA) Jet_QA();
 
   //--------------
   // Set up Input Managers
