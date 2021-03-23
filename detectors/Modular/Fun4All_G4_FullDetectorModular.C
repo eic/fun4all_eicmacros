@@ -283,7 +283,7 @@ int Fun4All_G4_FullDetectorModular(
   Enable::CEMC_CLUSTER = Enable::CEMC_TOWER && true;
   Enable::CEMC_EVAL = Enable::CEMC_CLUSTER && false;
 
-  Enable::HCALIN = true;
+//   Enable::HCALIN = true;
   if(specialSetting.Contains("FHCALSTANDALONE") || specialSetting.Contains("FEMCSTANDALONE") || specialSetting.Contains("CALOSTANDALONE"))
     Enable::HCALIN = false;
   //  Enable::HCALIN_ABSORBER = true;
@@ -292,9 +292,9 @@ int Fun4All_G4_FullDetectorModular(
   Enable::HCALIN_CLUSTER = Enable::HCALIN_TOWER && true;
   Enable::HCALIN_EVAL = Enable::HCALIN_CLUSTER && false;
 
-  Enable::MAGNET = true;
+//   Enable::MAGNET = true;
 
-  Enable::HCALOUT = true;
+//   Enable::HCALOUT = true;
   if(specialSetting.Contains("FHCALSTANDALONE") || specialSetting.Contains("FEMCSTANDALONE") || specialSetting.Contains("CALOSTANDALONE"))
     Enable::HCALOUT = false;
   //  Enable::HCALOUT_ABSORBER = true;
@@ -304,11 +304,11 @@ int Fun4All_G4_FullDetectorModular(
   Enable::HCALOUT_EVAL = Enable::HCALOUT_CLUSTER && false;
 
   // EICDetector geometry - barrel
-  Enable::DIRC = true;
+//   Enable::DIRC = true;
 
   // EICDetector geometry - 'hadron' direction
-  Enable::RICH = true;
-  Enable::AEROGEL = true;
+//   Enable::RICH = true;
+//   Enable::AEROGEL = true;
 
   Enable::FEMC = true;
   if(specialSetting.Contains("FHCALSTANDALONE") )
@@ -319,7 +319,7 @@ int Fun4All_G4_FullDetectorModular(
   Enable::FEMC_CLUSTER = Enable::FEMC_TOWER && true;
   Enable::FEMC_EVAL = Enable::FEMC_CLUSTER && false;
 
-  Enable::FHCAL = true;
+//   Enable::FHCAL = true;
   if(specialSetting.Contains("FEMCSTANDALONE") )
     Enable::FHCAL = false;
   Enable::FHCAL_VERBOSITY = 1;
