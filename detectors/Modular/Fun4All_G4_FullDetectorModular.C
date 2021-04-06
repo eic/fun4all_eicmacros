@@ -164,13 +164,13 @@ int Fun4All_G4_FullDetectorModular(
     else 
       INPUTGENERATOR::Pythia6->set_config_file(generatorSettings.Data());
     
-    if (specialSetting.Contains("FPartTrigg")){
+    if (generatorSettings.Contains("FPartTrigg")){
       PHPy6ParticleTrigger *ptrig = new PHPy6ParticleTrigger();
       ptrig->SetPtLow(1);
       ptrig->SetEtaHighLow(1,5);
       INPUTGENERATOR::Pythia6->register_trigger(ptrig);
     }
-    if (specialSetting.Contains("FJetTrigg")){
+    if (generatorSettings.Contains("FJetTrigg")){
       PHPy6JetTrigger *trig = new PHPy6JetTrigger();
       trig->SetEtaHighLow(1,5);
       if (generatorSettings.Contains("pTHard5"))
