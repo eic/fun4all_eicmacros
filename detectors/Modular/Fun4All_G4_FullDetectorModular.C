@@ -329,6 +329,16 @@ int Fun4All_G4_FullDetectorModular(
   Enable::FHCAL_CLUSTER = Enable::FHCAL_TOWER && true;
   Enable::FHCAL_EVAL = Enable::FHCAL_CLUSTER && false;
 
+  Enable::EHCAL = false;
+  if(specialSetting.Contains("FEMCSTANDALONE") )
+    Enable::EHCAL = false;
+  Enable::EHCAL_VERBOSITY = 1;
+  //  Enable::EHCAL_ABSORBER = true;
+  Enable::EHCAL_CELL = Enable::EHCAL && true;
+  Enable::EHCAL_TOWER = Enable::EHCAL_CELL && true;
+  Enable::EHCAL_CLUSTER = Enable::EHCAL_TOWER && true;
+  Enable::EHCAL_EVAL = Enable::EHCAL_CLUSTER && false;
+
   // EICDetector geometry - 'electron' direction
   Enable::EEMC = true;
   if(specialSetting.Contains("FHCALSTANDALONE") || specialSetting.Contains("FEMCSTANDALONE") || specialSetting.Contains("CALOSTANDALONE"))
@@ -338,7 +348,7 @@ int Fun4All_G4_FullDetectorModular(
   Enable::EEMC_CLUSTER = Enable::EEMC_TOWER && true;
   Enable::EEMC_EVAL = Enable::EEMC_CLUSTER && false;
 
-  Enable::PLUGDOOR = false;
+  Enable::PLUGDOOR = true;
 
   // deactivate all detector systems for FHCal standalone studies
   if(specialSetting.Contains("FHCALSTANDALONE")){
@@ -348,6 +358,7 @@ int Fun4All_G4_FullDetectorModular(
     G4TRACKING::PROJECTION_CEMC = false;
     G4TRACKING::PROJECTION_FEMC = false;
     G4TRACKING::PROJECTION_FHCAL = false;
+    // G4TRACKING::PROJECTION_EHCAL = false;
     Enable::MAGNET = false;
     Enable::DIRC = false;
     Enable::RICH = false;
@@ -362,6 +373,7 @@ int Fun4All_G4_FullDetectorModular(
     G4TRACKING::PROJECTION_CEMC = false;
     G4TRACKING::PROJECTION_FEMC = false;
     G4TRACKING::PROJECTION_FHCAL = false;
+    // G4TRACKING::PROJECTION_EHCAL = false;
     Enable::MAGNET = false;
     Enable::DIRC = false;
     Enable::RICH = false;
@@ -474,6 +486,9 @@ int Fun4All_G4_FullDetectorModular(
   if (Enable::FEMC_TOWER) FEMC_Towers();
   if (Enable::FEMC_CLUSTER) FEMC_Clusters();
 
+  if (Enable::EHCAL_TOWER) EHCAL_Towers();
+  if (Enable::EHCAL_CLUSTER) EHCAL_Clusters();
+
   if (Enable::FHCAL_TOWER) FHCAL_Towers();
   if (Enable::FHCAL_CLUSTER) FHCAL_Clusters();
 
@@ -534,6 +549,7 @@ int Fun4All_G4_FullDetectorModular(
       eval->set_do_CLUSTERS(true);
     } else {
       eval->set_do_FHCAL(true);
+      // eval->set_do_EHCAL(true);
       eval->set_do_FEMC(true);
       eval->set_do_CLUSTERS(true);
       eval->set_do_DRCALO(false);
@@ -546,7 +562,7 @@ int Fun4All_G4_FullDetectorModular(
     se->registerSubsystem(eval);
   }
 
-//   if (Enable::TRACKING_EVAL) Tracking_Eval(outputroot + "_g4tracking_eval.root", specialSetting);
+  // if (Enable::TRACKING_EVAL) Tracking_Eval(outputroot + "_g4tracking_eval.root", specialSetting);
   // if (Enable::CEMC_EVAL) CEMC_Eval(outputroot + "_g4cemc_eval.root");
   // if (Enable::HCALIN_EVAL) HCALInner_Eval(outputroot + "_g4hcalin_eval.root");
   // if (Enable::HCALOUT_EVAL) HCALOuter_Eval(outputroot + "_g4hcalout_eval.root");
