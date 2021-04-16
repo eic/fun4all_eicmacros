@@ -33,6 +33,7 @@ namespace Enable
 namespace G4TRACKING
 {
   bool DISPLACED_VERTEX = false;
+  bool PROJECTION_EEMC = false;
   bool PROJECTION_CEMC = false;
   bool PROJECTION_FEMC = false;
   bool PROJECTION_FHCAL = false;
@@ -55,7 +56,7 @@ void Tracking_Reco(TString specialSetting = "")
   Fun4AllServer *se = Fun4AllServer::instance();
 
   PHG4TrackFastSim *kalman = new PHG4TrackFastSim("PHG4TrackFastSim");
-  //  kalman->Verbosity();
+  kalman->Verbosity(verbosity);
   //  kalman->Smearing(false);
   if (G4TRACKING::DISPLACED_VERTEX){
     // do not use truth vertex in the track fitting,
@@ -81,6 +82,8 @@ void Tracking_Reco(TString specialSetting = "")
   // Different Barrel versions documented in arXiv:2009.0288
   if (Enable::BARREL){
     int nLayer            = 5;
+    if (G4BARREL::SETTING::BARRELV6)
+      nLayer            = 4;
     float_t pitch         = 20e-4;                    // default pitch size
     double r[6]           = { 3.64, 4.81, 5.98, 16.0, 22.0, -1};  //cm
     if (specialSetting.Contains("BARRELV4")){
@@ -89,7 +92,7 @@ void Tracking_Reco(TString specialSetting = "")
       r[4]    = 17.;
       r[5]    = 27.;
     }
-
+  
     for (Int_t i = 0; i < nLayer; i++){
       kalman->add_phg4hits(Form("G4HIT_BARREL_%d", i),              //      const std::string& phg4hitsNames,
                           PHG4TrackFastSim::Cylinder,  //      const DETECTOR_TYPE phg4dettype,
@@ -391,8 +394,14 @@ void Tracking_Reco(TString specialSetting = "")
   // FGEM
   //-------------------------
   if (Enable::FGEM) {
+    int minFGEM = 0;
+    if (Enable::FGEM_ORIG){
+      minFGEM = 0;
+    } else {
+      minFGEM = 2;
+    }
     // GEM2, 70um azimuthal resolution, 1cm radial strips
-    for (int i = 2; i < 5; i++) {
+    for (int i = minFGEM; i < 5; i++) {
       kalman->add_phg4hits(Form("G4HIT_FGEM_%d", i),          //      const std::string& phg4hitsNames,
                            PHG4TrackFastSim::Vertical_Plane,  //      const DETECTOR_TYPE phg4dettype,
                            1. / sqrt(12.),                    //      const float radres,
@@ -432,8 +441,16 @@ void Tracking_Reco(TString specialSetting = "")
   if (Enable::CEMC && G4TRACKING::PROJECTION_CEMC){
     kalman->add_state_name("CEMC");
   }
-  se->registerSubsystem(kalman);
+  
+  //-------------------------
+  // EEMC
+  //-------------------------
+  if (Enable::EEMC && G4TRACKING::PROJECTION_EEMC)
+  {
+    kalman->add_state_name("EEMC");
+  }
 
+  se->registerSubsystem(kalman);
   return;
 }
 

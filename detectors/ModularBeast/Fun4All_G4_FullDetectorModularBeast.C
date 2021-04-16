@@ -140,33 +140,33 @@ int Fun4All_G4_FullDetectorModularBeast(
   }
   // pythia6
   if (Input::PYTHIA6){
-    if (generatorSettings.CompareTo("e10p250MB") == 0)
+  if (generatorSettings.Contains("e10p250MB") )
       INPUTGENERATOR::Pythia6->set_config_file(string(getenv("CALIBRATIONROOT")) + "/Generators/phpythia6_ep.cfg");
-    else if (generatorSettings.CompareTo("e10p250pTHard5") == 0)
+    else if (generatorSettings.Contains("e10p250pTHard5") )
       INPUTGENERATOR::Pythia6->set_config_file(string(getenv("CALIBRATIONROOT")) + "/Generators/phpythia6_ep_MinPartonP5GeV.cfg");
-    else if (generatorSettings.CompareTo("e10p250pTHard10") == 0)
+    else if (generatorSettings.Contains("e10p250pTHard10"))
       INPUTGENERATOR::Pythia6->set_config_file(string(getenv("CALIBRATIONROOT")) + "/Generators/phpythia6_ep_MinPartonP10GeV.cfg");
-    else if (generatorSettings.CompareTo("e10p250pTHard20") == 0)
+    else if (generatorSettings.Contains("e10p250pTHard20"))
       INPUTGENERATOR::Pythia6->set_config_file(string(getenv("CALIBRATIONROOT")) + "/Generators/phpythia6_ep_MinPartonP20GeV.cfg");
-    else if (generatorSettings.CompareTo("e5p100MB") == 0)
+    else if (generatorSettings.Contains("e5p100MB") )
       INPUTGENERATOR::Pythia6->set_config_file(string(getenv("CALIBRATIONROOT")) + "/Generators/phpythia6_e5p100.cfg");
-    else if (generatorSettings.CompareTo("e5p100pTHard5") == 0)
+    else if (generatorSettings.Contains("e5p100pTHard5") )
       INPUTGENERATOR::Pythia6->set_config_file(string(getenv("CALIBRATIONROOT")) + "/Generators/phpythia6_e5p100_MinPartonP5GeV.cfg");
-    else if (generatorSettings.CompareTo("e10p275MB") == 0)
+    else if (generatorSettings.Contains("e10p275MB") )
       INPUTGENERATOR::Pythia6->set_config_file(string(getenv("CALIBRATIONROOT")) + "/Generators/phpythia6_e10p275.cfg");
-    else if (generatorSettings.CompareTo("e10p275pTHard5") == 0)
+    else if (generatorSettings.Contains("e10p275pTHard5") )
       INPUTGENERATOR::Pythia6->set_config_file(string(getenv("CALIBRATIONROOT")) + "/Generators/phpythia6_e10p275_MinPartonP5GeV.cfg");
-    else if (generatorSettings.CompareTo("e10p275pTHard10") == 0)
+    else if (generatorSettings.Contains("e10p275pTHard10") )
       INPUTGENERATOR::Pythia6->set_config_file(string(getenv("CALIBRATIONROOT")) + "/Generators/phpythia6_e10p275_MinPartonP10GeV.cfg");
-    else if (generatorSettings.CompareTo("e18p275MB") == 0)
+    else if (generatorSettings.Contains("e18p275MB") )
       INPUTGENERATOR::Pythia6->set_config_file(string(getenv("CALIBRATIONROOT")) + "/Generators/phpythia6_e18p275.cfg");
-    else if (generatorSettings.CompareTo("e18p275pTHard5") == 0)
+    else if (generatorSettings.Contains("e18p275pTHard5") )
       INPUTGENERATOR::Pythia6->set_config_file(string(getenv("CALIBRATIONROOT")) + "/Generators/phpythia6_e18p275_MinPartonP5GeV.cfg");
-    else if (generatorSettings.CompareTo("e18p275pTHard10") == 0)
+    else if (generatorSettings.Contains("e18p275pTHard10") )
       INPUTGENERATOR::Pythia6->set_config_file(string(getenv("CALIBRATIONROOT")) + "/Generators/phpythia6_e18p275_MinPartonP10GeV.cfg");
     else 
       INPUTGENERATOR::Pythia6->set_config_file(generatorSettings.Data());
-    
+      
     if (generatorSettings.Contains("FPartTrigg")){
       PHPy6ParticleTrigger *ptrig = new PHPy6ParticleTrigger();
       ptrig->SetPtLow(1);
@@ -187,6 +187,9 @@ int Fun4All_G4_FullDetectorModularBeast(
       trig->SetJetR(0.7);
       INPUTGENERATOR::Pythia6->register_trigger(trig);
     }
+    //! apply EIC beam parameter following EIC CDR
+//     Input::ApplyEICBeamParameter(INPUTGENERATOR::Pythia6);
+
   }
 
   // register all input generators with Fun4All
@@ -225,14 +228,22 @@ int Fun4All_G4_FullDetectorModularBeast(
   // EIC beam pipe extension beyond the Be-section:
   G4PIPE::use_forward_pipes = true;
 
-  
-    if (specialSetting.Contains("EGEM"))
+  // backward GEM
+  if (specialSetting.Contains("EGEM")){
     Enable::EGEM = true;
-  if (specialSetting.Contains("EGEMOO")) // only last 2 EGEM layers
-    Enable::EGEM_FULL = false;
+    if (specialSetting.Contains("EGEMOO")) // only last 2 EGEM layers
+      Enable::EGEM_FULL = false;
+  }
   //Forward GEM
-  if (specialSetting.Contains("FGEM"))
+  if (specialSetting.Contains("FGEM")){
     Enable::FGEM = true;
+     // FGEM settings
+    if (specialSetting.Contains("FGEMOrg")){
+      Enable::FGEM_ORIG = true;
+    } else {
+      Enable::FGEM_ORIG = false;
+    }
+  }
   
   // barrel tracker (LANL)
   if (specialSetting.Contains("BARREL"))
@@ -270,9 +281,17 @@ int Fun4All_G4_FullDetectorModularBeast(
   
   G4TRACKING::DISPLACED_VERTEX = true;  // this option exclude vertex in the track fitting and use RAVE to reconstruct primary and 2ndary vertexes
                                          // projections to calorimeters
-  G4TRACKING::PROJECTION_CEMC = true;
-  G4TRACKING::PROJECTION_FEMC = true;
-  G4TRACKING::PROJECTION_FHCAL = true;
+  if (specialSetting.Contains("TRACKEVALHITS")){
+    G4TRACKING::PROJECTION_CEMC = false;
+    G4TRACKING::PROJECTION_FEMC = false;
+    G4TRACKING::PROJECTION_FHCAL = false;
+    G4TRACKING::PROJECTION_EEMC = false;
+  } else {
+    G4TRACKING::PROJECTION_CEMC = true;
+    G4TRACKING::PROJECTION_FEMC = true;
+    G4TRACKING::PROJECTION_FHCAL = true;
+    G4TRACKING::PROJECTION_EEMC = true;    
+  }
 
   Enable::CEMC = true;
   if(specialSetting.Contains("FHCALSTANDALONE") || specialSetting.Contains("FEMCSTANDALONE") || specialSetting.Contains("CALOSTANDALONE"))
@@ -516,7 +535,7 @@ int Fun4All_G4_FullDetectorModularBeast(
     se->registerSubsystem(eval);
   }
 
-//   if (Enable::TRACKING_EVAL) Tracking_Eval(outputroot + "_g4tracking_eval.root", specialSetting);
+  if (specialSetting.Contains("TRACKEVALHITS")) Tracking_Eval(outputroot + "_g4tracking_eval.root", specialSetting);
   // if (Enable::CEMC_EVAL) CEMC_Eval(outputroot + "_g4cemc_eval.root");
   // if (Enable::HCALIN_EVAL) HCALInner_Eval(outputroot + "_g4hcalin_eval.root");
   // if (Enable::HCALOUT_EVAL) HCALOuter_Eval(outputroot + "_g4hcalout_eval.root");
@@ -644,6 +663,10 @@ void ParseTString(TString &specialSetting)
   else if (specialSetting.Contains("FSTV42"))
   {
     G4FST::SETTING::FSTV42 = true;
+  }
+  else if (specialSetting.Contains("FSTVTPC"))
+  {
+    G4FST::SETTING::FST_TPC = true;
   }
   else if (specialSetting.Contains("FST"))
   {
