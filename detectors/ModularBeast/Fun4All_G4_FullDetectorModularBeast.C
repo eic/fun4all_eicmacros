@@ -188,7 +188,7 @@ int Fun4All_G4_FullDetectorModularBeast(
       INPUTGENERATOR::Pythia6->register_trigger(trig);
     }
     //! apply EIC beam parameter following EIC CDR
-//     Input::ApplyEICBeamParameter(INPUTGENERATOR::Pythia6);
+    Input::ApplyEICBeamParameter(INPUTGENERATOR::Pythia6);
 
   }
 
@@ -208,7 +208,6 @@ int Fun4All_G4_FullDetectorModularBeast(
   Enable::DSTREADER = false;
 
   // turn the display on (default off)
-  // turn the display on (default off)
   if(specialSetting.Contains("display"))
     Enable::DISPLAY = true;
 
@@ -219,6 +218,10 @@ int Fun4All_G4_FullDetectorModularBeast(
   //======================
   // What to run
   //======================
+  // Global options (enabled for all subsystems - if implemented)
+  //  Enable::ABSORBER = true;
+  //  Enable::OVERLAPCHECK = true;
+  //  Enable::VERBOSITY = 1;
 
  //  Enable::BBC = true;
   Enable::BBCFAKE = true; // Smeared vtx and t0, use if you don't want real BBC in simulation
@@ -353,7 +356,19 @@ int Fun4All_G4_FullDetectorModularBeast(
   Enable::EEMC_CLUSTER = Enable::EEMC_TOWER && true;
   Enable::EEMC_EVAL = Enable::EEMC_CLUSTER && false;
   
-
+  if (specialSetting.Contains("EHCAL"))
+    Enable::EHCAL = true;
+  if(specialSetting.Contains("FEMCSTANDALONE") )
+    Enable::EHCAL = false;
+  Enable::EHCAL_VERBOSITY = 1;
+  //  Enable::EHCAL_ABSORBER = true;
+  Enable::EHCAL_CELL = Enable::EHCAL && true;
+  Enable::EHCAL_TOWER = Enable::EHCAL_CELL && true;
+  Enable::EHCAL_CLUSTER = Enable::EHCAL_TOWER && true;
+  Enable::EHCAL_EVAL = Enable::EHCAL_CLUSTER && false;
+  
+  Enable::PLUGDOOR = false;
+  
   // deactivate all detector systems for FHCal standalone studies
   if(specialSetting.Contains("FHCALSTANDALONE")){
     Enable::PIPE = false;
@@ -362,6 +377,7 @@ int Fun4All_G4_FullDetectorModularBeast(
     G4TRACKING::PROJECTION_CEMC = false;
     G4TRACKING::PROJECTION_FEMC = false;
     G4TRACKING::PROJECTION_FHCAL = false;
+    G4TRACKING::PROJECTION_EHCAL = false;
     Enable::MAGNET = false;
     Enable::DIRC = false;
     Enable::RICH = false;
@@ -376,6 +392,7 @@ int Fun4All_G4_FullDetectorModularBeast(
     G4TRACKING::PROJECTION_CEMC = false;
     G4TRACKING::PROJECTION_FEMC = false;
     G4TRACKING::PROJECTION_FHCAL = false;
+    G4TRACKING::PROJECTION_EHCAL = false;
     Enable::MAGNET = false;
     Enable::DIRC = false;
     Enable::RICH = false;
@@ -390,6 +407,7 @@ int Fun4All_G4_FullDetectorModularBeast(
     G4TRACKING::PROJECTION_CEMC = false;
     G4TRACKING::PROJECTION_FEMC = false;
     G4TRACKING::PROJECTION_FHCAL = false;
+    G4TRACKING::PROJECTION_EHCAL = false;
     Enable::MAGNET = false;
     Enable::DIRC = false;
     Enable::RICH = false;
@@ -426,9 +444,29 @@ int Fun4All_G4_FullDetectorModularBeast(
   Enable::BLACKHOLE = true;
   //Enable::BLACKHOLE_SAVEHITS = false; // turn off saving of bh hits
   //BlackHoleGeometry::visible = true;
+//Enable::USER = true;
+  
+  //---------------
+  // World Settings
+  //---------------
+  //  G4WORLD::PhysicsList = "QGSP_BERT"; //FTFP_BERT_HP best for calo
+  //  G4WORLD::WorldMaterial = "G4_AIR"; // set to G4_GALACTIC for material scans
+
+  //---------------
+  // Pythia Decayer
+  //---------------
+  // list of decay types in
+  // $OFFLINE_MAIN/include/g4decayer/EDecayType.hh
+  // default is All:
+  // G4P6DECAYER::decayType = EDecayType::kAll;
+
 
   // establish the geometry and reconstruction setup
   G4Init();
+
+  //---------------------
+  // GEANT4 Detector description
+  //---------------------
 
   // If "readhepMC" is also set, the Upsilons will be embedded in Hijing events, if 'particles" is set, the Upsilons will be embedded in whatever particles are thrown
   if (!Input::READHITS) G4Setup(specialSetting);
@@ -468,6 +506,9 @@ int Fun4All_G4_FullDetectorModularBeast(
 
   if (Enable::EEMC_TOWER) EEMC_Towers();
   if (Enable::EEMC_CLUSTER) EEMC_Clusters();
+
+  if (Enable::EHCAL_TOWER) EHCAL_Towers();
+  if (Enable::EHCAL_CLUSTER) EHCAL_Clusters();
 
   if (Enable::DSTOUT_COMPRESS) ShowerCompress();
 
@@ -510,7 +551,7 @@ int Fun4All_G4_FullDetectorModularBeast(
   if(doFullEventTree){
     EventEvaluator *eval = new EventEvaluator("EVENTEVALUATOR", outputroot + "_eventtree.root");
     eval->set_reco_tracing_energy_threshold(0.05);
-    eval->Verbosity(1);
+    eval->Verbosity(0);
     if(specialSetting.Contains("FHCALSTANDALONE")){
       eval->set_do_FHCAL(true);
       eval->set_do_CLUSTERS(true);
@@ -522,31 +563,29 @@ int Fun4All_G4_FullDetectorModularBeast(
       eval->set_do_FEMC(true);
       eval->set_do_CLUSTERS(true);
     } else {
-      eval->set_do_FHCAL(true);
-      eval->set_do_FEMC(true);
-      eval->set_do_CLUSTERS(true);
-      eval->set_do_DRCALO(false);
-      eval->set_do_HITS(true);
-      eval->set_do_TRACKS(true);
-      eval->set_do_VERTEX(true);
-      eval->set_do_PROJECTIONS(true);
+      if (Enable::FHCAL) 
+        eval->set_do_FHCAL(true);
+      if (Enable::FEMC) 
+        eval->set_do_FEMC(true);
+      if (Enable::EHCAL) 
+        eval->set_do_EHCAL(true);
+      if (Enable::FHCAL || Enable::FEMC || Enable::EHCAL) 
+        eval->set_do_CLUSTERS(true);
+//       if (Enable::DRCALO) 
+//         eval->set_do_DRCALO(false);
+  
+      if (Enable::TRACKING){
+        eval->set_do_TRACKS(true);
+        eval->set_do_HITS(true);  
+        eval->set_do_PROJECTIONS(true);
+        if (G4TRACKING::DISPLACED_VERTEX) eval->set_do_VERTEX(true);
+      }
     }
     eval->set_do_MCPARTICLES(true);
     se->registerSubsystem(eval);
   }
 
   if (specialSetting.Contains("TRACKEVALHITS")) Tracking_Eval(outputroot + "_g4tracking_eval.root", specialSetting);
-  // if (Enable::CEMC_EVAL) CEMC_Eval(outputroot + "_g4cemc_eval.root");
-  // if (Enable::HCALIN_EVAL) HCALInner_Eval(outputroot + "_g4hcalin_eval.root");
-  // if (Enable::HCALOUT_EVAL) HCALOuter_Eval(outputroot + "_g4hcalout_eval.root");
-  // if (Enable::FEMC_EVAL) FEMC_Eval(outputroot + "_g4femc_eval.root");
-  // if (Enable::FHCAL_EVAL) FHCAL_Eval(outputroot + "_g4fhcal_eval.root");
-  // if (Enable::EEMC_EVAL) EEMC_Eval(outputroot + "_g4eemc_eval.root");
-  // if (Enable::JETS_EVAL) Jet_Eval(outputroot + "_g4jet_eval.root");
-  // if (Enable::FWDJETS_EVAL) Jet_FwdEval(outputroot + "_g4fwdjet_eval.root");
-  // if (Enable::USER) UserAnalysisInit();
-
-  // if (Enable::JETS_QA) Jet_QA();
 
   //--------------
   // Set up Input Managers

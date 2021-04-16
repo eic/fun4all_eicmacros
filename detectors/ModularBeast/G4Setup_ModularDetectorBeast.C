@@ -15,6 +15,7 @@
 #include <G4_EEMC.C>
 #include <G4_FEMC_EIC.C>
 #include <G4_FHCAL.C>
+#include <G4_EHCAL.C>
 #include <G4_HcalIn_ref.C>
 #include <G4_HcalOut_ref.C>
 #include <G4_Mvtx_EIC.C>
@@ -26,6 +27,7 @@
 #include <G4_BlackHole.C>
 #include <G4_Magnet_Beast.C>
 #include <G4_Pipe_EIC.C>
+#include <G4_PlugDoor_EIC.C>
 #include <G4_User.C>
 #include <G4_World.C>
 #include <G4_Input.C>
@@ -49,7 +51,7 @@ R__LOAD_LIBRARY(libg4detectors.so)
 void G4Init()
 {
    // First some check for subsystems which do not go together
-  if (Enable::TPC && Enable::FST){
+  if (Enable::TPC && Enable::FST && !G4FST::SETTING::FST_TPC){
     cout << "TPC and FST cannot be enabled together" << endl;
     gSystem->Exit(1);
   } else if ((Enable::TPC || Enable::MVTX) && Enable::BARREL){
@@ -72,6 +74,7 @@ void G4Init()
   }
 
   // load detector/material macros and execute Init() function
+  if (Enable::PLUGDOOR) PlugDoorInit();
   if (Enable::MAGNET) MagnetInit();
   MagnetFieldInit(); // We want the field - even if the magnet volume is disabled
   if (Enable::PIPE) PipeInit();
@@ -96,6 +99,7 @@ void G4Init()
   if (Enable::HCALOUT) HCalOuterInit();
   if (Enable::FEMC) FEMCInit();
   if (Enable::FHCAL) FHCALInit();
+  if (Enable::EHCAL) EHCALInit();
   if (Enable::EEMC) EEMCInit();
   
   // very forward detectors
@@ -173,8 +177,9 @@ void G4Setup(TString specialSetting = "")
   if (Enable::HCALOUT) radius = HCalOuter(g4Reco, radius, 4);
   if (Enable::FEMC) FEMCSetup(g4Reco);
   if (Enable::FHCAL) FHCALSetup(g4Reco);
+  if (Enable::EHCAL) EHCALSetup(g4Reco);
   if (Enable::EEMC) EEMCSetup(g4Reco);
-
+  
   //----------------------------------------
   // PID
   if (Enable::DIRC) DIRCSetup(g4Reco);
@@ -183,6 +188,7 @@ void G4Setup(TString specialSetting = "")
 
   //----------------------------------------
   // sPHENIX forward flux return door
+  if (Enable::PLUGDOOR) PlugDoor(g4Reco);
   if (Enable::USER) UserDetector(g4Reco);
 
   //----------------------------------------
@@ -196,7 +202,7 @@ void G4Setup(TString specialSetting = "")
   WorldSize(g4Reco, radius);
 
   se->registerSubsystem(g4Reco);
-  return;
+  return 0;
 }
 
 void ShowerCompress()
@@ -236,15 +242,21 @@ void ShowerCompress()
   compress->AddHitContainer("G4HIT_ABSORBER_FEMC");
   compress->AddHitContainer("G4HIT_FHCAL");
   compress->AddHitContainer("G4HIT_ABSORBER_FHCAL");
+  compress->AddHitContainer("G4HIT_EHCAL");
+  compress->AddHitContainer("G4HIT_ABSORBER_EHCAL");
   compress->AddCellContainer("G4CELL_FEMC");
   compress->AddCellContainer("G4CELL_FHCAL");
+  compress->AddCellContainer("G4CELL_EHCAL");
   compress->AddTowerContainer("TOWER_SIM_FEMC");
   compress->AddTowerContainer("TOWER_RAW_FEMC");
   compress->AddTowerContainer("TOWER_CALIB_FEMC");
   compress->AddTowerContainer("TOWER_SIM_FHCAL");
   compress->AddTowerContainer("TOWER_RAW_FHCAL");
   compress->AddTowerContainer("TOWER_CALIB_FHCAL");
-
+  compress->AddTowerContainer("TOWER_SIM_EHCAL");
+  compress->AddTowerContainer("TOWER_RAW_EHCAL");
+  compress->AddTowerContainer("TOWER_CALIB_EHCAL");
+  
   compress->AddHitContainer("G4HIT_EEMC");
   compress->AddHitContainer("G4HIT_ABSORBER_EEMC");
   compress->AddCellContainer("G4CELL_EEMC");
@@ -284,8 +296,12 @@ void DstCompress(Fun4AllDstOutputManager *out)
     out->StripNode("G4HIT_ABSORBER_FEMC");
     out->StripNode("G4HIT_FHCAL");
     out->StripNode("G4HIT_ABSORBER_FHCAL");
+    out->StripNode("G4HIT_EHCAL");
+    out->StripNode("G4HIT_ABSORBER_EHCAL");
+    
     out->StripNode("G4CELL_FEMC");
     out->StripNode("G4CELL_FHCAL");
+    out->StripNode("G4CELL_EHCAL");
 
     out->StripNode("G4HIT_EEMC");
     out->StripNode("G4HIT_ABSORBER_EEMC");
