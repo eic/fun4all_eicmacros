@@ -37,6 +37,7 @@ namespace G4TRACKING
   bool PROJECTION_CEMC = false;
   bool PROJECTION_FEMC = false;
   bool PROJECTION_FHCAL = false;
+  bool PROJECTION_EHCAL = false;
   bool PROJECTION_DRCALO = false;
 }  // namespace G4TRACKING
 
