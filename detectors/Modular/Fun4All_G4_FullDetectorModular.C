@@ -578,7 +578,9 @@ int Fun4All_G4_FullDetectorModular(
         eval->set_do_FEMC(true);
       if (Enable::EHCAL) 
         eval->set_do_EHCAL(true);
-      if (Enable::FHCAL || Enable::FEMC || Enable::EHCAL) 
+      if (Enable::EEMC) 
+        eval->set_do_EEMC(true);
+      if (Enable::FHCAL || Enable::FEMC || Enable::EHCAL || Enable::EEMC) 
         eval->set_do_CLUSTERS(true);
 //       if (Enable::DRCALO) 
 //         eval->set_do_DRCALO(false);
