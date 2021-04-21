@@ -1,5 +1,5 @@
-#ifndef MACRO_G4SETUPMODULARDETECTORBEAST_C
-#define MACRO_G4SETUPMODULARDETECTORBEAST_C
+#ifndef MACRO_G4SETUPDUALREADOUTDETECTOR_C
+#define MACRO_G4SETUPDUALREADOUTDETECTOR_C
 
 #include <GlobalVariables.C>
 
@@ -10,37 +10,36 @@
 #include <G4_TTL_EIC.C>
 #include <G4_GEM_EIC.C>
 #include <G4_Bbc.C>
+#include <G4_BlackHole.C>
 #include <G4_CEmc_EIC.C>
 #include <G4_DIRC.C>
+#include <G4_DRCALO.C>
 #include <G4_EEMC.C>
 #include <G4_FEMC_EIC.C>
 #include <G4_FHCAL.C>
-#include <G4_EHCAL.C>
 #include <G4_HcalIn_ref.C>
 #include <G4_HcalOut_ref.C>
+#include <G4_Input.C>
+#include <G4_Magnet.C>
 #include <G4_Mvtx_EIC.C>
-#include <G4_RICH.C>
-#include <G4_TPC_EIC.C>
-
-#include <G4_Tracking_Modular.C>
-
-#include <G4_BlackHole.C>
-#include <G4_Magnet_Beast.C>
 #include <G4_Pipe_EIC.C>
 #include <G4_PlugDoor_EIC.C>
+#include <G4_RICH.C>
+#include <G4_TPC_EIC.C>
+#include <G4_Tracking_Modular.C>
 #include <G4_User.C>
 #include <G4_World.C>
-#include <G4_Input.C>
 
 #include <g4detectors/PHG4CylinderSubsystem.h>
 
-#include <g4decayer/EDecayType.hh>
-
 #include <g4eval/PHG4DstCompressReco.h>
+
 #include <g4main/PHG4Reco.h>
 #include <g4main/PHG4TruthSubsystem.h>
 
 #include <phfield/PHFieldConfig.h>
+
+#include <g4decayer/EDecayType.hh>
 
 #include <fun4all/Fun4AllDstOutputManager.h>
 #include <fun4all/Fun4AllServer.h>
@@ -50,8 +49,9 @@ R__LOAD_LIBRARY(libg4detectors.so)
 
 void G4Init()
 {
-   // First some check for subsystems which do not go together
-  if (Enable::TPC && Enable::FST && !G4FST::SETTING::FST_TPC){
+  // First some check for subsystems which do not go together
+
+  if (Enable::TPC && Enable::FST){
     cout << "TPC and FST cannot be enabled together" << endl;
     gSystem->Exit(1);
   } else if ((Enable::TPC || Enable::MVTX) && Enable::BARREL){
@@ -78,7 +78,6 @@ void G4Init()
   if (Enable::MAGNET) MagnetInit();
   MagnetFieldInit(); // We want the field - even if the magnet volume is disabled
   if (Enable::PIPE) PipeInit();
-
   // trackers
   if (Enable::EGEM) EGEM_Init();
   if (Enable::FGEM) FGEM_Init();
@@ -99,7 +98,7 @@ void G4Init()
   if (Enable::HCALOUT) HCalOuterInit();
   if (Enable::FEMC) FEMCInit();
   if (Enable::FHCAL) FHCALInit();
-  if (Enable::EHCAL) EHCALInit();
+  if (Enable::DRCALO) DRCALOInit();
   if (Enable::EEMC) EEMCInit();
   
   // very forward detectors
@@ -112,9 +111,10 @@ void G4Init()
   if (Enable::USER) UserInit();
   if (Enable::BLACKHOLE) BlackHoleInit();
   
+  
 }
 
-void G4Setup(TString specialSetting = "")
+int G4Setup(TString specialSetting = "")
 {
   //---------------
   // Fun4All server
@@ -126,13 +126,10 @@ void G4Setup(TString specialSetting = "")
 
   WorldInit(g4Reco);
 
-  // global coverage used for length of cylinders if lengthviarapidity is set
-  // probably needs to be adjusted for JLeic
-  g4Reco->set_rapidity_coverage(1.1);// according to drawings
+  g4Reco->set_rapidity_coverage(1.1);  // according to drawings
                                        // uncomment to set QGSP_BERT_HP physics list for productions
                                        // (default is QGSP_BERT for speed)
   //  g4Reco->SetPhysicsList("QGSP_BERT_HP");
-
 
   if (G4P6DECAYER::decayType != EDecayType::kAll){
     g4Reco->set_force_decay(G4P6DECAYER::decayType);
@@ -141,17 +138,22 @@ void G4Setup(TString specialSetting = "")
   double fieldstrength;
   istringstream stringline(G4MAGNET::magfield);
   stringline >> fieldstrength;
-  if (stringline.fail()){  // conversion to double fails -> we have a string
-    g4Reco->set_field_map(G4MAGNET::magfield, PHFieldConfig::kFieldBeast);
-  } else  {
+  if (stringline.fail())
+  {  // conversion to double fails -> we have a string
+
+    if (G4MAGNET::magfield.find("sPHENIX.root") != string::npos){
+      g4Reco->set_field_map(G4MAGNET::magfield, PHFieldConfig::Field3DCartesian);
+    } else {
+      g4Reco->set_field_map(G4MAGNET::magfield, PHFieldConfig::kField2D);
+    }
+  } else {
     g4Reco->set_field(fieldstrength);  // use const soleniodal field
   }
   g4Reco->set_field_rescale(G4MAGNET::magfield_rescale);
 
-  // the radius is an older protection against overlaps, it is not
-  // clear how well this works nowadays but it doesn't hurt either
+// the radius is an older protection against overlaps, it is not
+// clear how well this works nowadays but it doesn't hurt either
   double radius = 0.;
-
   if (Enable::PIPE) radius = Pipe(g4Reco, radius);
   //----------------------------------------
   // trackers
@@ -177,9 +179,9 @@ void G4Setup(TString specialSetting = "")
   if (Enable::HCALOUT) radius = HCalOuter(g4Reco, radius, 4);
   if (Enable::FEMC) FEMCSetup(g4Reco);
   if (Enable::FHCAL) FHCALSetup(g4Reco);
-  if (Enable::EHCAL) EHCALSetup(g4Reco);
+  if (Enable::DRCALO) DRCALOSetup(g4Reco);
   if (Enable::EEMC) EEMCSetup(g4Reco);
-  
+
   //----------------------------------------
   // PID
   if (Enable::DIRC) DIRCSetup(g4Reco);
@@ -190,10 +192,9 @@ void G4Setup(TString specialSetting = "")
   // sPHENIX forward flux return door
   if (Enable::PLUGDOOR) PlugDoor(g4Reco);
   if (Enable::USER) UserDetector(g4Reco);
-
+  
   //----------------------------------------
-  // BLACKHOLE needs to be last
-
+  // BLACKHOLE if enabled, needs info from all previous sub detectors for dimensions
   if (Enable::BLACKHOLE) BlackHole(g4Reco, radius);
 
   PHG4TruthSubsystem *truth = new PHG4TruthSubsystem();
@@ -241,22 +242,22 @@ void ShowerCompress()
   compress->AddHitContainer("G4HIT_FEMC");
   compress->AddHitContainer("G4HIT_ABSORBER_FEMC");
   compress->AddHitContainer("G4HIT_FHCAL");
+  compress->AddHitContainer("G4HIT_DRCALO");
   compress->AddHitContainer("G4HIT_ABSORBER_FHCAL");
-  compress->AddHitContainer("G4HIT_EHCAL");
-  compress->AddHitContainer("G4HIT_ABSORBER_EHCAL");
+  compress->AddHitContainer("G4HIT_ABSORBER_DRCALO");
   compress->AddCellContainer("G4CELL_FEMC");
   compress->AddCellContainer("G4CELL_FHCAL");
-  compress->AddCellContainer("G4CELL_EHCAL");
+  compress->AddCellContainer("G4CELL_DRCALO");
   compress->AddTowerContainer("TOWER_SIM_FEMC");
   compress->AddTowerContainer("TOWER_RAW_FEMC");
   compress->AddTowerContainer("TOWER_CALIB_FEMC");
   compress->AddTowerContainer("TOWER_SIM_FHCAL");
   compress->AddTowerContainer("TOWER_RAW_FHCAL");
   compress->AddTowerContainer("TOWER_CALIB_FHCAL");
-  compress->AddTowerContainer("TOWER_SIM_EHCAL");
-  compress->AddTowerContainer("TOWER_RAW_EHCAL");
-  compress->AddTowerContainer("TOWER_CALIB_EHCAL");
-  
+  compress->AddTowerContainer("TOWER_SIM_DRCALO");
+  compress->AddTowerContainer("TOWER_RAW_DRCALO");
+  compress->AddTowerContainer("TOWER_CALIB_DRCALO");
+
   compress->AddHitContainer("G4HIT_EEMC");
   compress->AddHitContainer("G4HIT_ABSORBER_EEMC");
   compress->AddCellContainer("G4CELL_EEMC");
@@ -295,18 +296,16 @@ void DstCompress(Fun4AllDstOutputManager *out)
     out->StripNode("G4HIT_FEMC");
     out->StripNode("G4HIT_ABSORBER_FEMC");
     out->StripNode("G4HIT_FHCAL");
+    out->StripNode("G4HIT_DRCALO");
     out->StripNode("G4HIT_ABSORBER_FHCAL");
-    out->StripNode("G4HIT_EHCAL");
-    out->StripNode("G4HIT_ABSORBER_EHCAL");
-    
+    out->StripNode("G4HIT_ABSORBER_DRCALO");
     out->StripNode("G4CELL_FEMC");
     out->StripNode("G4CELL_FHCAL");
-    out->StripNode("G4CELL_EHCAL");
+    out->StripNode("G4CELL_DRCALO");
 
     out->StripNode("G4HIT_EEMC");
     out->StripNode("G4HIT_ABSORBER_EEMC");
     out->StripNode("G4CELL_EEMC");
   }
 }
-
-#endif  // MACRO_G4SETUPBEAST_C
+#endif

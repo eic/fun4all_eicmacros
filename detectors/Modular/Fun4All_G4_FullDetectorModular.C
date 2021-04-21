@@ -137,40 +137,40 @@ int Fun4All_G4_FullDetectorModular(
   }
   // pythia6
   if (Input::PYTHIA6){
-    if (generatorSettings.CompareTo("e10p250MB") == 0)
+    if (generatorSettings.Contains("e10p250MB") )
       INPUTGENERATOR::Pythia6->set_config_file(string(getenv("CALIBRATIONROOT")) + "/Generators/phpythia6_ep.cfg");
-    else if (generatorSettings.CompareTo("e10p250pTHard5") == 0)
+    else if (generatorSettings.Contains("e10p250pTHard5") )
       INPUTGENERATOR::Pythia6->set_config_file(string(getenv("CALIBRATIONROOT")) + "/Generators/phpythia6_ep_MinPartonP5GeV.cfg");
-    else if (generatorSettings.CompareTo("e10p250pTHard10") == 0)
+    else if (generatorSettings.Contains("e10p250pTHard10"))
       INPUTGENERATOR::Pythia6->set_config_file(string(getenv("CALIBRATIONROOT")) + "/Generators/phpythia6_ep_MinPartonP10GeV.cfg");
-    else if (generatorSettings.CompareTo("e10p250pTHard20") == 0)
+    else if (generatorSettings.Contains("e10p250pTHard20"))
       INPUTGENERATOR::Pythia6->set_config_file(string(getenv("CALIBRATIONROOT")) + "/Generators/phpythia6_ep_MinPartonP20GeV.cfg");
-    else if (generatorSettings.CompareTo("e5p100MB") == 0)
+    else if (generatorSettings.Contains("e5p100MB") )
       INPUTGENERATOR::Pythia6->set_config_file(string(getenv("CALIBRATIONROOT")) + "/Generators/phpythia6_e5p100.cfg");
-    else if (generatorSettings.CompareTo("e5p100pTHard5") == 0)
+    else if (generatorSettings.Contains("e5p100pTHard5") )
       INPUTGENERATOR::Pythia6->set_config_file(string(getenv("CALIBRATIONROOT")) + "/Generators/phpythia6_e5p100_MinPartonP5GeV.cfg");
-    else if (generatorSettings.CompareTo("e10p275MB") == 0)
+    else if (generatorSettings.Contains("e10p275MB") )
       INPUTGENERATOR::Pythia6->set_config_file(string(getenv("CALIBRATIONROOT")) + "/Generators/phpythia6_e10p275.cfg");
-    else if (generatorSettings.CompareTo("e10p275pTHard5") == 0)
+    else if (generatorSettings.Contains("e10p275pTHard5") )
       INPUTGENERATOR::Pythia6->set_config_file(string(getenv("CALIBRATIONROOT")) + "/Generators/phpythia6_e10p275_MinPartonP5GeV.cfg");
-    else if (generatorSettings.CompareTo("e10p275pTHard10") == 0)
+    else if (generatorSettings.Contains("e10p275pTHard10") )
       INPUTGENERATOR::Pythia6->set_config_file(string(getenv("CALIBRATIONROOT")) + "/Generators/phpythia6_e10p275_MinPartonP10GeV.cfg");
-    else if (generatorSettings.CompareTo("e18p275MB") == 0)
+    else if (generatorSettings.Contains("e18p275MB") )
       INPUTGENERATOR::Pythia6->set_config_file(string(getenv("CALIBRATIONROOT")) + "/Generators/phpythia6_e18p275.cfg");
-    else if (generatorSettings.CompareTo("e18p275pTHard5") == 0)
+    else if (generatorSettings.Contains("e18p275pTHard5") )
       INPUTGENERATOR::Pythia6->set_config_file(string(getenv("CALIBRATIONROOT")) + "/Generators/phpythia6_e18p275_MinPartonP5GeV.cfg");
-    else if (generatorSettings.CompareTo("e18p275pTHard10") == 0)
+    else if (generatorSettings.Contains("e18p275pTHard10") )
       INPUTGENERATOR::Pythia6->set_config_file(string(getenv("CALIBRATIONROOT")) + "/Generators/phpythia6_e18p275_MinPartonP10GeV.cfg");
     else 
       INPUTGENERATOR::Pythia6->set_config_file(generatorSettings.Data());
     
-    if (specialSetting.Contains("FPartTrigg")){
+    if (generatorSettings.Contains("FPartTrigg")){
       PHPy6ParticleTrigger *ptrig = new PHPy6ParticleTrigger();
       ptrig->SetPtLow(1);
       ptrig->SetEtaHighLow(1,5);
       INPUTGENERATOR::Pythia6->register_trigger(ptrig);
     }
-    if (specialSetting.Contains("FJetTrigg")){
+    if (generatorSettings.Contains("FJetTrigg")){
       PHPy6JetTrigger *trig = new PHPy6JetTrigger();
       trig->SetEtaHighLow(1,5);
       if (generatorSettings.Contains("pTHard5"))
@@ -184,6 +184,10 @@ int Fun4All_G4_FullDetectorModular(
       trig->SetJetR(0.7);
       INPUTGENERATOR::Pythia6->register_trigger(trig);
     }
+    //! apply EIC beam parameter following EIC CDR
+    Input::ApplyEICBeamParameter(INPUTGENERATOR::Pythia6);
+
+    
   }
 
   // register all input generators with Fun4All
@@ -226,13 +230,22 @@ int Fun4All_G4_FullDetectorModular(
   // EIC beam pipe extension beyond the Be-section:
   G4PIPE::use_forward_pipes = true;
 
-  if (specialSetting.Contains("EGEM"))
+  // backward GEM
+  if (specialSetting.Contains("EGEM")){
     Enable::EGEM = true;
-  if (specialSetting.Contains("EGEMOO")) // only last 2 EGEM layers
-    Enable::EGEM_FULL = false;
+    if (specialSetting.Contains("EGEMOO")) // only last 2 EGEM layers
+      Enable::EGEM_FULL = false;
+  }
   //Forward GEM
-  if (specialSetting.Contains("FGEM"))
+  if (specialSetting.Contains("FGEM")){
     Enable::FGEM = true;
+     // FGEM settings
+    if (specialSetting.Contains("FGEMOrg")){
+      Enable::FGEM_ORIG = true;
+    } else {
+      Enable::FGEM_ORIG = false;
+    }
+  }
   
   // barrel tracker (LANL)
   if (specialSetting.Contains("BARREL"))
@@ -270,10 +283,18 @@ int Fun4All_G4_FullDetectorModular(
   
   G4TRACKING::DISPLACED_VERTEX = true;  // this option exclude vertex in the track fitting and use RAVE to reconstruct primary and 2ndary vertexes
                                          // projections to calorimeters
-  G4TRACKING::PROJECTION_CEMC = true;
-  G4TRACKING::PROJECTION_FEMC = true;
-  G4TRACKING::PROJECTION_FHCAL = true;
-
+                                         
+  if (specialSetting.Contains("TRACKEVALHITS")){
+    G4TRACKING::PROJECTION_CEMC = false;
+    G4TRACKING::PROJECTION_FEMC = false;
+    G4TRACKING::PROJECTION_FHCAL = false;
+    G4TRACKING::PROJECTION_EEMC = false;
+  } else {
+    G4TRACKING::PROJECTION_CEMC = true;
+    G4TRACKING::PROJECTION_FEMC = true;
+    G4TRACKING::PROJECTION_FHCAL = true;
+    G4TRACKING::PROJECTION_EEMC = true;    
+  }
   Enable::CEMC = true;
   if(specialSetting.Contains("FHCALSTANDALONE") || specialSetting.Contains("FEMCSTANDALONE") || specialSetting.Contains("CALOSTANDALONE"))
     Enable::CEMC = false;
@@ -329,15 +350,6 @@ int Fun4All_G4_FullDetectorModular(
   Enable::FHCAL_CLUSTER = Enable::FHCAL_TOWER && true;
   Enable::FHCAL_EVAL = Enable::FHCAL_CLUSTER && false;
 
-  Enable::EHCAL = false;
-  if(specialSetting.Contains("FEMCSTANDALONE") )
-    Enable::EHCAL = false;
-  Enable::EHCAL_VERBOSITY = 1;
-  //  Enable::EHCAL_ABSORBER = true;
-  Enable::EHCAL_CELL = Enable::EHCAL && true;
-  Enable::EHCAL_TOWER = Enable::EHCAL_CELL && true;
-  Enable::EHCAL_CLUSTER = Enable::EHCAL_TOWER && true;
-  Enable::EHCAL_EVAL = Enable::EHCAL_CLUSTER && false;
 
   // EICDetector geometry - 'electron' direction
   Enable::EEMC = true;
@@ -348,7 +360,18 @@ int Fun4All_G4_FullDetectorModular(
   Enable::EEMC_CLUSTER = Enable::EEMC_TOWER && true;
   Enable::EEMC_EVAL = Enable::EEMC_CLUSTER && false;
 
-  Enable::PLUGDOOR = true;
+  if (specialSetting.Contains("EHCAL"))
+    Enable::EHCAL = true;
+  if(specialSetting.Contains("FEMCSTANDALONE") )
+    Enable::EHCAL = false;
+  Enable::EHCAL_VERBOSITY = 1;
+  //  Enable::EHCAL_ABSORBER = true;
+  Enable::EHCAL_CELL = Enable::EHCAL && true;
+  Enable::EHCAL_TOWER = Enable::EHCAL_CELL && true;
+  Enable::EHCAL_CLUSTER = Enable::EHCAL_TOWER && true;
+  Enable::EHCAL_EVAL = Enable::EHCAL_CLUSTER && false;
+
+  Enable::PLUGDOOR = false;
 
   // deactivate all detector systems for FHCal standalone studies
   if(specialSetting.Contains("FHCALSTANDALONE")){
@@ -358,7 +381,7 @@ int Fun4All_G4_FullDetectorModular(
     G4TRACKING::PROJECTION_CEMC = false;
     G4TRACKING::PROJECTION_FEMC = false;
     G4TRACKING::PROJECTION_FHCAL = false;
-    // G4TRACKING::PROJECTION_EHCAL = false;
+    G4TRACKING::PROJECTION_EHCAL = false;
     Enable::MAGNET = false;
     Enable::DIRC = false;
     Enable::RICH = false;
@@ -373,7 +396,7 @@ int Fun4All_G4_FullDetectorModular(
     G4TRACKING::PROJECTION_CEMC = false;
     G4TRACKING::PROJECTION_FEMC = false;
     G4TRACKING::PROJECTION_FHCAL = false;
-    // G4TRACKING::PROJECTION_EHCAL = false;
+    G4TRACKING::PROJECTION_EHCAL = false;
     Enable::MAGNET = false;
     Enable::DIRC = false;
     Enable::RICH = false;
@@ -388,6 +411,7 @@ int Fun4All_G4_FullDetectorModular(
     G4TRACKING::PROJECTION_CEMC = false;
     G4TRACKING::PROJECTION_FEMC = false;
     G4TRACKING::PROJECTION_FHCAL = false;
+    G4TRACKING::PROJECTION_EHCAL = false;
     Enable::MAGNET = false;
     Enable::DIRC = false;
     Enable::RICH = false;
@@ -486,14 +510,14 @@ int Fun4All_G4_FullDetectorModular(
   if (Enable::FEMC_TOWER) FEMC_Towers();
   if (Enable::FEMC_CLUSTER) FEMC_Clusters();
 
-  if (Enable::EHCAL_TOWER) EHCAL_Towers();
-  if (Enable::EHCAL_CLUSTER) EHCAL_Clusters();
-
   if (Enable::FHCAL_TOWER) FHCAL_Towers();
   if (Enable::FHCAL_CLUSTER) FHCAL_Clusters();
 
   if (Enable::EEMC_TOWER) EEMC_Towers();
   if (Enable::EEMC_CLUSTER) EEMC_Clusters();
+
+  if (Enable::EHCAL_TOWER) EHCAL_Towers();
+  if (Enable::EHCAL_CLUSTER) EHCAL_Clusters();
 
   if (Enable::DSTOUT_COMPRESS) ShowerCompress();
 
@@ -548,33 +572,31 @@ int Fun4All_G4_FullDetectorModular(
       eval->set_do_FEMC(true);
       eval->set_do_CLUSTERS(true);
     } else {
-      eval->set_do_FHCAL(true);
-      // eval->set_do_EHCAL(true);
-      eval->set_do_FEMC(true);
-      eval->set_do_CLUSTERS(true);
-      eval->set_do_DRCALO(false);
-      eval->set_do_HITS(true);
-      eval->set_do_TRACKS(true);
-      eval->set_do_VERTEX(true);
-      eval->set_do_PROJECTIONS(true);
+      if (Enable::FHCAL) 
+        eval->set_do_FHCAL(true);
+      if (Enable::FEMC) 
+        eval->set_do_FEMC(true);
+      if (Enable::EHCAL) 
+        eval->set_do_EHCAL(true);
+      if (Enable::EEMC) 
+        eval->set_do_EEMC(true);
+      if (Enable::FHCAL || Enable::FEMC || Enable::EHCAL || Enable::EEMC) 
+        eval->set_do_CLUSTERS(true);
+//       if (Enable::DRCALO) 
+//         eval->set_do_DRCALO(false);
+      
+      if (Enable::TRACKING){
+        eval->set_do_TRACKS(true);
+        eval->set_do_HITS(true);  
+        eval->set_do_PROJECTIONS(true);
+        if (G4TRACKING::DISPLACED_VERTEX) eval->set_do_VERTEX(true);
+      }
     }
     eval->set_do_MCPARTICLES(true);
     se->registerSubsystem(eval);
   }
 
-  // if (Enable::TRACKING_EVAL) Tracking_Eval(outputroot + "_g4tracking_eval.root", specialSetting);
-  // if (Enable::CEMC_EVAL) CEMC_Eval(outputroot + "_g4cemc_eval.root");
-  // if (Enable::HCALIN_EVAL) HCALInner_Eval(outputroot + "_g4hcalin_eval.root");
-  // if (Enable::HCALOUT_EVAL) HCALOuter_Eval(outputroot + "_g4hcalout_eval.root");
-  // if (Enable::FEMC_EVAL) FEMC_Eval(outputroot + "_g4femc_eval.root");
-  // if (Enable::FHCAL_EVAL) FHCAL_Eval(outputroot + "_g4fhcal_eval.root");
-  // if (Enable::EEMC_EVAL) EEMC_Eval(outputroot + "_g4eemc_eval.root");
-  // if (Enable::JETS_EVAL) Jet_Eval(outputroot + "_g4jet_eval.root");
-  // if (Enable::FWDJETS_EVAL) Jet_FwdEval(outputroot + "_g4fwdjet_eval.root");
-  // if (Enable::USER) UserAnalysisInit();
-
-  // if (Enable::JETS_QA) Jet_QA();
-
+  if (specialSetting.Contains("TRACKEVALHITS")) Tracking_Eval(outputroot + "_g4tracking_eval.root", specialSetting);
   //--------------
   // Set up Input Managers
   //--------------
@@ -691,6 +713,10 @@ void ParseTString(TString &specialSetting)
   {
     G4FST::SETTING::FSTV42 = true;
   }
+  else if (specialSetting.Contains("FSTVTPC"))
+  {
+    G4FST::SETTING::FST_TPC = true;
+  }
   else if (specialSetting.Contains("FST"))
   {
     G4FST::SETTING::FSTV0 = true;
@@ -736,6 +762,7 @@ void ParseTString(TString &specialSetting)
   {
     G4FHCAL::SETTING::towercalib3 = true;
   }
+  
 }
 
 #endif

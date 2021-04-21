@@ -53,7 +53,7 @@ void G4Init()
 {
   // First some check for subsystems which do not go together
 
-  if (Enable::TPC && Enable::FST){
+  if (Enable::TPC && Enable::FST && !G4FST::SETTING::FST_TPC){
     cout << "TPC and FST cannot be enabled together" << endl;
     gSystem->Exit(1);
   } else if ((Enable::TPC || Enable::MVTX) && Enable::BARREL){
