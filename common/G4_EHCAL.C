@@ -6,8 +6,8 @@
 #include <g4calo/RawTowerBuilderByHitIndex.h>
 #include <g4calo/RawTowerDigitizer.h>
 
-#include <g4detectors/PHG4ForwardCalCellReco.h>
-#include <g4detectors/PHG4ForwardHcalSubsystem.h>
+#include <g4eiccalos/PHG4ForwardCalCellReco.h>
+#include <g4eiccalos/PHG4ForwardHcalSubsystem.h>
 
 #include <g4eval/CaloEvaluator.h>
 
