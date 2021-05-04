@@ -773,6 +773,16 @@ void ParseTString(TString &specialSetting)
     G4FHCAL::SETTING::FullEtaAcc = true;
     G4FEMC::SETTING::FullEtaAcc = true;
   }
+  if (specialSetting.Contains("ASYM")) // common for FHCAL and FEMC
+  {
+    G4FHCAL::SETTING::asymmetric = true;
+    G4FEMC::SETTING::asymmetric = true;
+  }
+  if (specialSetting.Contains("wDR")) // common for FHCAL and FEMC
+  {
+    G4FHCAL::SETTING::wDR = true;
+    G4FEMC::SETTING::wDR = true;
+  }
   if (specialSetting.Contains("HC2x"))
   {
     G4FHCAL::SETTING::HC2x = true;

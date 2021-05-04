@@ -55,13 +55,15 @@ namespace G4DRCALO
   {
     bool ECalReplace = false;
     bool LargeTowers = false;
+    bool FwdConfig = false;
+    bool FwdSquare = false;
   }  // namespace SETTING
 }  // namespace G4DRCALO
 
 void DRCALOInit()
 {
   // simple way to check if only 1 of the settings is true
-  if (( (G4DRCALO::SETTING::ECalReplace ? 1 : 0) + (G4DRCALO::SETTING::LargeTowers ? 1 : 0)) > 1)
+  if (( (G4DRCALO::SETTING::ECalReplace ? 1 : 0) + (G4DRCALO::SETTING::LargeTowers ? 1 : 0) + (G4DRCALO::SETTING::FwdConfig ? 1 : 0) + (G4DRCALO::SETTING::FwdSquare ? 1 : 0)) > 1)
   {
     cout << "use only  G4DRCALO::SETTING::FullEtaAcc=true or G4DRCALO::SETTING::HC2x=true or G4DRCALO::SETTING::HC4x=true" << endl;
     gSystem->Exit(1);
@@ -89,6 +91,14 @@ void DRCALOSetup(PHG4Reco *g4Reco)
   // full HCal Fe-Scint with nominal acceptance
   if (G4DRCALO::SETTING::LargeTowers)
     mapping_drcalo << getenv("CALIBRATIONROOT") << "/DRCALO/mapping/towerMap_DRCALO_large_tower.txt";
+    // mapping_drcalo << getenv("EICCONFIGS") << "/towerMap_DRCALO_default_singleTower.txt";
+  // full HCal Fe-Scint with enlarged beam pipe opening for Mar 2020 beam pipe
+  else if (G4DRCALO::SETTING::FwdConfig)
+    mapping_drcalo << getenv("CALIBRATIONROOT") << "/DRCALO/mapping/towerMap_DRCALO_FwdConfig.txt";
+    // mapping_drcalo << getenv("EICCONFIGS") << "/towerMap_DRCALO_default_singleTower.txt";
+  // full HCal Fe-Scint with enlarged beam pipe opening for Mar 2020 beam pipe
+  else if (G4DRCALO::SETTING::FwdSquare)
+    mapping_drcalo << getenv("CALIBRATIONROOT") << "/DRCALO/mapping/towerMap_DRCALO_FwdSquare.txt";
     // mapping_drcalo << getenv("EICCONFIGS") << "/towerMap_DRCALO_default_singleTower.txt";
   // full HCal Fe-Scint with enlarged beam pipe opening for Mar 2020 beam pipe
   else
@@ -122,6 +132,14 @@ void DRCALO_Towers()
     mapping_drcalo << getenv("CALIBRATIONROOT") << "/DRCALO/mapping/towerMap_DRCALO_large_tower.txt";
     // mapping_drcalo << getenv("EICCONFIGS") << "/towerMap_DRCALO_default_singleTower.txt";
   // full HCal Fe-Scint with nominal acceptance doubled granularity
+  else if (G4DRCALO::SETTING::FwdConfig)
+    mapping_drcalo << getenv("CALIBRATIONROOT") << "/DRCALO/mapping/towerMap_DRCALO_FwdConfig.txt";
+    // mapping_drcalo << getenv("EICCONFIGS") << "/towerMap_DRCALO_default_singleTower.txt";
+  // full HCal Fe-Scint with enlarged beam pipe opening for Mar 2020 beam pipe
+  else if (G4DRCALO::SETTING::FwdSquare)
+    mapping_drcalo << getenv("CALIBRATIONROOT") << "/DRCALO/mapping/towerMap_DRCALO_FwdSquare.txt";
+    // mapping_drcalo << getenv("EICCONFIGS") << "/towerMap_DRCALO_default_singleTower.txt";
+  // full HCal Fe-Scint with enlarged beam pipe opening for Mar 2020 beam pipe
   else
     mapping_drcalo << getenv("CALIBRATIONROOT") << "/DRCALO/mapping/towerMap_DRCALO_default.txt";
     // mapping_drcalo << getenv("EICCONFIGS") << "/towerMap_DRCALO_replaceEMC.txt";

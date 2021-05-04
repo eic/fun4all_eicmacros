@@ -227,9 +227,13 @@ int Fun4All_G4_FullDetectorDualReadout(
   Enable::BBCFAKE = true; // Smeared vtx and t0, use if you don't want real BBC in simulation
 
   // whether to simulate the Be section of the beam pipe
-  if(!specialSetting("DRCALOONLY"))Enable::PIPE = true;
+  if(!specialSetting.Contains("DRCALOONLY"))Enable::PIPE = true;
   // EIC beam pipe extension beyond the Be-section:
-  if(!specialSetting("DRCALOONLY"))G4PIPE::use_forward_pipes = true;
+  if(!specialSetting.Contains("DRCALOONLY"))G4PIPE::use_forward_pipes = true;
+  if(specialSetting.Contains("FwdConfig") || specialSetting.Contains("FwdSquare")  || specialSetting.Contains("PIPE")  ){
+    G4PIPE::use_forward_pipes = true;
+    Enable::PIPE = true;
+  }
 
   // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   // geometry - tracking
@@ -313,14 +317,16 @@ int Fun4All_G4_FullDetectorDualReadout(
   if(!specialSetting("DRCALOONLY"))Enable::DIRC = true;
   
 
- if(!specialSetting("DRCALOONLY")) Enable::CEMC = true;
+ if(!specialSetting.Contains("DRCALOONLY")) Enable::CEMC = true;
+ if(specialSetting.Contains("CEMC")) Enable::CEMC = true;
   //  Enable::CEMC_ABSORBER = true;
   Enable::CEMC_CELL = Enable::CEMC && true;
   Enable::CEMC_TOWER = Enable::CEMC_CELL && true;
   Enable::CEMC_CLUSTER = Enable::CEMC_TOWER && true;
   Enable::CEMC_EVAL = Enable::CEMC_CLUSTER && true;
 
-  if(!specialSetting("DRCALOONLY"))Enable::HCALIN = true;
+  if(!specialSetting.Contains("DRCALOONLY"))Enable::HCALIN = true;
+  if(specialSetting.Contains("CHCAL"))Enable::HCALIN = true;
   //  Enable::HCALIN_ABSORBER = true;
   Enable::HCALIN_CELL = Enable::HCALIN && true;
   Enable::HCALIN_TOWER = Enable::HCALIN_CELL && true;
@@ -329,7 +335,8 @@ int Fun4All_G4_FullDetectorDualReadout(
 
   Enable::MAGNET = true;
 
-  if(!specialSetting("DRCALOONLY"))Enable::HCALOUT = true;
+  if(!specialSetting.Contains("DRCALOONLY"))Enable::HCALOUT = true;
+  if(specialSetting.Contains("CHCAL"))Enable::HCALOUT = true;
   //  Enable::HCALOUT_ABSORBER = true;
   Enable::HCALOUT_CELL = Enable::HCALOUT && true;
   Enable::HCALOUT_TOWER = Enable::HCALOUT_CELL && true;
@@ -344,6 +351,7 @@ int Fun4All_G4_FullDetectorDualReadout(
   if(!specialSetting("DRCALOONLY"))Enable::AEROGEL = true;
 
   Enable::DRCALO = true;
+  if(specialSetting.Contains("noDR"))Enable::DRCALO = false;
   Enable::DRCALO_VERBOSITY = 1;
   //  Enable::DRCALO_ABSORBER = true;
   Enable::DRCALO_CELL = Enable::DRCALO && true;
@@ -372,6 +380,23 @@ int Fun4All_G4_FullDetectorDualReadout(
   Enable::EHCAL_TOWER = Enable::EHCAL_CELL && true;
   Enable::EHCAL_CLUSTER = Enable::EHCAL_TOWER && true;
   Enable::EHCAL_EVAL = Enable::EHCAL_CLUSTER && false;
+
+  Enable::FEMC = false;
+  if(specialSetting.Contains("FwdConfig") || specialSetting.Contains("FwdSquare") || specialSetting.Contains("noDR")|| specialSetting.Contains("FEMC") )Enable::FEMC = true;
+  //  Enable::FEMC_ABSORBER = true;
+  Enable::FEMC_CELL = Enable::FEMC && true;
+  Enable::FEMC_TOWER = Enable::FEMC_CELL && true;
+  Enable::FEMC_CLUSTER = Enable::FEMC_TOWER && true;
+  Enable::FEMC_EVAL = Enable::FEMC_CLUSTER && false;
+
+  Enable::FHCAL = false;
+  if(specialSetting.Contains("FwdConfig") || specialSetting.Contains("FwdSquare")   || specialSetting.Contains("noDR") || specialSetting.Contains("FHCAL"))Enable::FHCAL = true;
+  Enable::FHCAL_VERBOSITY = 1;
+  //  Enable::FHCAL_ABSORBER = true;
+  Enable::FHCAL_CELL = Enable::FHCAL && true;
+  Enable::FHCAL_TOWER = Enable::FHCAL_CELL && true;
+  Enable::FHCAL_CLUSTER = Enable::FHCAL_TOWER && true;
+  Enable::FHCAL_EVAL = Enable::FHCAL_CLUSTER && false;
 
   if(!specialSetting("DRCALOONLY"))Enable::PLUGDOOR = false;
   
@@ -447,9 +472,17 @@ int Fun4All_G4_FullDetectorDualReadout(
   //-----------------------------
   // CEMC towering and clustering
   //-----------------------------
+  if (Enable::FEMC_TOWER) FEMC_Towers();
+  if (Enable::FEMC_CLUSTER) FEMC_Clusters();
+
+  if (Enable::FHCAL_TOWER) FHCAL_Towers();
+  if (Enable::FHCAL_CLUSTER) FHCAL_Clusters();
+
   if (Enable::CEMC_TOWER) CEMC_Towers();
   if (Enable::CEMC_CLUSTER) CEMC_Clusters();
 
+  if (Enable::EHCAL_TOWER) EHCAL_Towers();
+  if (Enable::EHCAL_CLUSTER) EHCAL_Clusters();
   //-----------------------------
   // HCAL towering and clustering
   //-----------------------------
@@ -672,6 +705,23 @@ void ParseTString(TString &specialSetting)
   if (specialSetting.Contains("DRLARGE"))
   {
     G4DRCALO::SETTING::LargeTowers = true;
+  }
+  if (specialSetting.Contains("ASYM")) // common for FHCAL and FEMC
+  {
+    G4FHCAL::SETTING::asymmetric = true;
+    G4FEMC::SETTING::asymmetric = true;
+  }
+  if (specialSetting.Contains("FwdConfig")) // common for FHCAL and FEMC
+  {
+    G4DRCALO::SETTING::FwdConfig = true;
+    G4FHCAL::SETTING::wDR = true;
+    G4FEMC::SETTING::wDR = true;
+  }
+  if (specialSetting.Contains("FwdSquare")) // common for FHCAL and FEMC
+  {
+    G4DRCALO::SETTING::FwdSquare = true;
+    G4FHCAL::SETTING::FwdSquare = true;
+    G4FEMC::SETTING::FwdSquare = true;
   }
 }
 

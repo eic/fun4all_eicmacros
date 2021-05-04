@@ -19,6 +19,7 @@
 #include <G4_EHCAL.C>
 #include <G4_FEMC_EIC.C>
 #include <G4_FHCAL.C>
+#include <G4_EHCAL.C>
 #include <G4_HcalIn_ref.C>
 #include <G4_HcalOut_ref.C>
 
@@ -101,6 +102,7 @@ void G4Init()
   if (Enable::HCALOUT) HCalOuterInit();
   if (Enable::FEMC) FEMCInit();
   if (Enable::FHCAL) FHCALInit();
+  if (Enable::EHCAL) EHCALInit();
   if (Enable::DRCALO) DRCALOInit();
   if (Enable::EEMC) EEMCInit();
   if (Enable::EHCAL) EHCALInit();
@@ -250,6 +252,9 @@ void ShowerCompress()
   compress->AddTowerContainer("TOWER_SIM_HCALOUT");
   compress->AddTowerContainer("TOWER_RAW_HCALOUT");
   compress->AddTowerContainer("TOWER_CALIB_HCALOUT");
+  compress->AddTowerContainer("TOWER_SIM_EHCAL");
+  compress->AddTowerContainer("TOWER_RAW_EHCAL");
+  compress->AddTowerContainer("TOWER_CALIB_EHCAL");
 
 
   compress->AddHitContainer("G4HIT_EHCAL");
@@ -261,6 +266,12 @@ void ShowerCompress()
   
   compress->AddHitContainer("G4HIT_FEMC");
   compress->AddHitContainer("G4HIT_ABSORBER_FEMC");
+  compress->AddHitContainer("G4HIT_FHCAL");
+  compress->AddHitContainer("G4HIT_DRCALO");
+  compress->AddHitContainer("G4HIT_ABSORBER_FHCAL");
+  compress->AddHitContainer("G4HIT_EHCAL");
+  compress->AddHitContainer("G4HIT_ABSORBER_EHCAL");
+  compress->AddHitContainer("G4HIT_ABSORBER_DRCALO");
   compress->AddCellContainer("G4CELL_FEMC");
   compress->AddTowerContainer("TOWER_SIM_FEMC");
   compress->AddTowerContainer("TOWER_RAW_FEMC");
@@ -325,10 +336,12 @@ void DstCompress(Fun4AllDstOutputManager *out)
 
     out->StripNode("G4HIT_FHCAL");
     out->StripNode("G4HIT_ABSORBER_FHCAL");
-    out->StripNode("G4CELL_FHCAL");
-
-    out->StripNode("G4HIT_DRCALO");
     out->StripNode("G4HIT_ABSORBER_DRCALO");
+    out->StripNode("G4HIT_EHCAL");
+    out->StripNode("G4HIT_ABSORBER_EHCAL");
+    out->StripNode("G4CELL_FEMC");
+    out->StripNode("G4CELL_FHCAL");
+    out->StripNode("G4CELL_EHCAL");
     out->StripNode("G4CELL_DRCALO");
 
     out->StripNode("G4HIT_EEMC");

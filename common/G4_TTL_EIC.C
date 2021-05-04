@@ -59,6 +59,13 @@ void FTTLSetup(PHG4Reco *g4Reco, TString fttloption = "")
     make_forward_station("FTTL_1", g4Reco, 289,  3.9,  1.3, 85*um);
   } else if (fttloption.Contains("FTTLSE1LC") || fttloption.Contains("FTTLSE1LVC")){
     make_forward_station("FTTL_0", g4Reco, 289,  3.9,  1.3, 85*um);
+  } else if (fttloption.Contains("FTTLDRC")){
+    make_forward_station("FTTL_0", g4Reco, 287,  3.9,  1.3, 85*um);
+    make_forward_station("FTTL_1", g4Reco, 289,  3.9,  1.3, 85*um);
+    make_forward_station("FTTL_2", g4Reco, 340,  2.5,  1.1, 85*um);
+  } else if (fttloption.Contains("FTTLDRF")){
+    make_forward_station("FTTL_0", g4Reco, 287,  3.9,  1.1, 85*um);
+    make_forward_station("FTTL_1", g4Reco, 289,  3.9,  1.1, 85*um);
   } else {
     make_forward_station("FTTL_0", g4Reco, 287,  3.9,  2.5, 85*um);
     make_forward_station("FTTL_1", g4Reco, 289,  3.9,  2.5, 85*um);
@@ -81,6 +88,7 @@ void ETTLSetup(PHG4Reco *g4Reco, TString ettloption = "")
   } else {
     make_forward_station("ETTL_0", g4Reco, -155.5,  -1.6,  -3.7, 85*um); // define wit eta 
     make_forward_station("ETTL_1", g4Reco, -158.5,  -1.6,  -3.7, 85*um); // define wit eta 
+    make_forward_station("ETTL_2", g4Reco, -233.5,  -1.2,  -3.7, 85*um); // define wit eta 
   }
 }
 
