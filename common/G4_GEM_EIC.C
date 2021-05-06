@@ -61,111 +61,58 @@ void FGEMSetup(PHG4Reco *g4Reco, const int N_Sector = 8,  //
 {
   const double tilt = .1;
 
-  string name;
   double etamax;
-  double etamin;
   double zpos;
   PHG4SectorSubsystem *gem;
 
+  ///////////////////////////////////////////////////////////////////////////
   if(Enable::FGEM_ORIG){
-  	make_GEM_station("FGEM_0", g4Reco, 17.5, 0.94, 1.95, N_Sector);
-  	make_GEM_station("FGEM_1", g4Reco, 66.5, 2.07, 3.20, N_Sector);
+    make_GEM_station("FGEM_0", g4Reco, 17.5, 0.94, 1.95, N_Sector);
+    make_GEM_station("FGEM_1", g4Reco, 66.5, 2.07, 3.20, N_Sector);
   }
   ///////////////////////////////////////////////////////////////////////////
-
-  name = "FGEM_2";
   if(Enable::FGEM_ORIG){
-  	etamax = 3.3;
+    etamax = 3.3;
+  } else {
+    etamax = 2;
   }
-  else{
-	etamax = 2;
-  }
-  etamin = min_eta;
-  zpos = 134.0;
-
-  gem = new PHG4SectorSubsystem(name);
-
-  gem->get_geometry().set_normal_polar_angle(tilt);
-  gem->get_geometry().set_normal_start(zpos * PHG4Sector::Sector_Geometry::Unit_cm(), 0);
-  gem->get_geometry().set_min_polar_angle(PHG4Sector::Sector_Geometry::eta_to_polar_angle(etamax));
-  gem->get_geometry().set_max_polar_angle(PHG4Sector::Sector_Geometry::eta_to_polar_angle(etamin));
-  gem->get_geometry().set_max_polar_edge(PHG4Sector::Sector_Geometry::FlatEdge());
-  gem->get_geometry().set_material("G4_METHANE");
-  gem->get_geometry().set_N_Sector(N_Sector);
-  gem->OverlapCheck(Enable::OVERLAPCHECK);
-  AddLayers_MiniTPCDrift(gem);
-  gem->get_geometry().AddLayers_HBD_GEM();
-  g4Reco->registerSubsystem(gem);
+  make_GEM_station("FGEM_2", g4Reco, 134.0, min_eta, etamax, N_Sector);
+  ///////////////////////////////////////////////////////////////////////////
+  make_GEM_station("FGEM_3_LowerEta", g4Reco, 157.0, min_eta, 3.3, N_Sector, tilt, true);
 
   ///////////////////////////////////////////////////////////////////////////
+  make_GEM_station("FGEM_4", g4Reco, 271.0, 2, 3.5, N_Sector);
+  make_GEM_station("FGEM_4_LowerEta", g4Reco, 271.0, min_eta, 2, N_Sector, tilt, true);
+}
 
-  name = "FGEM_3";
-  etamax = 3.3;
-  etamin = min_eta;
-  zpos = 157.0;
+// ======================================================================================================================
+void addPassiveMaterial(PHG4Reco *g4Reco){
+  float z_pos = 130.0;
 
-  gem = new PHG4SectorSubsystem(name + "_LowerEta");
-  gem->SuperDetector(name);
+  // This is a mockup calorimeter in the forward (hadron-going) direction
+  PHG4CylinderSubsystem *cyl_f = new PHG4CylinderSubsystem("CALO_FORWARD_PASSIVE",0);
+  cyl_f->set_double_param("length", 5);		// Length in z direction in cm
+  cyl_f->set_double_param("radius", z_pos*0.0503-0.180808); // beampipe needs to fit here
+  cyl_f->set_double_param("thickness", 43); // 
+  cyl_f->set_string_param("material", "G4_Al");
+  cyl_f->set_double_param("place_z", z_pos);
+  //cyl_f->SetActive(1);
+  cyl_f->SuperDetector("passive_F");
+  //cyl_f->set_color(0,1,1,0.3); //reddish
+  g4Reco->registerSubsystem(cyl_f);
 
-  zpos = zpos - (zpos * sin(tilt) + zpos * cos(tilt) * tan(PHG4Sector::Sector_Geometry::eta_to_polar_angle(etamax) - tilt)) * sin(tilt);
-
-  gem->get_geometry().set_normal_polar_angle((PHG4Sector::Sector_Geometry::eta_to_polar_angle(min_eta) + PHG4Sector::Sector_Geometry::eta_to_polar_angle(etamax)) / 2);
-  gem->get_geometry().set_normal_start(
-      zpos * PHG4Sector::Sector_Geometry::Unit_cm(),
-      PHG4Sector::Sector_Geometry::eta_to_polar_angle(etamax));
-  gem->get_geometry().set_min_polar_angle(PHG4Sector::Sector_Geometry::eta_to_polar_angle(etamax));
-  gem->get_geometry().set_max_polar_angle(PHG4Sector::Sector_Geometry::eta_to_polar_angle(min_eta));
-  gem->get_geometry().set_material("G4_METHANE");
-  gem->get_geometry().set_N_Sector(N_Sector);
-  gem->get_geometry().set_min_polar_edge(PHG4Sector::Sector_Geometry::FlatEdge());
-
-  AddLayers_MiniTPCDrift(gem);
-  gem->get_geometry().AddLayers_HBD_GEM();
-  gem->OverlapCheck(Enable::OVERLAPCHECK);
-  g4Reco->registerSubsystem(gem);
-
-  ///////////////////////////////////////////////////////////////////////////
-
-  name = "FGEM_4";
-  etamax = 3.5;
-  etamin = min_eta;
-  zpos = 271.0;
-  gem = new PHG4SectorSubsystem(name);
-
-  gem->SuperDetector(name);
-  gem->get_geometry().set_normal_polar_angle(tilt);
-  gem->get_geometry().set_normal_start(zpos * PHG4Sector::Sector_Geometry::Unit_cm(), 0);
-  gem->get_geometry().set_min_polar_angle(PHG4Sector::Sector_Geometry::eta_to_polar_angle(etamax));
-  gem->get_geometry().set_max_polar_angle(PHG4Sector::Sector_Geometry::eta_to_polar_angle(2));
-  gem->get_geometry().set_max_polar_edge(PHG4Sector::Sector_Geometry::FlatEdge());
-  gem->get_geometry().set_material("G4_METHANE");
-  gem->get_geometry().set_N_Sector(N_Sector);
-  gem->OverlapCheck(Enable::OVERLAPCHECK);
-  AddLayers_MiniTPCDrift(gem);
-  gem->get_geometry().AddLayers_HBD_GEM();
-  g4Reco->registerSubsystem(gem);
-
-  ///////////////////////////////////////////////////////////////////////////
-
-  zpos = zpos - (zpos * sin(tilt) + zpos * cos(tilt) * tan(PHG4Sector::Sector_Geometry::eta_to_polar_angle(2) - tilt)) * sin(tilt);
-
-  gem = new PHG4SectorSubsystem(name + "_LowerEta");
-  gem->SuperDetector(name);
-
-  gem->get_geometry().set_normal_polar_angle((PHG4Sector::Sector_Geometry::eta_to_polar_angle(min_eta) + PHG4Sector::Sector_Geometry::eta_to_polar_angle(2)) / 2);
-  gem->get_geometry().set_normal_start(
-      zpos * PHG4Sector::Sector_Geometry::Unit_cm(),
-      PHG4Sector::Sector_Geometry::eta_to_polar_angle(2));
-  gem->get_geometry().set_min_polar_angle(PHG4Sector::Sector_Geometry::eta_to_polar_angle(2));
-  gem->get_geometry().set_max_polar_angle(PHG4Sector::Sector_Geometry::eta_to_polar_angle(min_eta));
-  gem->get_geometry().set_material("G4_METHANE");
-  gem->get_geometry().set_N_Sector(N_Sector);
-  gem->get_geometry().set_min_polar_edge(PHG4Sector::Sector_Geometry::FlatEdge());
-
-  AddLayers_MiniTPCDrift(gem);
-  gem->get_geometry().AddLayers_HBD_GEM();
-  gem->OverlapCheck(Enable::OVERLAPCHECK);
-  g4Reco->registerSubsystem(gem);
+  
+  // This is a mockup calorimeter in the backward (electron-going) direction
+  PHG4CylinderSubsystem * cyl_b = new PHG4CylinderSubsystem("CALO_BACKWARD_PASSIVE",0);
+  cyl_b->set_double_param("length", 5);	// Length in z direction in cm
+  cyl_b->set_double_param("radius",abs(-z_pos*0.030-0.806));	// beampipe needs to fit here
+  cyl_b->set_double_param("thickness", 43); // 
+  cyl_b->set_string_param("material", "G4_Al");
+  cyl_b->set_double_param("place_z", -z_pos);
+  //cyl_b->SetActive(1);
+  cyl_b->SuperDetector("passive_B");
+  //cyl_b->set_color(0,1,1,0.3); //reddish
+  g4Reco->registerSubsystem(cyl_b);
 }
 
 //! Add drift layers to mini TPC
@@ -195,7 +142,7 @@ void AddLayers_MiniTPCDrift(PHG4SectorSubsystem *gem)
 }
 
 int make_GEM_station(string name, PHG4Reco *g4Reco, double zpos, double etamin,
-                     double etamax, const int N_Sector = 8)
+                     double etamax, const int N_Sector = 8, double tilt = 0, bool doTilt = false)
 {
   //  cout
   //      << "make_GEM_station - GEM construction with PHG4SectorSubsystem - make_GEM_station_EdgeReadout  of "
@@ -203,26 +150,33 @@ int make_GEM_station(string name, PHG4Reco *g4Reco, double zpos, double etamin,
 
   double polar_angle = 0;
 
-  if (zpos < 0)
-  {
-    zpos = -zpos;
-    polar_angle = M_PI;
+  if (doTilt){
+    zpos = zpos - (zpos * sin(tilt) + zpos * cos(tilt) * tan(PHG4Sector::Sector_Geometry::eta_to_polar_angle(2) - tilt)) * sin(tilt);
+  } else {  
+    if (zpos < 0){
+      zpos = -zpos;
+      polar_angle = M_PI;
+    }    
   }
-  if (etamax < etamin)
-  {
-    double t = etamax;
-    etamax = etamin;
-    etamin = t;
-  }
+  if (etamax < etamin){
+      double t = etamax;
+      etamax = etamin;
+      etamin = t;
+    }
 
   PHG4SectorSubsystem *gem;
   gem = new PHG4SectorSubsystem(name);
 
   gem->SuperDetector(name);
 
-  gem->get_geometry().set_normal_polar_angle(polar_angle);
-  gem->get_geometry().set_normal_start(zpos * PHG4Sector::Sector_Geometry::Unit_cm());
-  gem->get_geometry().set_min_polar_angle(PHG4Sector::Sector_Geometry::eta_to_polar_angle(etamax));
+  if (doTilt){
+    gem->get_geometry().set_normal_polar_angle((PHG4Sector::Sector_Geometry::eta_to_polar_angle(min_eta) + PHG4Sector::Sector_Geometry::eta_to_polar_angle(etamax)) / 2);
+    gem->get_geometry().set_normal_start( zpos * PHG4Sector::Sector_Geometry::Unit_cm(), PHG4Sector::Sector_Geometry::eta_to_polar_angle(etamax));
+  } else {
+    gem->get_geometry().set_normal_polar_angle(polar_angle);
+    gem->get_geometry().set_normal_start(zpos * PHG4Sector::Sector_Geometry::Unit_cm());
+  }
+  gem->get_geometry().set_min_polar_angle(PHG4Sector::Sector_Geometry::eta_to_polar_angle(etamax));  
   gem->get_geometry().set_max_polar_angle(PHG4Sector::Sector_Geometry::eta_to_polar_angle(etamin));
   gem->get_geometry().set_max_polar_edge(PHG4Sector::Sector_Geometry::FlatEdge());
   gem->get_geometry().set_min_polar_edge(PHG4Sector::Sector_Geometry::FlatEdge());
@@ -233,6 +187,14 @@ int make_GEM_station(string name, PHG4Reco *g4Reco, double zpos, double etamin,
   AddLayers_MiniTPCDrift(gem);
   gem->get_geometry().AddLayers_HBD_GEM();
   g4Reco->registerSubsystem(gem);
+  
+  
+  AddLayers_MiniTPCDrift(gem);
+  gem->get_geometry().AddLayers_HBD_GEM();
+  gem->OverlapCheck(Enable::OVERLAPCHECK);
+  g4Reco->registerSubsystem(gem);
+
+  
   return 0;
 }
 #endif

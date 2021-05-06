@@ -70,8 +70,8 @@ double Pipe(PHG4Reco* g4Reco,
          << " larger than pipe inner radius: " << G4PIPE::be_pipe_radius << endl;
     gSystem->Exit(-1);
   }
-
-  // mid-rapidity beryillium pipe
+  
+  // vacuum inside mid-rapidity beryllium beampipe
   PHG4CylinderSubsystem* cyl = new PHG4CylinderSubsystem("VAC_BE_PIPE", 0);
   cyl->set_double_param("radius", 0.0);
   cyl->set_int_param("lengthviarapidity", 0);
@@ -84,6 +84,7 @@ double Pipe(PHG4Reco* g4Reco,
   if (AbsorberActive) cyl->SetActive();
   g4Reco->registerSubsystem(cyl);
 
+  // mid-rapidity beryllium beam-pipe
   cyl = new PHG4CylinderSubsystem("BE_PIPE", 1);
   cyl->set_double_param("radius", G4PIPE::be_pipe_radius);
   cyl->set_int_param("lengthviarapidity", 0);
@@ -100,6 +101,7 @@ double Pipe(PHG4Reco* g4Reco,
 
   radius += no_overlapp;
 
+  // electron-going section of the beampipe
   if (do_pipe_electron_forward_extension)
   {
     PHG4GDMLSubsystem* gdml = new PHG4GDMLSubsystem("ElectronForwardEnvelope");
@@ -110,6 +112,7 @@ double Pipe(PHG4Reco* g4Reco,
     g4Reco->registerSubsystem(gdml);
   }
 
+  // hadron-going section of the beampipe
   if (do_pipe_hadron_forward_extension)
   {
     PHG4GDMLSubsystem* gdml = new PHG4GDMLSubsystem("HadronForwardEnvelope");
