@@ -11,7 +11,7 @@
 
 R__LOAD_LIBRARY(libg4detectors.so)
 
-int make_GEM_station(string name, PHG4Reco *g4Reco, double zpos, double etamin, double etamax, const int N_Sector = 8);
+int make_GEM_station(string name, PHG4Reco *g4Reco, double zpos, double etamin, double etamax, const int N_Sector = 8, double tilt = 0, bool doTilt = false);
 void AddLayers_MiniTPCDrift(PHG4SectorSubsystem *gem);
 
 namespace Enable
@@ -170,7 +170,7 @@ int make_GEM_station(string name, PHG4Reco *g4Reco, double zpos, double etamin,
   gem->SuperDetector(name);
 
   if (doTilt){
-    gem->get_geometry().set_normal_polar_angle((PHG4Sector::Sector_Geometry::eta_to_polar_angle(min_eta) + PHG4Sector::Sector_Geometry::eta_to_polar_angle(etamax)) / 2);
+    gem->get_geometry().set_normal_polar_angle((PHG4Sector::Sector_Geometry::eta_to_polar_angle(etamin) + PHG4Sector::Sector_Geometry::eta_to_polar_angle(etamax)) / 2);
     gem->get_geometry().set_normal_start( zpos * PHG4Sector::Sector_Geometry::Unit_cm(), PHG4Sector::Sector_Geometry::eta_to_polar_angle(etamax));
   } else {
     gem->get_geometry().set_normal_polar_angle(polar_angle);
