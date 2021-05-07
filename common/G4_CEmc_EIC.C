@@ -285,7 +285,8 @@ void CEMC_Towers()
   CemcTowerCalibration->set_calib_algorithm(RawTowerCalibration::kSimple_linear_calibration);
   if (G4CEMC::TowerDigi == RawTowerDigitizer::kNo_digitization)
   {
-    CemcTowerCalibration->set_calib_const_GeV_ADC(1.0 / 0.023);  // 2.3% sampling fraction from test beam
+    //  0.039 from electron sims (edep(scintillator)/edep(total)
+    CemcTowerCalibration->set_calib_const_GeV_ADC(1.0 / 0.039); 
   }
   else
   {
