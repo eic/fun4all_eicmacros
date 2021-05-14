@@ -237,7 +237,8 @@ int Fun4All_G4_LBLDetector(
   Enable::FEMC_EVAL = Enable::FEMC_CLUSTER && true;
 
   Enable::FHCAL = true;
-  //  Enable::FHCAL_ABSORBER = true;
+  //  Enable::FHCAL_ABSORBER = true; // make absorber active volume
+  //  Enable::FHCAL_SUPPORT = true; // make support active volume
   Enable::FHCAL_CELL = Enable::FHCAL && true;
   Enable::FHCAL_TOWER = Enable::FHCAL_CELL && true;
   Enable::FHCAL_CLUSTER = Enable::FHCAL_TOWER && true;
