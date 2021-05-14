@@ -28,6 +28,7 @@ namespace Enable
 {
   bool FHCAL = false;
   bool FHCAL_ABSORBER = false;
+  bool FHCAL_SUPPORT = false;
   bool FHCAL_CELL = false;
   bool FHCAL_TOWER = false;
   bool FHCAL_CLUSTER = false;
@@ -86,7 +87,8 @@ void FHCALInit()
 
 void FHCALSetup(PHG4Reco *g4Reco)
 {
-  const bool AbsorberActive = Enable::ABSORBER || Enable::FHCAL_ABSORBER;
+  bool AbsorberActive = Enable::ABSORBER || Enable::FHCAL_ABSORBER;
+  bool SupportActive = Enable::SUPPORT || Enable::FHCAL_SUPPORT;
   bool OverlapCheck = Enable::OVERLAPCHECK || Enable::FHCAL_OVERLAPCHECK;
   Fun4AllServer *se = Fun4AllServer::instance();
 
@@ -97,7 +99,7 @@ void FHCALSetup(PHG4Reco *g4Reco)
 
   // Switch to desired calo setup
   // HCal Fe-Scint with doubled granularity
-  if (G4FHCAL::SETTING::HC2x )
+  if (G4FHCAL::SETTING::HC2x)
   {
     mapping_fhcal << getenv("CALIBRATIONROOT") << "/ForwardHcal/mapping/towerMap_FHCAL_2x.txt";
   }
@@ -107,7 +109,7 @@ void FHCALSetup(PHG4Reco *g4Reco)
     mapping_fhcal << getenv("CALIBRATIONROOT") << "/ForwardHcal/mapping/towerMap_FHCAL_2x_fullEtaCov.txt";
   }
   // HCal Fe-Scint with four times granularity
-  else if (G4FHCAL::SETTING::HC4x )
+  else if (G4FHCAL::SETTING::HC4x)
   {
     mapping_fhcal << getenv("CALIBRATIONROOT") << "/ForwardHcal/mapping/towerMap_FHCAL_4x.txt";
   }
@@ -133,7 +135,7 @@ void FHCALSetup(PHG4Reco *g4Reco)
   fhcal->SetActive();
   fhcal->SuperDetector("FHCAL");
   if (AbsorberActive) fhcal->SetAbsorberActive();
-
+  if (SupportActive) fhcal->SetSupportActive();
   g4Reco->registerSubsystem(fhcal);
 }
 
@@ -152,7 +154,7 @@ void FHCAL_Towers()
 
   // Switch to desired calo setup
   // HCal Fe-Scint with doubled granularity
-  if (G4FHCAL::SETTING::HC2x )
+  if (G4FHCAL::SETTING::HC2x)
   {
     mapping_fhcal << getenv("CALIBRATIONROOT") << "/ForwardHcal/mapping/towerMap_FHCAL_2x.txt";
   }
@@ -162,7 +164,7 @@ void FHCAL_Towers()
     mapping_fhcal << getenv("CALIBRATIONROOT") << "/ForwardHcal/mapping/towerMap_FHCAL_2x_fullEtaCov.txt";
   }
   // HCal Fe-Scint with four times granularity
-  else if (G4FHCAL::SETTING::HC4x )
+  else if (G4FHCAL::SETTING::HC4x)
   {
     mapping_fhcal << getenv("CALIBRATIONROOT") << "/ForwardHcal/mapping/towerMap_FHCAL_4x.txt";
   }

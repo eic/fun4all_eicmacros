@@ -341,7 +341,8 @@ int Fun4All_G4_FullDetectorModularBeast(
   if(specialSetting.Contains("FEMCSTANDALONE") )
     Enable::FHCAL = false;
   Enable::FHCAL_VERBOSITY = 1;
-  //  Enable::FHCAL_ABSORBER = true;
+  //  Enable::FHCAL_ABSORBER = true; // make absorber active volume
+  //  Enable::FHCAL_SUPPORT = true; // make support active volume
   Enable::FHCAL_CELL = Enable::FHCAL && true;
   Enable::FHCAL_TOWER = Enable::FHCAL_CELL && true;
   Enable::FHCAL_CLUSTER = Enable::FHCAL_TOWER && true;

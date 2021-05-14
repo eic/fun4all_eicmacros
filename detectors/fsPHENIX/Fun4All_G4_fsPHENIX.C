@@ -305,7 +305,8 @@ int Fun4All_G4_fsPHENIX(
   Enable::FEMC_CLUSTER = Enable::FEMC_TOWER && true;
 
   Enable::FHCAL = true;
-  Enable::FHCAL_ABSORBER = true;
+  //  Enable::FHCAL_ABSORBER = true; // make absorber active volume
+  //  Enable::FHCAL_SUPPORT = true; // make support active volume
   Enable::FHCAL_TOWER = Enable::FHCAL && true;
   Enable::FHCAL_CLUSTER = Enable::FHCAL_TOWER && true;
   Enable::FHCAL_EVAL = Enable::FHCAL_CLUSTER && true;
