@@ -384,6 +384,7 @@ int Fun4All_G4_FullDetectorDualReadout(
   Enable::FEMC = false;
   if(specialSetting.Contains("FwdConfig") || specialSetting.Contains("FwdSquare") || specialSetting.Contains("noDR")|| specialSetting.Contains("FEMC") )Enable::FEMC = true;
   //  Enable::FEMC_ABSORBER = true;
+  G4TRACKING::PROJECTION_FEMC = Enable::FEMC && true;
   Enable::FEMC_CELL = Enable::FEMC && true;
   Enable::FEMC_TOWER = Enable::FEMC_CELL && true;
   Enable::FEMC_CLUSTER = Enable::FEMC_TOWER && true;
@@ -392,6 +393,7 @@ int Fun4All_G4_FullDetectorDualReadout(
   Enable::FHCAL = false;
   if(specialSetting.Contains("FwdConfig") || specialSetting.Contains("FwdSquare")   || specialSetting.Contains("noDR") || specialSetting.Contains("FHCAL"))Enable::FHCAL = true;
   Enable::FHCAL_VERBOSITY = 1;
+  G4TRACKING::PROJECTION_FHCAL = Enable::FHCAL && true;
   //  Enable::FHCAL_ABSORBER = true;
   Enable::FHCAL_CELL = Enable::FHCAL && true;
   Enable::FHCAL_TOWER = Enable::FHCAL_CELL && true;
