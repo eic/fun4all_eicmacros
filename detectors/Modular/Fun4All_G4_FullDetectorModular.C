@@ -278,9 +278,12 @@ int Fun4All_G4_FullDetectorModular(
 
   Enable::TRACKING = true;
   Enable::TRACKING_EVAL = Enable::TRACKING && true;
+  if (specialSetting.Contains("INNERTRACKING")) {
+    Enable::TRACKING_INNER = true;
+  }
   if (specialSetting.Contains("TREXTOUT"))
     Enable::TRACKING_EVAL_DETAILED = Enable::TRACKING_EVAL && true;
-  
+
   G4TRACKING::DISPLACED_VERTEX = true;  // this option exclude vertex in the track fitting and use RAVE to reconstruct primary and 2ndary vertexes
                                          // projections to calorimeters
                                          
