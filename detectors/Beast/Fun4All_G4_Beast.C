@@ -192,6 +192,14 @@ int Fun4All_G4_Beast(
   //Enable::BLACKHOLE_SAVEHITS = false; // turn off saving of bh hits
   //BlackHoleGeometry::visible = true;
 
+  //---------------
+  // Magnet Settings
+  //---------------
+// use updated Beast field map (default is old mfield.4col.dat)
+ G4MAGNET::magfield = string(getenv("CALIBRATIONROOT")) + string("/Field/Map/EIC_Magnetic_Field_Map_2021_05_07_radial_coords_cm_T.120000.lines.Bmap");
+
+
+
   // establish the geometry and reconstruction setup
   G4Init();
 
