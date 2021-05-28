@@ -43,6 +43,7 @@ namespace G4FHCAL
   double Gz0 = 400.;
   double Gdz = 100.;
   double outer_radius = 262.;
+  double sampling_fraction = 0.03898; // calibrated with muons
   enum enu_FHcal_clusterizer
   {
     kFHcalGraphClusterizer,
@@ -286,7 +287,7 @@ void FHCAL_Towers()
     TowerCalibration->Detector("FHCAL");
     TowerCalibration->Verbosity(verbosity);
     TowerCalibration->set_calib_algorithm(RawTowerCalibration::kSimple_linear_calibration);
-    TowerCalibration->set_calib_const_GeV_ADC(1. / 0.03898);  // calibrated with muons
+    TowerCalibration->set_calib_const_GeV_ADC(1. / G4FHCAL::sampling_fraction);
     TowerCalibration->set_pedstal_ADC(0);
     se->registerSubsystem(TowerCalibration);
   }
@@ -303,7 +304,7 @@ void FHCAL_Towers()
     TowerCalibration->Detector("FHCAL");
     TowerCalibration->Verbosity(verbosity);
     TowerCalibration->set_calib_algorithm(RawTowerCalibration::kSimple_linear_calibration);
-    TowerCalibration->set_calib_const_GeV_ADC(1. / 0.03898);  // calibrated with muons
+    TowerCalibration->set_calib_const_GeV_ADC(1. / G4FHCAL::sampling_fraction);
     TowerCalibration->set_pedstal_ADC(0);
     se->registerSubsystem(TowerCalibration);
   }
