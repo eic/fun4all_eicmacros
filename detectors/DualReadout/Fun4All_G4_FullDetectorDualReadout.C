@@ -83,7 +83,7 @@ int Fun4All_G4_FullDetectorDualReadout(
   INPUTHEPMC::filename = inputFile;
 
 
-  Enable::QA = true;
+  Enable::QA = false;
 
   //-----------------
   // Initialize the selected Input/Event generation
@@ -114,13 +114,6 @@ int Fun4All_G4_FullDetectorDualReadout(
       std::cout << "You didn't specify which particle you wanted to generate, exiting" << std::endl;
       return 0;
     }
-    std::cout << "running " << generatorSettings.Data() << " generation" << std::endl;
-    std::cout << "running " << generatorSettings.Data() << " generation" << std::endl;
-    std::cout << "running " << generatorSettings.Data() << " generation" << std::endl;
-    std::cout << "running " << generatorSettings.Data() << " generation" << std::endl;
-    std::cout << "running " << generatorSettings.Data() << " generation" << std::endl;
-    std::cout << "running " << generatorSettings.Data() << " generation" << std::endl;
-    std::cout << "running " << generatorSettings.Data() << " generation" << std::endl;
     INPUTGENERATOR::SimpleEventGenerator[0]->set_vertex_distribution_function(PHG4SimpleEventGenerator::Uniform,
                                                                               PHG4SimpleEventGenerator::Uniform,
                                                                               PHG4SimpleEventGenerator::Uniform);
@@ -133,13 +126,6 @@ int Fun4All_G4_FullDetectorDualReadout(
  
   }
   if(particlemomMin>-1 && particlemomMax == -1){
-    std::cout << "running " << generatorSettings.Data() << " PHG4ParticleGenerator" << std::endl;
-    std::cout << "running " << generatorSettings.Data() << " PHG4ParticleGenerator" << std::endl;
-    std::cout << "running " << generatorSettings.Data() << " PHG4ParticleGenerator" << std::endl;
-    std::cout << "running " << generatorSettings.Data() << " PHG4ParticleGenerator" << std::endl;
-    std::cout << "running " << generatorSettings.Data() << " PHG4ParticleGenerator" << std::endl;
-    std::cout << "running " << generatorSettings.Data() << " PHG4ParticleGenerator" << std::endl;
-    std::cout << "running " << generatorSettings.Data() << " PHG4ParticleGenerator" << std::endl;
     PHG4ParticleGenerator *gen = new PHG4ParticleGenerator("PGENERATOR");
     gen->set_name("pi-");
     gen->set_vtx(0, 0, 0);
@@ -154,40 +140,40 @@ int Fun4All_G4_FullDetectorDualReadout(
   }
   // pythia6
   if (Input::PYTHIA6){
-    if (generatorSettings.CompareTo("e10p250MB") == 0)
+    if (generatorSettings.Contains("e10p250MB") )
       INPUTGENERATOR::Pythia6->set_config_file(string(getenv("CALIBRATIONROOT")) + "/Generators/phpythia6_ep.cfg");
-    else if (generatorSettings.CompareTo("e10p250pTHard5") == 0)
+    else if (generatorSettings.Contains("e10p250pTHard5") )
       INPUTGENERATOR::Pythia6->set_config_file(string(getenv("CALIBRATIONROOT")) + "/Generators/phpythia6_ep_MinPartonP5GeV.cfg");
-    else if (generatorSettings.CompareTo("e10p250pTHard10") == 0)
+    else if (generatorSettings.Contains("e10p250pTHard10"))
       INPUTGENERATOR::Pythia6->set_config_file(string(getenv("CALIBRATIONROOT")) + "/Generators/phpythia6_ep_MinPartonP10GeV.cfg");
-    else if (generatorSettings.CompareTo("e10p250pTHard20") == 0)
+    else if (generatorSettings.Contains("e10p250pTHard20"))
       INPUTGENERATOR::Pythia6->set_config_file(string(getenv("CALIBRATIONROOT")) + "/Generators/phpythia6_ep_MinPartonP20GeV.cfg");
-    else if (generatorSettings.CompareTo("e5p100MB") == 0)
+    else if (generatorSettings.Contains("e5p100MB") )
       INPUTGENERATOR::Pythia6->set_config_file(string(getenv("CALIBRATIONROOT")) + "/Generators/phpythia6_e5p100.cfg");
-    else if (generatorSettings.CompareTo("e5p100pTHard5") == 0)
+    else if (generatorSettings.Contains("e5p100pTHard5") )
       INPUTGENERATOR::Pythia6->set_config_file(string(getenv("CALIBRATIONROOT")) + "/Generators/phpythia6_e5p100_MinPartonP5GeV.cfg");
-    else if (generatorSettings.CompareTo("e10p275MB") == 0)
+    else if (generatorSettings.Contains("e10p275MB") )
       INPUTGENERATOR::Pythia6->set_config_file(string(getenv("CALIBRATIONROOT")) + "/Generators/phpythia6_e10p275.cfg");
-    else if (generatorSettings.CompareTo("e10p275pTHard5") == 0)
+    else if (generatorSettings.Contains("e10p275pTHard5") )
       INPUTGENERATOR::Pythia6->set_config_file(string(getenv("CALIBRATIONROOT")) + "/Generators/phpythia6_e10p275_MinPartonP5GeV.cfg");
-    else if (generatorSettings.CompareTo("e10p275pTHard10") == 0)
+    else if (generatorSettings.Contains("e10p275pTHard10") )
       INPUTGENERATOR::Pythia6->set_config_file(string(getenv("CALIBRATIONROOT")) + "/Generators/phpythia6_e10p275_MinPartonP10GeV.cfg");
-    else if (generatorSettings.CompareTo("e18p275MB") == 0)
+    else if (generatorSettings.Contains("e18p275MB") )
       INPUTGENERATOR::Pythia6->set_config_file(string(getenv("CALIBRATIONROOT")) + "/Generators/phpythia6_e18p275.cfg");
-    else if (generatorSettings.CompareTo("e18p275pTHard5") == 0)
+    else if (generatorSettings.Contains("e18p275pTHard5") )
       INPUTGENERATOR::Pythia6->set_config_file(string(getenv("CALIBRATIONROOT")) + "/Generators/phpythia6_e18p275_MinPartonP5GeV.cfg");
-    else if (generatorSettings.CompareTo("e18p275pTHard10") == 0)
+    else if (generatorSettings.Contains("e18p275pTHard10") )
       INPUTGENERATOR::Pythia6->set_config_file(string(getenv("CALIBRATIONROOT")) + "/Generators/phpythia6_e18p275_MinPartonP10GeV.cfg");
     else 
       INPUTGENERATOR::Pythia6->set_config_file(generatorSettings.Data());
     
-    if (specialSetting.Contains("FPartTrigg")){
+    if (generatorSettings.Contains("FPartTrigg")){
       PHPy6ParticleTrigger *ptrig = new PHPy6ParticleTrigger();
       ptrig->SetPtLow(1);
       ptrig->SetEtaHighLow(1,5);
       INPUTGENERATOR::Pythia6->register_trigger(ptrig);
     }
-    if (specialSetting.Contains("FJetTrigg")){
+    if (generatorSettings.Contains("FJetTrigg")){
       PHPy6JetTrigger *trig = new PHPy6JetTrigger();
       trig->SetEtaHighLow(1,5);
       if (generatorSettings.Contains("pTHard5"))
@@ -201,6 +187,8 @@ int Fun4All_G4_FullDetectorDualReadout(
       trig->SetJetR(0.7);
       INPUTGENERATOR::Pythia6->register_trigger(trig);
     }
+    //! apply EIC beam parameter following EIC CDR
+    Input::ApplyEICBeamParameter(INPUTGENERATOR::Pythia6);
   }
 
   // register all input generators with Fun4All
@@ -223,6 +211,10 @@ int Fun4All_G4_FullDetectorDualReadout(
   if(specialSetting.Contains("display"))
     Enable::DISPLAY = true;
 
+  bool enableCentral = true;
+  bool enableForwardTracking = true;
+  bool enableElectronSide = true;
+
   //======================
   // What to run
   //======================
@@ -239,13 +231,28 @@ int Fun4All_G4_FullDetectorDualReadout(
   // EIC beam pipe extension beyond the Be-section:
   if(!specialSetting("DRCALOONLY"))G4PIPE::use_forward_pipes = true;
 
-  if (specialSetting.Contains("EGEM"))
+  // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  // geometry - tracking
+  // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  
+  // backward GEM
+  if (specialSetting.Contains("EGEM")){
     Enable::EGEM = true;
-  if (specialSetting.Contains("EGEMOO")) // only last 2 EGEM layers
-    Enable::EGEM_FULL = false;
+    if (specialSetting.Contains("EGEMOO")) // only last 2 EGEM layers
+      Enable::EGEM_FULL = false;
+    else 
+      Enable::EGEM_FULL = true;
+  }
   //Forward GEM
-  if (specialSetting.Contains("FGEM"))
+  if (specialSetting.Contains("FGEM")){
     Enable::FGEM = true;
+     // FGEM settings
+    if (specialSetting.Contains("FGEMOrg")){
+      Enable::FGEM_ORIG = true;
+    } else {
+      Enable::FGEM_ORIG = false;
+    }
+  }
   
   // barrel tracker (LANL)
   if (specialSetting.Contains("BARREL"))
@@ -278,13 +285,33 @@ int Fun4All_G4_FullDetectorDualReadout(
 
   Enable::TRACKING = true;
   Enable::TRACKING_EVAL = Enable::TRACKING && true;
+  if (specialSetting.Contains("INNERTRACKING")) {
+    Enable::TRACKING_INNER = true;
+  }
   if (specialSetting.Contains("TREXTOUT"))
     Enable::TRACKING_EVAL_DETAILED = Enable::TRACKING_EVAL && true;
   
   G4TRACKING::DISPLACED_VERTEX = true;  // this option exclude vertex in the track fitting and use RAVE to reconstruct primary and 2ndary vertexes
-                                         // projections to calorimeters
-  if(!specialSetting("DRCALOONLY"))G4TRACKING::PROJECTION_CEMC = true;
-  G4TRACKING::PROJECTION_DRCALO = true;
+                                      
+  // projections to calorimeters
+  if (specialSetting.Contains("TRACKEVALHITS")){
+    G4TRACKING::PROJECTION_CEMC   = false;
+    G4TRACKING::PROJECTION_EEMC   = false;
+    G4TRACKING::PROJECTION_EHCAL  = false;
+    G4TRACKING::PROJECTION_DRCALO = false;
+  } else {
+    if(!specialSetting("DRCALOONLY"))G4TRACKING::PROJECTION_CEMC = Enable::CEMC && true;
+    G4TRACKING::PROJECTION_EEMC   = Enable::EEMC && true;  
+    G4TRACKING::PROJECTION_EHCAL  = Enable::EHCAL && true;
+    G4TRACKING::PROJECTION_DRCALO = true;
+  }
+
+  // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  // geometry - barrel
+  // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  // PID detectors
+  if(!specialSetting("DRCALOONLY"))Enable::DIRC = true;
+  
 
  if(!specialSetting("DRCALOONLY")) Enable::CEMC = true;
   //  Enable::CEMC_ABSORBER = true;
@@ -300,7 +327,7 @@ int Fun4All_G4_FullDetectorDualReadout(
   Enable::HCALIN_CLUSTER = Enable::HCALIN_TOWER && true;
   Enable::HCALIN_EVAL = Enable::HCALIN_CLUSTER && true;
 
-  // Enable::MAGNET = true;
+  Enable::MAGNET = true;
 
   if(!specialSetting("DRCALOONLY"))Enable::HCALOUT = true;
   //  Enable::HCALOUT_ABSORBER = true;
@@ -309,13 +336,12 @@ int Fun4All_G4_FullDetectorDualReadout(
   Enable::HCALOUT_CLUSTER = Enable::HCALOUT_TOWER && true;
   Enable::HCALOUT_EVAL = Enable::HCALOUT_CLUSTER && true;
 
-  // EICDetector geometry - barrel
-  if(!specialSetting("DRCALOONLY"))Enable::DIRC = true;
-
-  // EICDetector geometry - 'hadron' direction
+  // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  // geometry - 'hadron' direction
+  // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  // PID detectors - RICH's
   if(!specialSetting("DRCALOONLY"))Enable::RICH = true;
   if(!specialSetting("DRCALOONLY"))Enable::AEROGEL = true;
-
 
   Enable::DRCALO = true;
   Enable::DRCALO_VERBOSITY = 1;
@@ -325,15 +351,30 @@ int Fun4All_G4_FullDetectorDualReadout(
   Enable::DRCALO_CLUSTER = Enable::DRCALO_TOWER && true;
   Enable::DRCALO_EVAL = Enable::DRCALO_CLUSTER && true;
 
-  // EICDetector geometry - 'electron' direction
-  if(!specialSetting("DRCALOONLY"))Enable::EEMC = true;
-  Enable::EEMC_CELL = Enable::EEMC && true;
-  Enable::EEMC_TOWER = Enable::EEMC_CELL && true;
-  Enable::EEMC_CLUSTER = Enable::EEMC_TOWER && true;
-  Enable::EEMC_EVAL = Enable::EEMC_CLUSTER && true;
+  // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  // geometry - 'electron' direction
+  // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  Enable::EEMC = true;
+  if(specialSetting.Contains("DRCALOONLY") )
+    Enable::EEMC = false;
+  Enable::EEMC_CELL     = Enable::EEMC && true;
+  Enable::EEMC_TOWER    = Enable::EEMC_CELL && true;
+  Enable::EEMC_CLUSTER  = Enable::EEMC_TOWER && true;
+  Enable::EEMC_EVAL     = Enable::EEMC_CLUSTER && false;
+
+  if (specialSetting.Contains("EHCAL"))
+    Enable::EHCAL = true;
+  if(specialSetting.Contains("DRCALOONLY") )
+    Enable::EHCAL = false;
+  Enable::EHCAL_VERBOSITY = 0;
+  //  Enable::EHCAL_ABSORBER = true;
+  Enable::EHCAL_CELL = Enable::EHCAL && true;
+  Enable::EHCAL_TOWER = Enable::EHCAL_CELL && true;
+  Enable::EHCAL_CLUSTER = Enable::EHCAL_TOWER && true;
+  Enable::EHCAL_EVAL = Enable::EHCAL_CLUSTER && false;
 
   if(!specialSetting("DRCALOONLY"))Enable::PLUGDOOR = false;
-
+  
   // Other options
   Enable::GLOBAL_RECO = true;
   Enable::GLOBAL_FASTSIM = true;
@@ -345,7 +386,7 @@ int Fun4All_G4_FullDetectorDualReadout(
   Enable::JETS = false;
   Enable::JETS_EVAL = Enable::JETS && true;
 
-  Enable::FWDJETS = true;
+  Enable::FWDJETS = false;
   Enable::FWDJETS_EVAL = Enable::FWDJETS && true;
 
   // HI Jet Reco for jet simulations in Au+Au (default is false for
@@ -428,6 +469,9 @@ int Fun4All_G4_FullDetectorDualReadout(
   if (Enable::EEMC_TOWER) EEMC_Towers();
   if (Enable::EEMC_CLUSTER) EEMC_Clusters();
 
+  if (Enable::EHCAL_TOWER) EHCAL_Towers();
+  if (Enable::EHCAL_CLUSTER) EHCAL_Clusters();
+
   if (Enable::DSTOUT_COMPRESS) ShowerCompress();
 
   //--------------
@@ -465,19 +509,36 @@ int Fun4All_G4_FullDetectorDualReadout(
   //----------------------
   // Simulation evaluation
   //----------------------
-  Bool_t doFullEventTree = true;
+  bool doFullEventTree = true;
   if(doFullEventTree){
     EventEvaluator *eval = new EventEvaluator("EVENTEVALUATOR", "eventtree.root");
     eval->set_reco_tracing_energy_threshold(0.02);
     eval->Verbosity(1);
     eval->set_do_FHCAL(false);
     eval->set_do_FEMC(false);
-    eval->set_do_DRCALO(true);
-    // eval->set_do_HITS(true);
-    eval->set_do_TRACKS(true);
-    eval->set_do_CLUSTERS(true);
-    eval->set_do_VERTEX(true);
-    eval->set_do_PROJECTIONS(true);
+    if (Enable::DRCALO) 
+      eval->set_do_DRCALO(true);
+    if (Enable::EHCAL) 
+      eval->set_do_EHCAL(true);
+    if (Enable::EEMC) 
+      eval->set_do_EEMC(true);
+    if (Enable::CEMC) 
+      eval->set_do_CEMC(true);
+    if (Enable::HCALIN) 
+      eval->set_do_HCALIN(true);
+    if (Enable::HCALOUT) 
+      eval->set_do_HCALOUT(true);
+    if (Enable::DRCALO || Enable::EHCAL || Enable::EEMC || Enable::CEMC || Enable::HCALIN || Enable::HCALOUT ) 
+      eval->set_do_CLUSTERS(true);
+
+    if (Enable::TRACKING){
+      eval->set_do_TRACKS(true);
+      eval->set_do_HITS(true);  
+      eval->set_do_PROJECTIONS(true);
+    }
+    if (G4TRACKING::DISPLACED_VERTEX) 
+      eval->set_do_VERTEX(true);
+    
     eval->set_do_MCPARTICLES(true);
     se->registerSubsystem(eval);
   }
@@ -597,6 +658,10 @@ void ParseTString(TString &specialSetting)
   else if (specialSetting.Contains("FSTV42"))
   {
     G4FST::SETTING::FSTV42 = true;
+  }
+  else if (specialSetting.Contains("FSTVTPC"))
+  {
+    G4FST::SETTING::FST_TPC = true;
   }
   else if (specialSetting.Contains("FST"))
   {
