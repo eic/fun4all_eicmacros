@@ -106,6 +106,8 @@ int Fun4All_G4_FullDetectorModular(
       INPUTGENERATOR::SimpleEventGenerator[0]->add_particles("proton", 1);
     else if (generatorSettings.Contains("SimplePhoton"))
       INPUTGENERATOR::SimpleEventGenerator[0]->add_particles("gamma", 1);
+    else if (generatorSettings.Contains("SimpleElectron"))
+      INPUTGENERATOR::SimpleEventGenerator[0]->add_particles("e-", 1);    
     else if (generatorSettings.Contains("SimplePiZero"))
       INPUTGENERATOR::SimpleEventGenerator[0]->add_particles("pi0", 1);
     else {
@@ -120,7 +122,7 @@ int Fun4All_G4_FullDetectorModular(
     INPUTGENERATOR::SimpleEventGenerator[0]->set_eta_range(1., 3.7);
     INPUTGENERATOR::SimpleEventGenerator[0]->set_phi_range(-M_PI, M_PI);
     INPUTGENERATOR::SimpleEventGenerator[0]->set_pt_range(particlemomMin, particlemomMax);
- 
+//     INPUTGENERATOR::SimpleEventGenerator[0]->set_p_range(particlemomMin, particlemomMax);
   }
   if(particlemomMin>-1 && particlemomMax == -1){
     PHG4ParticleGenerator *gen = new PHG4ParticleGenerator("PGENERATOR");
@@ -230,11 +232,17 @@ int Fun4All_G4_FullDetectorModular(
   // EIC beam pipe extension beyond the Be-section:
   G4PIPE::use_forward_pipes = true;
 
+  // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  // geometry - tracking
+  // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
   // backward GEM
   if (specialSetting.Contains("EGEM")){
     Enable::EGEM = true;
     if (specialSetting.Contains("EGEMOO")) // only last 2 EGEM layers
       Enable::EGEM_FULL = false;
+    else 
+      Enable::EGEM_FULL = true;
   }
   //Forward GEM
   if (specialSetting.Contains("FGEM")){
@@ -285,19 +293,29 @@ int Fun4All_G4_FullDetectorModular(
     Enable::TRACKING_EVAL_DETAILED = Enable::TRACKING_EVAL && true;
 
   G4TRACKING::DISPLACED_VERTEX = true;  // this option exclude vertex in the track fitting and use RAVE to reconstruct primary and 2ndary vertexes
-                                         // projections to calorimeters
-                                         
+  
+  // projections to calorimeters
   if (specialSetting.Contains("TRACKEVALHITS")){
-    G4TRACKING::PROJECTION_CEMC = false;
-    G4TRACKING::PROJECTION_FEMC = false;
-    G4TRACKING::PROJECTION_FHCAL = false;
-    G4TRACKING::PROJECTION_EEMC = false;
+    G4TRACKING::PROJECTION_CEMC   = false;
+    G4TRACKING::PROJECTION_FEMC   = false;
+    G4TRACKING::PROJECTION_FHCAL  = false;
+    G4TRACKING::PROJECTION_EEMC   = false;
+    G4TRACKING::PROJECTION_EHCAL  = false;
   } else {
-    G4TRACKING::PROJECTION_CEMC = true;
-    G4TRACKING::PROJECTION_FEMC = true;
-    G4TRACKING::PROJECTION_FHCAL = true;
-    G4TRACKING::PROJECTION_EEMC = true;    
+    G4TRACKING::PROJECTION_CEMC   = Enable::CEMC &&true;
+    G4TRACKING::PROJECTION_FEMC   = Enable::FEMC && true;
+    G4TRACKING::PROJECTION_FHCAL  = Enable::FHCAL && true;
+    G4TRACKING::PROJECTION_EEMC   = Enable::EEMC && true;  
+    G4TRACKING::PROJECTION_EHCAL  = Enable::EHCAL && true;
   }
+
+  // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  // geometry - barrel
+  // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  // PID detectors
+  Enable::DIRC = true;
+  
+  // sPHENIX SPACAL reuse
   Enable::CEMC = true;
   if(specialSetting.Contains("FHCALSTANDALONE") || specialSetting.Contains("FEMCSTANDALONE") || specialSetting.Contains("CALOSTANDALONE"))
     Enable::CEMC = false;
@@ -307,6 +325,7 @@ int Fun4All_G4_FullDetectorModular(
   Enable::CEMC_CLUSTER = Enable::CEMC_TOWER && true;
   Enable::CEMC_EVAL = Enable::CEMC_CLUSTER && false;
 
+  // sPHENIX HCal inner reuse
   Enable::HCALIN = true;
   if(specialSetting.Contains("FHCALSTANDALONE") || specialSetting.Contains("FEMCSTANDALONE") || specialSetting.Contains("CALOSTANDALONE"))
     Enable::HCALIN = false;
@@ -318,6 +337,7 @@ int Fun4All_G4_FullDetectorModular(
 
   Enable::MAGNET = true;
 
+  // sPHENIX HCal outer reuse
   Enable::HCALOUT = true;
   if(specialSetting.Contains("FHCALSTANDALONE") || specialSetting.Contains("FEMCSTANDALONE") || specialSetting.Contains("CALOSTANDALONE"))
     Enable::HCALOUT = false;
@@ -326,49 +346,54 @@ int Fun4All_G4_FullDetectorModular(
   Enable::HCALOUT_TOWER = Enable::HCALOUT_CELL && true;
   Enable::HCALOUT_CLUSTER = Enable::HCALOUT_TOWER && true;
   Enable::HCALOUT_EVAL = Enable::HCALOUT_CLUSTER && false;
-
-  // EICDetector geometry - barrel
-  Enable::DIRC = true;
-
-  // EICDetector geometry - 'hadron' direction
+  
+  
+  
+  // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  // geometry - 'hadron' direction
+  // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  // PID detectors - RICH's
   Enable::RICH = true;
   Enable::AEROGEL = true;
-
+  
+  // PHENIX EMCal shashlik reuse
   Enable::FEMC = true;
   if(specialSetting.Contains("FHCALSTANDALONE") )
     Enable::FEMC = false;
   //  Enable::FEMC_ABSORBER = true;
-  Enable::FEMC_CELL = Enable::FEMC && true;
-  Enable::FEMC_TOWER = Enable::FEMC_CELL && true;
-  Enable::FEMC_CLUSTER = Enable::FEMC_TOWER && true;
-  Enable::FEMC_EVAL = Enable::FEMC_CLUSTER && false;
+  Enable::FEMC_CELL     = Enable::FEMC && true;
+  Enable::FEMC_TOWER    = Enable::FEMC_CELL && true;
+  Enable::FEMC_CLUSTER  = Enable::FEMC_TOWER && true;
+  Enable::FEMC_EVAL     = Enable::FEMC_CLUSTER && false;
 
+  // STAR forward HCal 
   Enable::FHCAL = true;
   if(specialSetting.Contains("FEMCSTANDALONE") )
     Enable::FHCAL = false;
-  Enable::FHCAL_VERBOSITY = 1;
-  //  Enable::FHCAL_ABSORBER = true; // make absorber active volume
+  Enable::FHCAL_VERBOSITY = 0;
+  //  Enable::FHCAL_ABSORBER = true;
   //  Enable::FHCAL_SUPPORT = true; // make support active volume
-  Enable::FHCAL_CELL = Enable::FHCAL && true;
-  Enable::FHCAL_TOWER = Enable::FHCAL_CELL && true;
+  Enable::FHCAL_CELL    = Enable::FHCAL && true;
+  Enable::FHCAL_TOWER   = Enable::FHCAL_CELL && true;
   Enable::FHCAL_CLUSTER = Enable::FHCAL_TOWER && true;
-  Enable::FHCAL_EVAL = Enable::FHCAL_CLUSTER && false;
+  Enable::FHCAL_EVAL    = Enable::FHCAL_CLUSTER && false;
 
-
+  // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   // EICDetector geometry - 'electron' direction
+  // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   Enable::EEMC = true;
   if(specialSetting.Contains("FHCALSTANDALONE") || specialSetting.Contains("FEMCSTANDALONE") || specialSetting.Contains("CALOSTANDALONE"))
     Enable::EEMC = false;
-  Enable::EEMC_CELL = Enable::EEMC && true;
-  Enable::EEMC_TOWER = Enable::EEMC_CELL && true;
-  Enable::EEMC_CLUSTER = Enable::EEMC_TOWER && true;
-  Enable::EEMC_EVAL = Enable::EEMC_CLUSTER && false;
+  Enable::EEMC_CELL     = Enable::EEMC && true;
+  Enable::EEMC_TOWER    = Enable::EEMC_CELL && true;
+  Enable::EEMC_CLUSTER  = Enable::EEMC_TOWER && true;
+  Enable::EEMC_EVAL     = Enable::EEMC_CLUSTER && false;
 
   if (specialSetting.Contains("EHCAL"))
     Enable::EHCAL = true;
   if(specialSetting.Contains("FEMCSTANDALONE") )
     Enable::EHCAL = false;
-  Enable::EHCAL_VERBOSITY = 1;
+  Enable::EHCAL_VERBOSITY = 0;
   //  Enable::EHCAL_ABSORBER = true;
   Enable::EHCAL_CELL = Enable::EHCAL && true;
   Enable::EHCAL_TOWER = Enable::EHCAL_CELL && true;
@@ -377,6 +402,9 @@ int Fun4All_G4_FullDetectorModular(
 
   Enable::PLUGDOOR = false;
 
+  // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  // special settings for Calo standalone studies
+  // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   // deactivate all detector systems for FHCal standalone studies
   if(specialSetting.Contains("FHCALSTANDALONE")){
     Enable::PIPE = false;
@@ -560,7 +588,7 @@ int Fun4All_G4_FullDetectorModular(
   //----------------------
   // Simulation evaluation
   //----------------------
-  Bool_t doFullEventTree = kTRUE;
+  bool doFullEventTree = true;
   if(doFullEventTree){
     EventEvaluator *eval = new EventEvaluator("EVENTEVALUATOR",  outputroot + "_eventtree.root");
     eval->set_reco_tracing_energy_threshold(0.05);
@@ -584,10 +612,14 @@ int Fun4All_G4_FullDetectorModular(
         eval->set_do_EHCAL(true);
       if (Enable::EEMC) 
         eval->set_do_EEMC(true);
-      if (Enable::FHCAL || Enable::FEMC || Enable::EHCAL || Enable::EEMC) 
+      if (Enable::CEMC) 
+        eval->set_do_CEMC(true);
+      if (Enable::HCALIN) 
+        eval->set_do_HCALIN(true);
+      if (Enable::HCALOUT) 
+        eval->set_do_HCALOUT(true);
+      if (Enable::FHCAL || Enable::FEMC || Enable::EHCAL || Enable::EEMC || Enable::CEMC || Enable::HCALIN || Enable::HCALOUT ) 
         eval->set_do_CLUSTERS(true);
-//       if (Enable::DRCALO) 
-//         eval->set_do_DRCALO(false);
       
       if (Enable::TRACKING){
         eval->set_do_TRACKS(true);
