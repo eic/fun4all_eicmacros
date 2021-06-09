@@ -56,15 +56,18 @@ namespace G4FEMC
     bool FullEtaAcc = false;
     bool fsPHENIX = false;
     bool EC2x = false;
+    bool asymmetric = false;
+    bool wDR = false;
+    bool FwdSquare = false;
   }  // namespace SETTING
 }  // namespace G4FEMC
 
 void FEMCInit()
 {
   // simple way to check if only 1 of the settings is true
-  if ((G4FEMC::SETTING::FullEtaAcc ? 1 : 0) + (G4FEMC::SETTING::fsPHENIX ? 1 : 0) > 1)
+  if ((G4FEMC::SETTING::FullEtaAcc ? 1 : 0) + (G4FEMC::SETTING::fsPHENIX ? 1 : 0) + (G4FEMC::SETTING::wDR ? 1 : 0) + (G4FEMC::SETTING::FwdSquare ? 1 : 0) + (G4FEMC::SETTING::asymmetric ? 1 : 0) > 1)
   {
-    cout << "use only  G4FHCAL::SETTING::FullEtaAcc=true or G4FHCAL::SETTING::fsPHENIX=true" << endl;
+    cout << "use only  G4FHCAL::SETTING::FullEtaAcc=true or G4FHCAL::SETTING::fsPHENIX=true or G4FHCAL::SETTING::wDR=true or G4FHCAL::SETTING::asymmetric=true" << endl;
     gSystem->Exit(1);
   }
 
@@ -98,6 +101,21 @@ void FEMCSetup(PHG4Reco *g4Reco)
   else if (G4FEMC::SETTING::fsPHENIX)
   {
     mapping_femc << getenv("CALIBRATIONROOT") << "/ForwardEcal/mapping/towerMap_FEMC_fsPHENIX_v004.txt";
+  }
+  // asymmetric ECAL around beampipe
+  else if (G4FEMC::SETTING::asymmetric)
+  {
+    mapping_femc << getenv("CALIBRATIONROOT") << "/ForwardEcal/mapping/towerMap_FEMC_asymmetric.txt";
+  }
+  // ECAL surrounding dual readout calorimeter
+  else if (G4FEMC::SETTING::FwdSquare)
+  {
+    mapping_femc << getenv("CALIBRATIONROOT") << "/ForwardEcal/mapping/towerMap_FEMC_FwdSquare.txt";
+  }
+  // ECAL surrounding dual readout calorimeter
+  else if (G4FEMC::SETTING::wDR)
+  {
+    mapping_femc << getenv("CALIBRATIONROOT") << "/ForwardEcal/mapping/towerMap_FEMC_wDR.txt";
   }
   // PbScint ECAL with enlarged beam pipe opening for Mar 2020 beam pipe
   else
@@ -145,6 +163,21 @@ void FEMC_Towers()
   else if (G4FEMC::SETTING::fsPHENIX)
   {
     mapping_femc << getenv("CALIBRATIONROOT") << "/ForwardEcal/mapping/towerMap_FEMC_fsPHENIX_v004.txt";
+  }
+  // ECAL surrounding dual readout calorimeter
+  else if (G4FEMC::SETTING::FwdSquare)
+  {
+    mapping_femc << getenv("CALIBRATIONROOT") << "/ForwardEcal/mapping/towerMap_FEMC_FwdSquare.txt";
+  }
+  // ECAL surrounding dual readout calorimeter
+  else if (G4FEMC::SETTING::wDR)
+  {
+    mapping_femc << getenv("CALIBRATIONROOT") << "/ForwardEcal/mapping/towerMap_FEMC_wDR.txt";
+  }
+  // asymmetric ECAL around beampipe
+  else if (G4FEMC::SETTING::asymmetric)
+  {
+    mapping_femc << getenv("CALIBRATIONROOT") << "/ForwardEcal/mapping/towerMap_FEMC_asymmetric.txt";
   }
   // PbScint ECAL with enlarged beam pipe opening for Mar 2020 beam pipe
   else
