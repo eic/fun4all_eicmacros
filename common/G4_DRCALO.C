@@ -53,8 +53,9 @@ namespace G4DRCALO
   //enu_FHcal_clusterizer FHcal_clusterizer = kFHcalGraphClusterizer;
   namespace SETTING
   {
-    bool ECalReplace = false;
-    bool LargeTowers = false;
+    bool Tungsten = false;
+    bool Quartz = false;
+    bool PMMA = false;
     bool FwdConfig = false;
     bool FwdSquare = false;
   }  // namespace SETTING
@@ -63,9 +64,14 @@ namespace G4DRCALO
 void DRCALOInit()
 {
   // simple way to check if only 1 of the settings is true
-  if (( (G4DRCALO::SETTING::ECalReplace ? 1 : 0) + (G4DRCALO::SETTING::LargeTowers ? 1 : 0) + (G4DRCALO::SETTING::FwdConfig ? 1 : 0) + (G4DRCALO::SETTING::FwdSquare ? 1 : 0)) > 1)
+  if (( (G4DRCALO::SETTING::Tungsten ? 1 : 0) + (G4DRCALO::SETTING::Quartz ? 1 : 0) + (G4DRCALO::SETTING::PMMA ? 1 : 0)) > 1)
   {
-    cout << "use only  G4DRCALO::SETTING::FullEtaAcc=true or G4DRCALO::SETTING::HC2x=true or G4DRCALO::SETTING::HC4x=true" << endl;
+    cout << "use only  G4DRCALO::SETTING::Tungsten=true or G4DRCALO::SETTING::Quartz=true or G4DRCALO::SETTING::PMMA=true" << endl;
+    gSystem->Exit(1);
+  }
+  if (( (G4DRCALO::SETTING::FwdSquare ? 1 : 0) + (G4DRCALO::SETTING::FwdConfig ? 1 : 0)) > 1)
+  {
+    cout << "use only  G4DRCALO::SETTING::FwdSquare=true or G4DRCALO::SETTING::FwdConfig=true" << endl;
     gSystem->Exit(1);
   }
 
@@ -88,22 +94,29 @@ void DRCALOSetup(PHG4Reco *g4Reco)
   ostringstream mapping_drcalo;
 
   // Switch to desired calo setup
-  // full HCal Fe-Scint with nominal acceptance
-  if (G4DRCALO::SETTING::LargeTowers)
-    mapping_drcalo << getenv("CALIBRATIONROOT") << "/DRCALO/mapping/towerMap_DRCALO_large_tower.txt";
-    // mapping_drcalo << getenv("EICCONFIGS") << "/towerMap_DRCALO_default_singleTower.txt";
-  // full HCal Fe-Scint with enlarged beam pipe opening for Mar 2020 beam pipe
-  else if (G4DRCALO::SETTING::FwdConfig)
-    mapping_drcalo << getenv("CALIBRATIONROOT") << "/DRCALO/mapping/towerMap_DRCALO_FwdConfig.txt";
-    // mapping_drcalo << getenv("EICCONFIGS") << "/towerMap_DRCALO_default_singleTower.txt";
-  // full HCal Fe-Scint with enlarged beam pipe opening for Mar 2020 beam pipe
-  else if (G4DRCALO::SETTING::FwdSquare)
-    mapping_drcalo << getenv("CALIBRATIONROOT") << "/DRCALO/mapping/towerMap_DRCALO_FwdSquare.txt";
-    // mapping_drcalo << getenv("EICCONFIGS") << "/towerMap_DRCALO_default_singleTower.txt";
-  // full HCal Fe-Scint with enlarged beam pipe opening for Mar 2020 beam pipe
-  else
-    mapping_drcalo << getenv("CALIBRATIONROOT") << "/DRCALO/mapping/towerMap_DRCALO_default.txt";
-    // mapping_drcalo << getenv("EICCONFIGS") << "/towerMap_DRCALO_replaceEMC.txt";
+  if(G4DRCALO::SETTING::Tungsten) { // design with PMMA cerenkov fibers and tungsten absorber material
+    if (G4DRCALO::SETTING::FwdSquare)
+      mapping_drcalo << getenv("CALIBRATIONROOT") << "/DRCALO/mapping/towerMap_DRCALO_tungsten_FwdSquare.txt";
+    else
+      mapping_drcalo << getenv("CALIBRATIONROOT") << "/DRCALO/mapping/towerMap_DRCALO_tungsten.txt";
+  } else if(G4DRCALO::SETTING::Quartz) { // design with Quartz cerenkov fibers
+    if (G4DRCALO::SETTING::FwdSquare)
+      mapping_drcalo << getenv("CALIBRATIONROOT") << "/DRCALO/mapping/towerMap_DRCALO_Quartz_FwdSquare.txt";
+    else
+      mapping_drcalo << getenv("CALIBRATIONROOT") << "/DRCALO/mapping/towerMap_DRCALO_Quartz.txt";
+  } else if(G4DRCALO::SETTING::PMMA) { // design with PMMA cerenkov fibers
+    if (G4DRCALO::SETTING::FwdSquare)
+      mapping_drcalo << getenv("CALIBRATIONROOT") << "/DRCALO/mapping/towerMap_DRCALO_PMMA_FwdSquare.txt";
+    else
+      mapping_drcalo << getenv("CALIBRATIONROOT") << "/DRCALO/mapping/towerMap_DRCALO_PMMA.txt";
+  } else { // NOTCHED design with PMMA cerenkov fiber
+    if (G4DRCALO::SETTING::FwdConfig)
+      mapping_drcalo << getenv("CALIBRATIONROOT") << "/DRCALO/mapping/towerMap_DRCALO_default_FwdConfig.txt";
+    else if (G4DRCALO::SETTING::FwdSquare)
+      mapping_drcalo << getenv("CALIBRATIONROOT") << "/DRCALO/mapping/towerMap_DRCALO_default_FwdSquare.txt";
+    else
+      mapping_drcalo << getenv("CALIBRATIONROOT") << "/DRCALO/mapping/towerMap_DRCALO_default.txt";
+  }
 
   hhcal->SetTowerMappingFile(mapping_drcalo.str());
 
@@ -127,22 +140,30 @@ void DRCALO_Towers()
   ostringstream mapping_drcalo;
 
   // Switch to desired calo setup
-  // full HCal Fe-Scint with nominal acceptance
-  if (G4DRCALO::SETTING::LargeTowers)
-    mapping_drcalo << getenv("CALIBRATIONROOT") << "/DRCALO/mapping/towerMap_DRCALO_large_tower.txt";
-    // mapping_drcalo << getenv("EICCONFIGS") << "/towerMap_DRCALO_default_singleTower.txt";
-  // full HCal Fe-Scint with nominal acceptance doubled granularity
-  else if (G4DRCALO::SETTING::FwdConfig)
-    mapping_drcalo << getenv("CALIBRATIONROOT") << "/DRCALO/mapping/towerMap_DRCALO_FwdConfig.txt";
-    // mapping_drcalo << getenv("EICCONFIGS") << "/towerMap_DRCALO_default_singleTower.txt";
-  // full HCal Fe-Scint with enlarged beam pipe opening for Mar 2020 beam pipe
-  else if (G4DRCALO::SETTING::FwdSquare)
-    mapping_drcalo << getenv("CALIBRATIONROOT") << "/DRCALO/mapping/towerMap_DRCALO_FwdSquare.txt";
-    // mapping_drcalo << getenv("EICCONFIGS") << "/towerMap_DRCALO_default_singleTower.txt";
-  // full HCal Fe-Scint with enlarged beam pipe opening for Mar 2020 beam pipe
-  else
-    mapping_drcalo << getenv("CALIBRATIONROOT") << "/DRCALO/mapping/towerMap_DRCALO_default.txt";
-    // mapping_drcalo << getenv("EICCONFIGS") << "/towerMap_DRCALO_replaceEMC.txt";
+  if(G4DRCALO::SETTING::Tungsten) { // design with PMMA cerenkov fibers and tungsten absorber material
+    if (G4DRCALO::SETTING::FwdSquare)
+      mapping_drcalo << getenv("CALIBRATIONROOT") << "/DRCALO/mapping/towerMap_DRCALO_tungsten_FwdSquare.txt";
+    else
+      mapping_drcalo << getenv("CALIBRATIONROOT") << "/DRCALO/mapping/towerMap_DRCALO_tungsten.txt";
+  } else if(G4DRCALO::SETTING::Quartz) { // design with Quartz cerenkov fibers
+    if (G4DRCALO::SETTING::FwdSquare)
+      mapping_drcalo << getenv("CALIBRATIONROOT") << "/DRCALO/mapping/towerMap_DRCALO_Quartz_FwdSquare.txt";
+    else
+      mapping_drcalo << getenv("CALIBRATIONROOT") << "/DRCALO/mapping/towerMap_DRCALO_Quartz.txt";
+  } else if(G4DRCALO::SETTING::PMMA) { // design with PMMA cerenkov fibers
+    if (G4DRCALO::SETTING::FwdSquare)
+      mapping_drcalo << getenv("CALIBRATIONROOT") << "/DRCALO/mapping/towerMap_DRCALO_PMMA_FwdSquare.txt";
+    else
+      mapping_drcalo << getenv("CALIBRATIONROOT") << "/DRCALO/mapping/towerMap_DRCALO_PMMA.txt";
+  } else { // NOTCHED design with PMMA cerenkov fiber
+    if (G4DRCALO::SETTING::FwdConfig)
+      mapping_drcalo << getenv("CALIBRATIONROOT") << "/DRCALO/mapping/towerMap_DRCALO_default_FwdConfig.txt";
+    else if (G4DRCALO::SETTING::FwdSquare)
+      mapping_drcalo << getenv("CALIBRATIONROOT") << "/DRCALO/mapping/towerMap_DRCALO_default_FwdSquare.txt";
+    else
+      mapping_drcalo << getenv("CALIBRATIONROOT") << "/DRCALO/mapping/towerMap_DRCALO_default.txt";
+  }
+  cout << "using " << mapping_drcalo.str() << endl;
 
 
   RawTowerBuilderDRCALO *tower_DRCALO = new RawTowerBuilderDRCALO("TowerBuilder_DRCALO");

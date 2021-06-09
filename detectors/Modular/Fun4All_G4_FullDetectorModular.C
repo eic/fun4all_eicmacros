@@ -301,12 +301,14 @@ int Fun4All_G4_FullDetectorModular(
     G4TRACKING::PROJECTION_FHCAL  = false;
     G4TRACKING::PROJECTION_EEMC   = false;
     G4TRACKING::PROJECTION_EHCAL  = false;
+    G4TRACKING::PROJECTION_DRCALO = false;
   } else {
     G4TRACKING::PROJECTION_CEMC   = Enable::CEMC &&true;
     G4TRACKING::PROJECTION_FEMC   = Enable::FEMC && true;
     G4TRACKING::PROJECTION_FHCAL  = Enable::FHCAL && true;
     G4TRACKING::PROJECTION_EEMC   = Enable::EEMC && true;  
     G4TRACKING::PROJECTION_EHCAL  = Enable::EHCAL && true;
+    G4TRACKING::PROJECTION_DRCALO = Enable::DRCALO && true;
   }
 
   // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -317,96 +319,64 @@ int Fun4All_G4_FullDetectorModular(
   
   // sPHENIX SPACAL reuse
   Enable::CEMC = true;
-  if(specialSetting.Contains("FHCALSTANDALONE") || specialSetting.Contains("FEMCSTANDALONE") || specialSetting.Contains("CALOSTANDALONE"))
-    Enable::CEMC = false;
   //  Enable::CEMC_ABSORBER = true;
-  Enable::CEMC_CELL = Enable::CEMC && true;
-  Enable::CEMC_TOWER = Enable::CEMC_CELL && true;
-  Enable::CEMC_CLUSTER = Enable::CEMC_TOWER && true;
-  Enable::CEMC_EVAL = Enable::CEMC_CLUSTER && false;
 
   // sPHENIX HCal inner reuse
   Enable::HCALIN = true;
-  if(specialSetting.Contains("FHCALSTANDALONE") || specialSetting.Contains("FEMCSTANDALONE") || specialSetting.Contains("CALOSTANDALONE"))
-    Enable::HCALIN = false;
   //  Enable::HCALIN_ABSORBER = true;
-  Enable::HCALIN_CELL = Enable::HCALIN && true;
-  Enable::HCALIN_TOWER = Enable::HCALIN_CELL && true;
-  Enable::HCALIN_CLUSTER = Enable::HCALIN_TOWER && true;
-  Enable::HCALIN_EVAL = Enable::HCALIN_CLUSTER && false;
 
   Enable::MAGNET = true;
 
   // sPHENIX HCal outer reuse
   Enable::HCALOUT = true;
-  if(specialSetting.Contains("FHCALSTANDALONE") || specialSetting.Contains("FEMCSTANDALONE") || specialSetting.Contains("CALOSTANDALONE"))
-    Enable::HCALOUT = false;
   //  Enable::HCALOUT_ABSORBER = true;
-  Enable::HCALOUT_CELL = Enable::HCALOUT && true;
-  Enable::HCALOUT_TOWER = Enable::HCALOUT_CELL && true;
-  Enable::HCALOUT_CLUSTER = Enable::HCALOUT_TOWER && true;
-  Enable::HCALOUT_EVAL = Enable::HCALOUT_CLUSTER && false;
-  
-  
-  
+
+
   // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   // geometry - 'hadron' direction
   // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   // PID detectors - RICH's
   Enable::RICH = true;
   Enable::AEROGEL = true;
-  
+
   // PHENIX EMCal shashlik reuse
   Enable::FEMC = true;
-  if(specialSetting.Contains("FHCALSTANDALONE") )
-    Enable::FEMC = false;
   //  Enable::FEMC_ABSORBER = true;
-  Enable::FEMC_CELL     = Enable::FEMC && true;
-  Enable::FEMC_TOWER    = Enable::FEMC_CELL && true;
-  Enable::FEMC_CLUSTER  = Enable::FEMC_TOWER && true;
-  Enable::FEMC_EVAL     = Enable::FEMC_CLUSTER && false;
 
-  // STAR forward HCal 
+  // STAR forward HCal
   Enable::FHCAL = true;
-  if(specialSetting.Contains("FEMCSTANDALONE") )
-    Enable::FHCAL = false;
   Enable::FHCAL_VERBOSITY = 0;
   //  Enable::FHCAL_ABSORBER = true;
   //  Enable::FHCAL_SUPPORT = true; // make support active volume
-  Enable::FHCAL_CELL    = Enable::FHCAL && true;
-  Enable::FHCAL_TOWER   = Enable::FHCAL_CELL && true;
-  Enable::FHCAL_CLUSTER = Enable::FHCAL_TOWER && true;
-  Enable::FHCAL_EVAL    = Enable::FHCAL_CLUSTER && false;
+
+
+  Enable::DRCALO = false;
+  if(specialSetting.Contains("DRCALO")){
+    Enable::DRCALO = true;
+    if(!specialSetting.Contains("FwdConfig") && !specialSetting.Contains("FwdSquare")){
+      Enable::FEMC = false;
+      Enable::FHCAL = false;
+    }
+  }
+  Enable::DRCALO_VERBOSITY = 0;
+  //  Enable::DRCALO_ABSORBER = true;
 
   // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   // EICDetector geometry - 'electron' direction
   // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   Enable::EEMC = true;
-  if(specialSetting.Contains("FHCALSTANDALONE") || specialSetting.Contains("FEMCSTANDALONE") || specialSetting.Contains("CALOSTANDALONE"))
-    Enable::EEMC = false;
-  Enable::EEMC_CELL     = Enable::EEMC && true;
-  Enable::EEMC_TOWER    = Enable::EEMC_CELL && true;
-  Enable::EEMC_CLUSTER  = Enable::EEMC_TOWER && true;
-  Enable::EEMC_EVAL     = Enable::EEMC_CLUSTER && false;
 
-  if (specialSetting.Contains("EHCAL"))
-    Enable::EHCAL = true;
-  if(specialSetting.Contains("FEMCSTANDALONE") )
-    Enable::EHCAL = false;
+  Enable::EHCAL = true;
   Enable::EHCAL_VERBOSITY = 0;
   //  Enable::EHCAL_ABSORBER = true;
-  Enable::EHCAL_CELL = Enable::EHCAL && true;
-  Enable::EHCAL_TOWER = Enable::EHCAL_CELL && true;
-  Enable::EHCAL_CLUSTER = Enable::EHCAL_TOWER && true;
-  Enable::EHCAL_EVAL = Enable::EHCAL_CLUSTER && false;
 
   Enable::PLUGDOOR = false;
 
   // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   // special settings for Calo standalone studies
   // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  // deactivate all detector systems for FHCal standalone studies
-  if(specialSetting.Contains("FHCALSTANDALONE")){
+  // deactivate all respective detector systems for standalone studies
+  if(specialSetting.Contains("FHCALSTANDALONE") || specialSetting.Contains("FEMCSTANDALONE") || specialSetting.Contains("CALOSTANDALONE") || specialSetting.Contains("DRSTANDALONE")){
     Enable::PIPE = false;
     G4PIPE::use_forward_pipes = false;
     Enable::TPC_ENDCAP = false;
@@ -418,39 +388,65 @@ int Fun4All_G4_FullDetectorModular(
     Enable::DIRC = false;
     Enable::RICH = false;
     Enable::AEROGEL = false;
-    Enable::FHCAL = true;
+    Enable::CEMC = false;
+    Enable::HCALOUT = false;
+    Enable::HCALIN = false;
+    Enable::EHCAL = false;
+    Enable::EEMC = false;
+
+    Enable::FEMC = false;
+    Enable::FHCAL = false;
+    if(specialSetting.Contains("FEMCSTANDALONE"))
+      Enable::FEMC = true;
+    if(specialSetting.Contains("FHCALSTANDALONE"))
+      Enable::FHCAL = true;
+    if(specialSetting.Contains("CALOSTANDALONE")){
+      Enable::FEMC = true;
+      Enable::FHCAL = true;
+    }
   }
-  // deactivate all detector systems for FHCal standalone studies
-  if(specialSetting.Contains("FEMCSTANDALONE")){
-    Enable::PIPE = false;
-    G4PIPE::use_forward_pipes = false;
-    Enable::TPC_ENDCAP = false;
-    G4TRACKING::PROJECTION_CEMC = false;
-    G4TRACKING::PROJECTION_FEMC = false;
-    G4TRACKING::PROJECTION_FHCAL = false;
-    G4TRACKING::PROJECTION_EHCAL = false;
-    Enable::MAGNET = false;
-    Enable::DIRC = false;
-    Enable::RICH = false;
-    Enable::AEROGEL = false;
-    Enable::FEMC = true;
-  }
-  // deactivate all detector systems for FHCal standalone studies
-  if(specialSetting.Contains("CALOSTANDALONE")){
-    Enable::PIPE = false;
-    G4PIPE::use_forward_pipes = false;
-    Enable::TPC_ENDCAP = false;
-    G4TRACKING::PROJECTION_CEMC = false;
-    G4TRACKING::PROJECTION_FEMC = false;
-    G4TRACKING::PROJECTION_FHCAL = false;
-    G4TRACKING::PROJECTION_EHCAL = false;
-    Enable::MAGNET = false;
-    Enable::DIRC = false;
-    Enable::RICH = false;
-    Enable::AEROGEL = false;
-    Enable::FHCAL = true;
-    Enable::FEMC = true;
-  }
+
+  // Automatic settings based on previous selections:
+  Enable::CEMC_CELL = Enable::CEMC && true;
+  Enable::CEMC_TOWER = Enable::CEMC_CELL && true;
+  Enable::CEMC_CLUSTER = Enable::CEMC_TOWER && true;
+  Enable::CEMC_EVAL = Enable::CEMC_CLUSTER && false;
+
+  Enable::HCALIN_CELL = Enable::HCALIN && true;
+  Enable::HCALIN_TOWER = Enable::HCALIN_CELL && true;
+  Enable::HCALIN_CLUSTER = Enable::HCALIN_TOWER && true;
+  Enable::HCALIN_EVAL = Enable::HCALIN_CLUSTER && false;
+
+  Enable::HCALOUT_CELL = Enable::HCALOUT && true;
+  Enable::HCALOUT_TOWER = Enable::HCALOUT_CELL && true;
+  Enable::HCALOUT_CLUSTER = Enable::HCALOUT_TOWER && true;
+  Enable::HCALOUT_EVAL = Enable::HCALOUT_CLUSTER && false;
+
+  Enable::DRCALO_CELL = Enable::DRCALO && true;
+  Enable::DRCALO_TOWER = Enable::DRCALO_CELL && true;
+  Enable::DRCALO_CLUSTER = Enable::DRCALO_TOWER && true;
+  Enable::DRCALO_EVAL = Enable::DRCALO_CLUSTER && true;
+
+  Enable::FEMC_CELL     = Enable::FEMC && true;
+  Enable::FEMC_TOWER    = Enable::FEMC_CELL && true;
+  Enable::FEMC_CLUSTER  = Enable::FEMC_TOWER && true;
+  Enable::FEMC_EVAL     = Enable::FEMC_CLUSTER && false;
+
+  Enable::FHCAL_CELL    = Enable::FHCAL && true;
+  Enable::FHCAL_TOWER   = Enable::FHCAL_CELL && true;
+  Enable::FHCAL_CLUSTER = Enable::FHCAL_TOWER && true;
+  Enable::FHCAL_EVAL    = Enable::FHCAL_CLUSTER && false;
+
+  Enable::EEMC_CELL     = Enable::EEMC && true;
+  Enable::EEMC_TOWER    = Enable::EEMC_CELL && true;
+  Enable::EEMC_CLUSTER  = Enable::EEMC_TOWER && true;
+  Enable::EEMC_EVAL     = Enable::EEMC_CLUSTER && false;
+
+  Enable::EHCAL_CELL = Enable::EHCAL && true;
+  Enable::EHCAL_TOWER = Enable::EHCAL_CELL && true;
+  Enable::EHCAL_CLUSTER = Enable::EHCAL_TOWER && true;
+  Enable::EHCAL_EVAL = Enable::EHCAL_CLUSTER && false;
+
 
   // Other options
   Enable::GLOBAL_RECO = true;
@@ -545,6 +541,9 @@ int Fun4All_G4_FullDetectorModular(
   if (Enable::FHCAL_TOWER) FHCAL_Towers();
   if (Enable::FHCAL_CLUSTER) FHCAL_Clusters();
 
+  if (Enable::DRCALO_TOWER) DRCALO_Towers();
+  if (Enable::DRCALO_CLUSTER) DRCALO_Clusters();
+
   if (Enable::EEMC_TOWER) EEMC_Towers();
   if (Enable::EEMC_CLUSTER) EEMC_Clusters();
 
@@ -592,41 +591,31 @@ int Fun4All_G4_FullDetectorModular(
   if(doFullEventTree){
     EventEvaluator *eval = new EventEvaluator("EVENTEVALUATOR",  outputroot + "_eventtree.root");
     eval->set_reco_tracing_energy_threshold(0.05);
-    eval->Verbosity(0);
-    if(specialSetting.Contains("FHCALSTANDALONE")){
+    eval->Verbosity(1);
+    if (Enable::FHCAL)
       eval->set_do_FHCAL(true);
-      eval->set_do_CLUSTERS(true);
-    } else if(specialSetting.Contains("FEMCSTANDALONE")){
+    if (Enable::FEMC)
       eval->set_do_FEMC(true);
+    if (Enable::DRCALO)
+      eval->set_do_DRCALO(true);
+    if (Enable::EHCAL)
+      eval->set_do_EHCAL(true);
+    if (Enable::EEMC)
+      eval->set_do_EEMC(true);
+    if (Enable::CEMC)
+      eval->set_do_CEMC(true);
+    if (Enable::HCALIN)
+      eval->set_do_HCALIN(true);
+    if (Enable::HCALOUT)
+      eval->set_do_HCALOUT(true);
+    if (Enable::FHCAL || Enable::FEMC || Enable::EHCAL || Enable::EEMC || Enable::CEMC || Enable::HCALIN || Enable::HCALOUT )
       eval->set_do_CLUSTERS(true);
-    } else if(specialSetting.Contains("CALOSTANDALONE")){
-      eval->set_do_FHCAL(true);
-      eval->set_do_FEMC(true);
-      eval->set_do_CLUSTERS(true);
-    } else {
-      if (Enable::FHCAL) 
-        eval->set_do_FHCAL(true);
-      if (Enable::FEMC) 
-        eval->set_do_FEMC(true);
-      if (Enable::EHCAL) 
-        eval->set_do_EHCAL(true);
-      if (Enable::EEMC) 
-        eval->set_do_EEMC(true);
-      if (Enable::CEMC) 
-        eval->set_do_CEMC(true);
-      if (Enable::HCALIN) 
-        eval->set_do_HCALIN(true);
-      if (Enable::HCALOUT) 
-        eval->set_do_HCALOUT(true);
-      if (Enable::FHCAL || Enable::FEMC || Enable::EHCAL || Enable::EEMC || Enable::CEMC || Enable::HCALIN || Enable::HCALOUT ) 
-        eval->set_do_CLUSTERS(true);
-      
-      if (Enable::TRACKING){
-        eval->set_do_TRACKS(true);
-        eval->set_do_HITS(true);  
-        eval->set_do_PROJECTIONS(true);
-        if (G4TRACKING::DISPLACED_VERTEX) eval->set_do_VERTEX(true);
-      }
+    
+    if (Enable::TRACKING){
+      eval->set_do_TRACKS(true);
+      eval->set_do_HITS(true);
+      eval->set_do_PROJECTIONS(true);
+      if (G4TRACKING::DISPLACED_VERTEX) eval->set_do_VERTEX(true);
     }
     eval->set_do_MCPARTICLES(true);
     se->registerSubsystem(eval);
@@ -783,6 +772,19 @@ void ParseTString(TString &specialSetting)
     G4FHCAL::SETTING::wDR = true;
     G4FEMC::SETTING::wDR = true;
   }
+
+  if (specialSetting.Contains("FwdConfig")) // common for FHCAL and FEMC
+  {
+    G4DRCALO::SETTING::FwdConfig = true;
+    G4FHCAL::SETTING::wDR = true;
+    G4FEMC::SETTING::wDR = true;
+  }
+  if (specialSetting.Contains("FwdSquare")) // common for FHCAL and FEMC
+  {
+    G4DRCALO::SETTING::FwdSquare = true;
+    G4FHCAL::SETTING::FwdSquare = true;
+    G4FEMC::SETTING::FwdSquare = true;
+  }
   if (specialSetting.Contains("HC2x"))
   {
     G4FHCAL::SETTING::HC2x = true;
@@ -808,7 +810,19 @@ void ParseTString(TString &specialSetting)
   {
     G4FHCAL::SETTING::towercalib3 = true;
   }
-  
+  // DRCALO settings
+  if (specialSetting.Contains("DRTungsten"))
+  {
+    G4DRCALO::SETTING::Tungsten = true;
+  }
+  if (specialSetting.Contains("DRQuartz"))
+  {
+    G4DRCALO::SETTING::Quartz = true;
+  }
+  if (specialSetting.Contains("DRPMMA"))
+  {
+    G4DRCALO::SETTING::PMMA = true;
+  }  
 }
 
 #endif

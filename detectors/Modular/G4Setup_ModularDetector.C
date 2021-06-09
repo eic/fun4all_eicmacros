@@ -12,6 +12,7 @@
 #include <G4_Bbc.C>
 #include <G4_CEmc_EIC.C>
 #include <G4_DIRC.C>
+#include <G4_DRCALO.C>
 #include <G4_EEMC.C>
 #include <G4_FEMC_EIC.C>
 #include <G4_FHCAL.C>
@@ -99,6 +100,7 @@ void G4Init()
   if (Enable::HCALIN) HCalInnerInit(1);
   if (Enable::HCALOUT) HCalOuterInit();
   if (Enable::FEMC) FEMCInit();
+  if (Enable::DRCALO) DRCALOInit();
   if (Enable::FHCAL) FHCALInit();
   if (Enable::EHCAL) EHCALInit();
   if (Enable::EEMC) EEMCInit();
@@ -178,6 +180,7 @@ int G4Setup(TString specialSetting = ""){
   if (Enable::HCALOUT) radius = HCalOuter(g4Reco, radius, 4);
   if (Enable::FEMC) FEMCSetup(g4Reco);
   if (Enable::FHCAL) FHCALSetup(g4Reco);
+  if (Enable::DRCALO) DRCALOSetup(g4Reco);
   if (Enable::EHCAL) EHCALSetup(g4Reco);
   if (Enable::EEMC) EEMCSetup(g4Reco);
 
@@ -243,9 +246,12 @@ void ShowerCompress(){
   compress->AddHitContainer("G4HIT_ABSORBER_FHCAL");
   compress->AddHitContainer("G4HIT_EHCAL");
   compress->AddHitContainer("G4HIT_ABSORBER_EHCAL");
+  compress->AddHitContainer("G4HIT_DRCALO");
+  compress->AddHitContainer("G4HIT_ABSORBER_DRCALO");
   compress->AddCellContainer("G4CELL_FEMC");
   compress->AddCellContainer("G4CELL_FHCAL");
   compress->AddCellContainer("G4CELL_EHCAL");
+  compress->AddCellContainer("G4CELL_DRCALO");
   compress->AddTowerContainer("TOWER_SIM_FEMC");
   compress->AddTowerContainer("TOWER_RAW_FEMC");
   compress->AddTowerContainer("TOWER_CALIB_FEMC");
@@ -255,6 +261,9 @@ void ShowerCompress(){
   compress->AddTowerContainer("TOWER_SIM_EHCAL");
   compress->AddTowerContainer("TOWER_RAW_EHCAL");
   compress->AddTowerContainer("TOWER_CALIB_EHCAL");
+  compress->AddTowerContainer("TOWER_SIM_DRCALO");
+  compress->AddTowerContainer("TOWER_RAW_DRCALO");
+  compress->AddTowerContainer("TOWER_CALIB_DRCALO");
 
   compress->AddHitContainer("G4HIT_EEMC");
   compress->AddHitContainer("G4HIT_ABSORBER_EEMC");
@@ -288,17 +297,18 @@ void DstCompress(Fun4AllDstOutputManager *out){
     out->StripNode("G4CELL_CEMC");
     out->StripNode("G4CELL_HCALIN");
     out->StripNode("G4CELL_HCALOUT");
-
     out->StripNode("G4HIT_FEMC");
     out->StripNode("G4HIT_ABSORBER_FEMC");
+    out->StripNode("G4CELL_FEMC");
     out->StripNode("G4HIT_FHCAL");
     out->StripNode("G4HIT_ABSORBER_FHCAL");
+    out->StripNode("G4CELL_FHCAL");
     out->StripNode("G4HIT_EHCAL");
     out->StripNode("G4HIT_ABSORBER_EHCAL");
-    out->StripNode("G4CELL_FEMC");
-    out->StripNode("G4CELL_FHCAL");
     out->StripNode("G4CELL_EHCAL");
-
+    out->StripNode("G4HIT_DRCALO");
+    out->StripNode("G4HIT_ABSORBER_DRCALO");
+    out->StripNode("G4CELL_DRCALO");
     out->StripNode("G4HIT_EEMC");
     out->StripNode("G4HIT_ABSORBER_EEMC");
     out->StripNode("G4CELL_EEMC");

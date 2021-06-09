@@ -88,7 +88,7 @@ void ETTLSetup(PHG4Reco *g4Reco, TString ettloption = "")
   } else {
     make_forward_station("ETTL_0", g4Reco, -155.5,  -1.6,  -3.7, 85*um); // define wit eta 
     make_forward_station("ETTL_1", g4Reco, -158.5,  -1.6,  -3.7, 85*um); // define wit eta 
-    make_forward_station("ETTL_2", g4Reco, -233.5,  -1.2,  -3.7, 85*um); // define wit eta 
+    make_forward_station("ETTL_2", g4Reco, -309.5,  -1.2,  -3.7, 85*um); // define wit eta 
   }
 }
 
