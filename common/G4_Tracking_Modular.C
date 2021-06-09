@@ -333,6 +333,12 @@ void Tracking_Reco(TString specialSetting = "")
       zDisk[0]        = 289;
       zDisk[1]        = 340; 
       pitch           = 500e-4;
+    } else if (specialSetting.Contains("FTTLDRC")){
+      nlayers         = 3; 
+      pitch           = 500e-4;
+    } else if (specialSetting.Contains("FTTLDRF")){
+      nlayers         = 2; 
+      pitch           = 500e-4;
     } else if (specialSetting.Contains("FTTLS2LVC")){
       nlayers         = 2; 
       zDisk[0]        = 289;
@@ -549,11 +555,11 @@ void Tracking_Eval(const std::string &outputfile, TString specialSetting = "")
   if (Enable::FTTL){
     
     int layerMax = 6;
-    if (specialSetting.Contains("FTTLS3LC") || specialSetting.Contains("FTTLS3LVC") )
+    if (specialSetting.Contains("FTTLS3LC") || specialSetting.Contains("FTTLS3LVC")  || specialSetting.Contains("FTTLDRC"))
       layerMax = 3;
     else if (specialSetting.Contains("FTTLS2LF") || specialSetting.Contains("FTTLSE2LF"))
       layerMax = 4;
-    else if (specialSetting.Contains("FTTLS2LC") || specialSetting.Contains("FTTLSE2LC") || specialSetting.Contains("FTTLS2LVC") || specialSetting.Contains("FTTLSE2LVC"))
+    else if (specialSetting.Contains("FTTLS2LC") || specialSetting.Contains("FTTLSE2LC") || specialSetting.Contains("FTTLS2LVC") || specialSetting.Contains("FTTLSE2LVC") || specialSetting.Contains("FTTLDRF"))
       layerMax = 2;
     else if (specialSetting.Contains("FTTLSE1LC") || specialSetting.Contains("FTTLSE1LVC"))
       layerMax = 1;
