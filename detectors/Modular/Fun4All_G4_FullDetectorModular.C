@@ -591,7 +591,7 @@ int Fun4All_G4_FullDetectorModular(
   if(doFullEventTree){
     EventEvaluator *eval = new EventEvaluator("EVENTEVALUATOR",  outputroot + "_eventtree.root");
     eval->set_reco_tracing_energy_threshold(0.05);
-    eval->Verbosity(1);
+    eval->Verbosity(0);
     if (Enable::FHCAL)
       eval->set_do_FHCAL(true);
     if (Enable::FEMC)
