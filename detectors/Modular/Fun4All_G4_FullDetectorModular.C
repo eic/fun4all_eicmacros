@@ -367,6 +367,8 @@ int Fun4All_G4_FullDetectorModular(
   Enable::EEMC = true;
 
   Enable::EHCAL = true;
+  if(specialSetting.Contains("noEHCAL"))
+    Enable::EHCAL = false;
   Enable::EHCAL_VERBOSITY = 0;
   //  Enable::EHCAL_ABSORBER = true;
 

@@ -100,7 +100,9 @@ void CTTLSetup(PHG4Reco *g4Reco, TString cttloption = "")
   const double um = 1e-3 * mm;
   cout << "entered setup for CTTL" << endl;
   
-  if (cttloption.Contains("CTTLSE1")){
+  if (cttloption.Contains("CTTLSEL1")){
+    make_barrel_layer("CTTL_0", g4Reco, 50,  100, 85*um); 
+  } else if (cttloption.Contains("CTTLSE1")){
     make_barrel_layer("CTTL_0", g4Reco, 92,  180, 85*um); 
   } else if (cttloption.Contains("CTTLSH1")){
     make_barrel_layer("CTTL_0", g4Reco, 114.7,  180, 85*um); 

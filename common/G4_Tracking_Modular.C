@@ -255,7 +255,7 @@ void Tracking_Reco(TString specialSetting = "")
     float pitch=500e-4;
     float res   = pitch/posResImp;
     int nlayer  = 2;
-    if (specialSetting.Contains("CTTLSE1") || specialSetting.Contains("CTTLSH1") )
+    if (specialSetting.Contains("CTTLSEL1") || specialSetting.Contains("CTTLSE1") || specialSetting.Contains("CTTLSH1"))
       nlayer    = 1;
     if (specialSetting.Contains("CTTLLC")) 
       pitch =1300e-4;
@@ -269,7 +269,9 @@ void Tracking_Reco(TString specialSetting = "")
                           0.95,                              //      const float eff,
                           0);                                //      const float noise
     }
-    if (specialSetting.Contains("CTTLSE1")) {
+    if (specialSetting.Contains("CTTLSEL1")) {
+      kalman -> add_cylinder_state("CTTL_0", 50);
+    } else if (specialSetting.Contains("CTTLSE1")) {
       kalman -> add_cylinder_state("CTTL_0", 92);
     } else if ( specialSetting.Contains("CTTLSH1") ) { 
       kalman -> add_cylinder_state("CTTL_0", 114.7);
@@ -579,7 +581,7 @@ void Tracking_Eval(const std::string &outputfile, TString specialSetting = "")
   }
   if (Enable::CTTL){
     int nlayer  = 2;
-    if (specialSetting.Contains("CTTLSE1") || specialSetting.Contains("CTTLSH1") )
+    if (specialSetting.Contains("CTTLSE1") || specialSetting.Contains("CTTLSH1")  || specialSetting.Contains("CTTLSH1"))
       nlayer    = 1;
     for (int l = 0; l < nlayer; l++)
       fast_sim_eval->AddProjection(Form("CTTL_%d",l));
