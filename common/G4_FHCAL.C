@@ -55,6 +55,7 @@ namespace G4FHCAL
   //enu_FHcal_clusterizer FHcal_clusterizer = kFHcalGraphClusterizer;
   namespace SETTING
   {
+    int Absorber_FeTungsten = 0;
     bool FullEtaAcc = false;
     bool HC2x = false;
     bool HC4x = false;
@@ -148,7 +149,7 @@ void FHCALSetup(PHG4Reco *g4Reco)
     mapping_fhcal << getenv("CALIBRATIONROOT")
                   << "/ForwardHcal/mapping/towerMap_FHCAL_v005.txt";
   }
-
+  if(G4FHCAL::SETTING::Absorber_FeTungsten)fhcal->SetUseFeTungstenAbsorber(1);
   fhcal->SetTowerMappingFile(mapping_fhcal.str());
   fhcal->OverlapCheck(OverlapCheck);
   fhcal->SetActive();

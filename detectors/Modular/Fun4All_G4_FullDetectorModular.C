@@ -594,6 +594,8 @@ int Fun4All_G4_FullDetectorModular(
     EventEvaluator *eval = new EventEvaluator("EVENTEVALUATOR",  outputroot + "_eventtree.root");
     eval->set_reco_tracing_energy_threshold(0.05);
     eval->Verbosity(0);
+    if(specialSetting.Contains("GEOMETRYTREE"))
+      eval->set_do_GEOMETRY(true);
     if (Enable::FHCAL)
       eval->set_do_FHCAL(true);
     if (Enable::FEMC)
@@ -790,6 +792,10 @@ void ParseTString(TString &specialSetting)
   if (specialSetting.Contains("HC2x"))
   {
     G4FHCAL::SETTING::HC2x = true;
+  } 
+  if (specialSetting.Contains("FHCFeTungsten"))
+  {
+    G4FHCAL::SETTING::Absorber_FeTungsten = 1;
   } 
   else if (specialSetting.Contains("HC4x"))
   {
