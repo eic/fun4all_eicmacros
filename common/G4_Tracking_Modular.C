@@ -581,7 +581,7 @@ void Tracking_Eval(const std::string &outputfile, TString specialSetting = "")
   }
   if (Enable::CTTL){
     int nlayer  = 2;
-    if (specialSetting.Contains("CTTLSE1") || specialSetting.Contains("CTTLSH1")  || specialSetting.Contains("CTTLSH1"))
+    if (specialSetting.Contains("CTTLSEL1") || specialSetting.Contains("CTTLSE1") || specialSetting.Contains("CTTLSH1"))
       nlayer    = 1;
     for (int l = 0; l < nlayer; l++)
       fast_sim_eval->AddProjection(Form("CTTL_%d",l));
