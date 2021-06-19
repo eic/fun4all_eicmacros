@@ -622,6 +622,7 @@ int Fun4All_G4_FullDetectorModular(
       if (G4TRACKING::DISPLACED_VERTEX) eval->set_do_VERTEX(true);
     }
     eval->set_do_MCPARTICLES(true);
+    eval->set_do_store_event_level_info(true);
     se->registerSubsystem(eval);
   }
 
