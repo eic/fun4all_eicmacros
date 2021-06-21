@@ -462,7 +462,7 @@ void Tracking_Reco(TString specialSetting = "")
   // FEMC
   //-------------------------
   // Saved track states (projections)
-  if (Enable::FEMC && G4TRACKING::PROJECTION_FEMC){
+  if (Enable::FEMC){
     kalman->add_state_name("FEMC");
   //   kalman->add_zplane_state("FEMC", 310);
   }
@@ -470,14 +470,14 @@ void Tracking_Reco(TString specialSetting = "")
   //-------------------------
   // DRCALO
   //-------------------------
-  // if (Enable::DRCALO && G4TRACKING::PROJECTION_DRCALO) {
-  //   kalman -> add_zplane_state("DRCALO_0", 300);
-  // }
+  if (Enable::DRCALO) {
+    kalman -> add_zplane_state("DRCALO_0", 300);
+  }
 
   //-------------------------
   // FHCAL
   //-------------------------
-  if (Enable::FHCAL && G4TRACKING::PROJECTION_FHCAL) {
+  if (Enable::FHCAL) {
     kalman->add_state_name("FHCAL");
   //   kalman->add_zplane_state("FHCAL", 350);
   }
@@ -485,14 +485,14 @@ void Tracking_Reco(TString specialSetting = "")
   // CEMC
   //-------------------------
 
-  if (Enable::CEMC && G4TRACKING::PROJECTION_CEMC){
+  if (Enable::CEMC){
     kalman->add_state_name("CEMC");
   }
   
   //-------------------------
   // EEMC
   //-------------------------
-  if (Enable::EEMC && G4TRACKING::PROJECTION_EEMC)
+  if (Enable::EEMC)
   {
     kalman->add_state_name("EEMC");
   }
