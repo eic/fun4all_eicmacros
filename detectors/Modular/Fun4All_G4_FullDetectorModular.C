@@ -122,17 +122,17 @@ int Fun4All_G4_FullDetectorModular(
     INPUTGENERATOR::SimpleEventGenerator[0]->set_eta_range(1., 3.7);
     INPUTGENERATOR::SimpleEventGenerator[0]->set_phi_range(-M_PI, M_PI);
     INPUTGENERATOR::SimpleEventGenerator[0]->set_pt_range(particlemomMin, particlemomMax);
-//     INPUTGENERATOR::SimpleEventGenerator[0]->set_p_range(particlemomMin, particlemomMax);
   }
   if(particlemomMin>-1 && particlemomMax == -1){
     PHG4ParticleGenerator *gen = new PHG4ParticleGenerator("PGENERATOR");
     gen->set_name("pi-");
+    // gen->set_name("pi0");
     gen->set_vtx(0, 0, 0);
     gen->set_eta_range(2.5, 4.2);            // around midrapidity
     if(particlemomMin > -1)
       gen->set_mom_range(particlemomMin, particlemomMin);                   // fixed 4 GeV/c
     else
-      gen->set_mom_range(5, 60);                   // fixed 4 GeV/c
+      gen->set_mom_range(1, 60);                   // fixed 4 GeV/c
     gen->set_phi_range(0., 2* M_PI);  // 0-90 deg
     // gen->Verbosity(1);  // 0-90 deg
     se->registerSubsystem(gen);
@@ -398,6 +398,8 @@ int Fun4All_G4_FullDetectorModular(
 
     Enable::FEMC = false;
     Enable::FHCAL = false;
+    if(specialSetting.Contains("DRSTANDALONE"))
+      Enable::DRCALO = true;
     if(specialSetting.Contains("FEMCSTANDALONE"))
       Enable::FEMC = true;
     if(specialSetting.Contains("FHCALSTANDALONE"))
