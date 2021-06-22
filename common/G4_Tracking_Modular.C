@@ -492,7 +492,7 @@ void Tracking_Reco(TString specialSetting = "")
   //-------------------------
   // EEMC
   //-------------------------
-  if (Enable::EEMC)
+  if ((Enable::EEMC || Enable::EEMCH ) )
   {
     kalman->add_state_name("EEMC");
   }

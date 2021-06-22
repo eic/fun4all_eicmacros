@@ -294,23 +294,6 @@ int Fun4All_G4_FullDetectorModular(
 
   G4TRACKING::DISPLACED_VERTEX = true;  // this option exclude vertex in the track fitting and use RAVE to reconstruct primary and 2ndary vertexes
   
-  // projections to calorimeters
-  if (specialSetting.Contains("TRACKEVALHITS")){
-    G4TRACKING::PROJECTION_CEMC   = false;
-    G4TRACKING::PROJECTION_FEMC   = false;
-    G4TRACKING::PROJECTION_FHCAL  = false;
-    G4TRACKING::PROJECTION_EEMC   = false;
-    G4TRACKING::PROJECTION_EHCAL  = false;
-    G4TRACKING::PROJECTION_DRCALO = false;
-  } else {
-    G4TRACKING::PROJECTION_CEMC   = Enable::CEMC &&true;
-    G4TRACKING::PROJECTION_FEMC   = Enable::FEMC && true;
-    G4TRACKING::PROJECTION_FHCAL  = Enable::FHCAL && true;
-    G4TRACKING::PROJECTION_EEMC   = Enable::EEMC && true;  
-    G4TRACKING::PROJECTION_EHCAL  = Enable::EHCAL && true;
-    G4TRACKING::PROJECTION_DRCALO = Enable::DRCALO && true;
-  }
-
   // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   // geometry - barrel
   // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -364,8 +347,12 @@ int Fun4All_G4_FullDetectorModular(
   // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   // EICDetector geometry - 'electron' direction
   // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  Enable::EEMC = true;
-
+  Enable::EEMC  = true;
+  Enable::EEMCH = false;
+  if (specialSetting.Contains("EEMCH")){
+    Enable::EEMCH = true;
+    Enable::EEMC  = false;
+  }
   Enable::EHCAL = true;
   if(specialSetting.Contains("noEHCAL"))
     Enable::EHCAL = false;
@@ -373,6 +360,25 @@ int Fun4All_G4_FullDetectorModular(
   //  Enable::EHCAL_ABSORBER = true;
 
   Enable::PLUGDOOR = false;
+
+  
+  // projections to calorimeters
+  if (specialSetting.Contains("TRACKEVALHITS")){
+    G4TRACKING::PROJECTION_CEMC   = false;
+    G4TRACKING::PROJECTION_FEMC   = false;
+    G4TRACKING::PROJECTION_FHCAL  = false;
+    G4TRACKING::PROJECTION_EEMC   = false;
+    G4TRACKING::PROJECTION_EHCAL  = false;
+    G4TRACKING::PROJECTION_DRCALO = false;
+  } else {
+    G4TRACKING::PROJECTION_CEMC   = Enable::CEMC && true;
+    G4TRACKING::PROJECTION_FEMC   = Enable::FEMC && true;
+    G4TRACKING::PROJECTION_FHCAL  = Enable::FHCAL && true;
+    G4TRACKING::PROJECTION_EEMC   = ( Enable::EEMC || Enable::EEMCH ) && true;  
+    G4TRACKING::PROJECTION_EHCAL  = Enable::EHCAL && true;
+    G4TRACKING::PROJECTION_DRCALO = Enable::DRCALO && true;
+  }
+
 
   // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   // special settings for Calo standalone studies
@@ -395,7 +401,7 @@ int Fun4All_G4_FullDetectorModular(
     Enable::HCALIN = false;
     Enable::EHCAL = false;
     Enable::EEMC = false;
-
+    Enable::EEMCH = false;
     Enable::FEMC = false;
     Enable::FHCAL = false;
     if(specialSetting.Contains("DRSTANDALONE"))
@@ -446,10 +452,15 @@ int Fun4All_G4_FullDetectorModular(
   Enable::EEMC_CLUSTER  = Enable::EEMC_TOWER && true;
   Enable::EEMC_EVAL     = Enable::EEMC_CLUSTER && false;
 
-  Enable::EHCAL_CELL = Enable::EHCAL && true;
-  Enable::EHCAL_TOWER = Enable::EHCAL_CELL && true;
+  Enable::EEMCH_CELL     = Enable::EEMCH && true;
+  Enable::EEMCH_TOWER    = Enable::EEMCH_CELL && true;
+  Enable::EEMCH_CLUSTER  = Enable::EEMCH_TOWER && true;
+  Enable::EEMCH_EVAL     = Enable::EEMCH_CLUSTER && false;
+
+  Enable::EHCAL_CELL    = Enable::EHCAL && true;
+  Enable::EHCAL_TOWER   = Enable::EHCAL_CELL && true;
   Enable::EHCAL_CLUSTER = Enable::EHCAL_TOWER && true;
-  Enable::EHCAL_EVAL = Enable::EHCAL_CLUSTER && false;
+  Enable::EHCAL_EVAL    = Enable::EHCAL_CLUSTER && false;
 
 
   // Other options
@@ -520,6 +531,7 @@ int Fun4All_G4_FullDetectorModular(
   if (Enable::HCALIN_CELL) HCALInner_Cells();
   if (Enable::HCALOUT_CELL) HCALOuter_Cells();
   if (Enable::EEMC_CELL) EEMC_Cells();
+  if (Enable::EEMCH_CELL) EEMCH_Cells();
 
   //-----------------------------
   // CEMC towering and clustering
@@ -550,6 +562,9 @@ int Fun4All_G4_FullDetectorModular(
 
   if (Enable::EEMC_TOWER) EEMC_Towers();
   if (Enable::EEMC_CLUSTER) EEMC_Clusters();
+
+  if (Enable::EEMCH_TOWER) EEMCH_Towers();
+  if (Enable::EEMCH_CLUSTER) EEMCH_Clusters();
 
   if (Enable::EHCAL_TOWER) EHCAL_Towers();
   if (Enable::EHCAL_CLUSTER) EHCAL_Clusters();
@@ -606,15 +621,17 @@ int Fun4All_G4_FullDetectorModular(
       eval->set_do_DRCALO(true);
     if (Enable::EHCAL)
       eval->set_do_EHCAL(true);
-    if (Enable::EEMC)
+    if (Enable::EEMC || Enable::EEMCH)
       eval->set_do_EEMC(true);
+    if (Enable::EEMCH)
+      eval->set_do_EEMCG(true);
     if (Enable::CEMC)
       eval->set_do_CEMC(true);
     if (Enable::HCALIN)
       eval->set_do_HCALIN(true);
     if (Enable::HCALOUT)
       eval->set_do_HCALOUT(true);
-    if (Enable::FHCAL || Enable::FEMC || Enable::EHCAL || Enable::EEMC || Enable::CEMC || Enable::HCALIN || Enable::HCALOUT )
+    if (Enable::FHCAL || Enable::FEMC || Enable::EHCAL || Enable::EEMC ||  Enable::EEMCH || Enable::CEMC || Enable::HCALIN || Enable::HCALOUT )
       eval->set_do_CLUSTERS(true);
     
     if (Enable::TRACKING){
