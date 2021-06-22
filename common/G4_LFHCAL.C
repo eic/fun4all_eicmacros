@@ -4,7 +4,7 @@
 #include <GlobalVariables.C>
 
 #include <g4calo/RawTowerBuilderByHitIndexLHCal.h>
-#include <g4calo/RawTowerDigitizerV2.h>
+#include <g4calo/RawTowerDigitizer.h>
 
 #include <g4eiccalos/PHG4LFHcalSubsystem.h>
 
@@ -14,7 +14,7 @@
 
 #include <caloreco/RawClusterBuilderFwd.h>
 #include <caloreco/RawClusterBuilderTemplate.h>
-#include <caloreco/RawTowerCalibrationv2.h>
+#include <caloreco/RawTowerCalibration.h>
 
 #include <fun4all/Fun4AllServer.h>
 
@@ -169,16 +169,16 @@ void LFHCAL_Towers()
   se->registerSubsystem(tower_LFHCAL);
 
   cout << "def: using default for LFHCAL towers" << endl;
-  RawTowerDigitizerV2 *TowerDigitizer = new RawTowerDigitizerV2("LFHCALRawTowerDigitizer");
+  RawTowerDigitizer *TowerDigitizer = new RawTowerDigitizer("LFHCALRawTowerDigitizer");
   TowerDigitizer->Detector("LFHCAL");
   TowerDigitizer->Verbosity(verbosity);
-  TowerDigitizer->set_digi_algorithm(RawTowerDigitizerV2::kNo_digitization);
+  TowerDigitizer->set_digi_algorithm(RawTowerDigitizer::kNo_digitization);
   se->registerSubsystem(TowerDigitizer);
 
-  RawTowerCalibrationv2 *TowerCalibration = new RawTowerCalibrationv2("LFHCALRawTowerCalibration");
+  RawTowerCalibration *TowerCalibration = new RawTowerCalibration("LFHCALRawTowerCalibration");
   TowerCalibration->Detector("LFHCAL");
   TowerCalibration->Verbosity(verbosity);
-  TowerCalibration->set_calib_algorithm(RawTowerCalibrationv2::kSimple_linear_calibration);
+  TowerCalibration->set_calib_algorithm(RawTowerCalibration::kSimple_linear_calibration);
   TowerCalibration->set_calib_const_GeV_ADC(1. / 0.03898);  // calibrated with muons
   TowerCalibration->set_pedstal_ADC(0);
   se->registerSubsystem(TowerCalibration);
