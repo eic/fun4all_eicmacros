@@ -200,7 +200,7 @@ int Fun4All_G4_FullDetectorModular(
   // Write the DST
   //======================
 
-//  Enable::DSTOUT = true;
+  Enable::DSTOUT = false;
   DstOut::OutputDir = outdir;
   DstOut::OutputFile = outputFile;
   Enable::DSTOUT_COMPRESS = false;  // Compress DST files
@@ -328,6 +328,8 @@ int Fun4All_G4_FullDetectorModular(
 
   // STAR forward HCal
   Enable::FHCAL = true;
+  if(specialSetting.Contains("FEMCSTANDALONE") || specialSetting.Contains("LFHCAL"))
+    Enable::FHCAL = false;
   Enable::FHCAL_VERBOSITY = 0;
   //  Enable::FHCAL_ABSORBER = true;
   //  Enable::FHCAL_SUPPORT = true; // make support active volume
@@ -344,6 +346,17 @@ int Fun4All_G4_FullDetectorModular(
   Enable::DRCALO_VERBOSITY = 0;
   //  Enable::DRCALO_ABSORBER = true;
 
+  // PSD like HCal
+  if ( specialSetting.Contains("LFHCAL"))
+    Enable::LFHCAL = true;
+  
+  Enable::LFHCAL_ABSORBER = false;
+  Enable::LFHCAL_CELL    = Enable::LFHCAL && true;
+  Enable::LFHCAL_TOWER   = Enable::LFHCAL_CELL && true;
+  Enable::LFHCAL_CLUSTER = Enable::LFHCAL_TOWER && true;
+  Enable::LFHCAL_EVAL    = Enable::LFHCAL_CLUSTER && false;
+
+  
   // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   // EICDetector geometry - 'electron' direction
   // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -560,6 +573,9 @@ int Fun4All_G4_FullDetectorModular(
   if (Enable::DRCALO_TOWER) DRCALO_Towers();
   if (Enable::DRCALO_CLUSTER) DRCALO_Clusters();
 
+  if (Enable::LFHCAL_TOWER) LFHCAL_Towers();
+  if (Enable::LFHCAL_CLUSTER) LFHCAL_Clusters();
+
   if (Enable::EEMC_TOWER) EEMC_Towers();
   if (Enable::EEMC_CLUSTER) EEMC_Clusters();
 
@@ -619,6 +635,8 @@ int Fun4All_G4_FullDetectorModular(
       eval->set_do_FEMC(true);
     if (Enable::DRCALO)
       eval->set_do_DRCALO(true);
+    if (Enable::LFHCAL)
+      eval->set_do_LFHCAL(true);
     if (Enable::EHCAL)
       eval->set_do_EHCAL(true);
     if (Enable::EEMC || Enable::EEMCH)
@@ -789,11 +807,13 @@ void ParseTString(TString &specialSetting)
   if (specialSetting.Contains("ASYM")) // common for FHCAL and FEMC
   {
     G4FHCAL::SETTING::asymmetric = true;
+    G4LFHCAL::SETTING::asymmetric = true;
     G4FEMC::SETTING::asymmetric = true;
   }
   if (specialSetting.Contains("wDR")) // common for FHCAL and FEMC
   {
     G4FHCAL::SETTING::wDR = true;
+    G4LFHCAL::SETTING::wDR = true;
     G4FEMC::SETTING::wDR = true;
   }
 
@@ -801,17 +821,24 @@ void ParseTString(TString &specialSetting)
   {
     G4DRCALO::SETTING::FwdConfig = true;
     G4FHCAL::SETTING::wDR = true;
+    G4LFHCAL::SETTING::wDR = true;
     G4FEMC::SETTING::wDR = true;
   }
   if (specialSetting.Contains("FwdSquare")) // common for FHCAL and FEMC
   {
     G4DRCALO::SETTING::FwdSquare = true;
     G4FHCAL::SETTING::FwdSquare = true;
+    G4LFHCAL::SETTING::FwdSquare = true;
     G4FEMC::SETTING::FwdSquare = true;
   }
   if (specialSetting.Contains("HC2x"))
   {
     G4FHCAL::SETTING::HC2x = true;
+    G4LFHCAL::SETTING::HC2x = true;
+  } 
+  if (specialSetting.Contains("FHCFeTungsten"))
+  {
+    G4FHCAL::SETTING::Absorber_FeTungsten = 1;
   } 
   if (specialSetting.Contains("FHCFeTungsten"))
   {

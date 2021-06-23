@@ -6,8 +6,8 @@
 #include <g4calo/RawTowerBuilderByHitIndex.h>
 #include <g4calo/RawTowerDigitizer.h>
 
-#include <g4eiccalos/PHG4ForwardCalCellReco.h>
-#include <g4eiccalos/PHG4ForwardHcalSubsystem.h>
+// #include <g4eiccalos/PHG4ForwardCalCellReco.h>
+#include <g4eiccalos/PHG4BackwardHcalSubsystem.h>
 
 #include <g4eval/CaloEvaluator.h>
 
@@ -91,7 +91,7 @@ void EHCALSetup(PHG4Reco *g4Reco)
   Fun4AllServer *se = Fun4AllServer::instance();
 
   /** Use dedicated EHCAL module */
-  PHG4ForwardHcalSubsystem *ehcal = new PHG4ForwardHcalSubsystem("EHCAL");
+  PHG4BackwardHcalSubsystem *ehcal = new PHG4BackwardHcalSubsystem("EHCAL");
 
   ostringstream mapping_EHCAL;
 

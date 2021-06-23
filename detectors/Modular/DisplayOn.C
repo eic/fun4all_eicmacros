@@ -56,7 +56,7 @@ PHG4Reco * DisplayOn(const char *mac = "vis.mac")
   g4->ApplyCommand("/vis/modeling/trajectories/drawByParticleID-0/set proton- orange");
   g4->ApplyCommand("/vis/modeling/trajectories/drawByParticleID-0/set neutron lightgrey");
   g4->ApplyCommand("/vis/modeling/trajectories/drawByParticleID-0/set gamma wheat");
-//     g4->ApplyCommand("/vis/scene/add/trajectories smooth rich");
+  g4->ApplyCommand("/vis/scene/add/trajectories smooth rich");
   // remove neutrons and neutrinos
   g4->ApplyCommand("/vis/filtering/trajectories/create/particleFilter");
   g4->ApplyCommand("/vis/filtering/trajectories/particleFilter-0/add neutron");
