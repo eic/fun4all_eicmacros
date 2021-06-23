@@ -14,6 +14,7 @@
 #include <G4_DIRC.C>
 #include <G4_DRCALO.C>
 #include <G4_EEMC.C>
+#include <G4_EEMC_hybrid.C>
 #include <G4_FEMC_EIC.C>
 #include <G4_FHCAL.C>
 #include <G4_EHCAL.C>
@@ -74,6 +75,9 @@ void G4Init()
   } else if ( (Enable::FGEM && Enable::FTTL) ) {
     cout << "FGEM and FTTL cannot be enabled together" << endl;
     gSystem->Exit(1);
+  } else if ( (Enable::EEMC && Enable::EEMCH) ) {
+    cout << "two different versions of the EEMC are enabled together, pleas fix" << endl;
+    gSystem->Exit(1);
   }
 
   // load detector/material macros and execute Init() function
@@ -104,7 +108,7 @@ void G4Init()
   if (Enable::FHCAL) FHCALInit();
   if (Enable::EHCAL) EHCALInit();
   if (Enable::EEMC) EEMCInit();
-  
+  if (Enable::EEMCH) EEMCHInit();
   // very forward detectors
   if (Enable::BBC) BbcInit();
   
@@ -183,7 +187,8 @@ int G4Setup(TString specialSetting = ""){
   if (Enable::DRCALO) DRCALOSetup(g4Reco);
   if (Enable::EHCAL) EHCALSetup(g4Reco);
   if (Enable::EEMC) EEMCSetup(g4Reco);
-
+  if (Enable::EEMCH) EEMCHSetup(g4Reco);
+  
   //----------------------------------------
   // PID
   if (Enable::DIRC) DIRCSetup(g4Reco);
