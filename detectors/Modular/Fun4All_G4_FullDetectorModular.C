@@ -397,7 +397,7 @@ int Fun4All_G4_FullDetectorModular(
   // special settings for Calo standalone studies
   // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   // deactivate all respective detector systems for standalone studies
-  if(specialSetting.Contains("FHCALSTANDALONE") || specialSetting.Contains("FEMCSTANDALONE") || specialSetting.Contains("CALOSTANDALONE") || specialSetting.Contains("DRSTANDALONE")){
+  if(specialSetting.Contains("FHCALSTANDALONE") || specialSetting.Contains("FEMCSTANDALONE") || specialSetting.Contains("CALOSTANDALONE") || specialSetting.Contains("DRSTANDALONE") || specialSetting.Contains("TTLSTANDALONE")){
     Enable::PIPE = false;
     G4PIPE::use_forward_pipes = false;
     Enable::TPC_ENDCAP = false;
@@ -426,6 +426,17 @@ int Fun4All_G4_FullDetectorModular(
     if(specialSetting.Contains("CALOSTANDALONE")){
       Enable::FEMC = true;
       Enable::FHCAL = true;
+    }
+    if(specialSetting.Contains("TTLSTANDALONE")){
+      Enable::PIPE = true;
+      G4PIPE::use_forward_pipes = true;
+      // LGAD layers
+      if(specialSetting.Contains("FTTL"))
+        Enable::FTTL = true;
+      if(specialSetting.Contains("ETTL"))
+        Enable::ETTL = true;
+      if(specialSetting.Contains("CTTL"))
+        Enable::CTTL = true;
     }
   }
 
@@ -658,6 +669,7 @@ int Fun4All_G4_FullDetectorModular(
       eval->set_do_PROJECTIONS(true);
       if (G4TRACKING::DISPLACED_VERTEX) eval->set_do_VERTEX(true);
     }
+    eval->set_do_HEPMC(true);
     eval->set_do_MCPARTICLES(true);
     eval->set_do_store_event_level_info(true);
     se->registerSubsystem(eval);

@@ -3,7 +3,7 @@
 
 #include "GlobalVariables.C"
 
-#include <g4detectors/PHG4SectorSubsystem.h>
+#include <g4ttl/PHG4TTLSubsystem.h>
 #include <g4detectors/PHG4CylinderSubsystem.h>
 
 #include <g4main/PHG4Reco.h>
@@ -13,7 +13,7 @@
 R__LOAD_LIBRARY(libg4detectors.so)
 
 int make_forward_station(string name, PHG4Reco *g4Reco, double zpos, double Rmin,
-                          double Rmax,double tSilicon);
+                          double Rmax,double tSilicon, double xoffset=0);
 int make_barrel_layer(string name, PHG4Reco *g4Reco, 
                       double radius, double halflength, double tSilicon);
 
@@ -33,43 +33,40 @@ void TTL_Init()
 //-----------------------------------------------------------------------------------//
 void FTTLSetup(PHG4Reco *g4Reco, TString fttloption = "")
 {
-  const double cm = PHG4Sector::Sector_Geometry::Unit_cm();
-  const double mm = .1 * cm;
-  const double um = 1e-3 * mm;
 
   if (fttloption.Contains("FTTLS3LC") || fttloption.Contains("FTTLS3LVC") ){
-    make_forward_station("FTTL_0", g4Reco, 287,  3.9,  1.3, 85*um);
-    make_forward_station("FTTL_1", g4Reco, 289,  3.9,  1.3, 85*um);
-    make_forward_station("FTTL_2", g4Reco, 340,  3.9,  1.1, 85*um);    
+    make_forward_station("FTTL_0", g4Reco, 287,  3.9,  1.3, 85*um, 6 );
+    make_forward_station("FTTL_1", g4Reco, 289,  3.9,  1.3, 85*um, 6 );
+    make_forward_station("FTTL_2", g4Reco, 340,  3.9,  1.1, 85*um, 6 );    
   } else if (fttloption.Contains("FTTLS2LF")){
-    make_forward_station("FTTL_0", g4Reco, 289,  3.9,  2.5, 85*um);
-    make_forward_station("FTTL_1", g4Reco, 340,  3.9,  2.5, 85*um);
+    make_forward_station("FTTL_0", g4Reco, 289,  3.9,  2.5, 85*um, 6 );
+    make_forward_station("FTTL_1", g4Reco, 340,  3.9,  2.5, 85*um, 6 );
     make_forward_station("FTTL_2", g4Reco, 289,  2.5,  1.3, 85*um);
     make_forward_station("FTTL_3", g4Reco, 340,  2.5,  1.1, 85*um);
   } else if (fttloption.Contains("FTTLSE2LF")){
-    make_forward_station("FTTL_0", g4Reco, 287,  3.9,  2.5, 85*um);
-    make_forward_station("FTTL_1", g4Reco, 289,  3.9,  2.5, 85*um);
+    make_forward_station("FTTL_0", g4Reco, 287,  3.9,  2.5, 85*um, 6 );
+    make_forward_station("FTTL_1", g4Reco, 289,  3.9,  2.5, 85*um, 6 );
     make_forward_station("FTTL_2", g4Reco, 287,  2.5,  1.3, 85*um);
     make_forward_station("FTTL_3", g4Reco, 289,  2.5,  1.3, 85*um);
   } else if (fttloption.Contains("FTTLS2LC") || fttloption.Contains("FTTLS2LVC")){
-    make_forward_station("FTTL_0", g4Reco, 289,  3.9,  1.3, 85*um);
-    make_forward_station("FTTL_1", g4Reco, 340,  3.9,  1.1, 85*um);    
+    make_forward_station("FTTL_0", g4Reco, 289,  3.9,  1.3, 85*um, 6 );
+    make_forward_station("FTTL_1", g4Reco, 340,  3.9,  1.1, 85*um, 6 );    
   } else if (fttloption.Contains("FTTLSE2LC") || fttloption.Contains("FTTLSE2LVC")){
-    make_forward_station("FTTL_0", g4Reco, 287,  3.9,  1.3, 85*um);
-    make_forward_station("FTTL_1", g4Reco, 289,  3.9,  1.3, 85*um);
+    make_forward_station("FTTL_0", g4Reco, 287,  3.9,  1.3, 85*um, 6 );
+    make_forward_station("FTTL_1", g4Reco, 289,  3.9,  1.3, 85*um, 6 );
   } else if (fttloption.Contains("FTTLSE1LC") || fttloption.Contains("FTTLSE1LVC")){
-    make_forward_station("FTTL_0", g4Reco, 289,  3.9,  1.3, 85*um);
+    make_forward_station("FTTL_0", g4Reco, 289,  3.9,  1.3, 85*um, 6 );
   } else if (fttloption.Contains("FTTLDRC")){
-    make_forward_station("FTTL_0", g4Reco, 287,  3.9,  1.3, 85*um);
-    make_forward_station("FTTL_1", g4Reco, 289,  3.9,  1.3, 85*um);
+    make_forward_station("FTTL_0", g4Reco, 287,  3.9,  1.3, 85*um, 6 );
+    make_forward_station("FTTL_1", g4Reco, 289,  3.9,  1.3, 85*um, 6 );
     make_forward_station("FTTL_2", g4Reco, 340,  2.5,  1.1, 85*um);
   } else if (fttloption.Contains("FTTLDRF")){
-    make_forward_station("FTTL_0", g4Reco, 287,  3.9,  1.1, 85*um);
-    make_forward_station("FTTL_1", g4Reco, 289,  3.9,  1.1, 85*um);
+    make_forward_station("FTTL_0", g4Reco, 287,  3.9,  1.1, 85*um, 6 );
+    make_forward_station("FTTL_1", g4Reco, 289,  3.9,  1.1, 85*um, 6 );
   } else {
-    make_forward_station("FTTL_0", g4Reco, 287,  3.9,  2.5, 85*um);
-    make_forward_station("FTTL_1", g4Reco, 289,  3.9,  2.5, 85*um);
-    make_forward_station("FTTL_2", g4Reco, 340,  3.9,  2.5, 85*um);
+    make_forward_station("FTTL_0", g4Reco, 287,  3.9,  2.5, 85*um, 6 );
+    make_forward_station("FTTL_1", g4Reco, 289,  3.9,  2.5, 85*um, 6 );
+    make_forward_station("FTTL_2", g4Reco, 340,  3.9,  2.5, 85*um, 6 );
     make_forward_station("FTTL_3", g4Reco, 287,  2.5,  1.3, 85*um);
     make_forward_station("FTTL_4", g4Reco, 340,  2.5,  1.1, 85*um);    
     make_forward_station("FTTL_5", g4Reco, 289,  2.5,  1.3, 85*um);
@@ -80,9 +77,6 @@ void FTTLSetup(PHG4Reco *g4Reco, TString fttloption = "")
 //-----------------------------------------------------------------------------------//
 void ETTLSetup(PHG4Reco *g4Reco, TString ettloption = "")
 {
-  const double cm = PHG4Sector::Sector_Geometry::Unit_cm();
-  const double mm = .1 * cm;
-  const double um = 1e-3 * mm;
   if (ettloption.Contains("ETTLSE1")){
     make_forward_station("ETTL_0", g4Reco, -158.5,  -1.6,  -3.7, 85*um); // define wit eta 
   } else {
@@ -95,9 +89,6 @@ void ETTLSetup(PHG4Reco *g4Reco, TString ettloption = "")
 //-----------------------------------------------------------------------------------//
 void CTTLSetup(PHG4Reco *g4Reco, TString cttloption = "")
 {
-  const double cm = PHG4Sector::Sector_Geometry::Unit_cm();
-  const double mm = .1 * cm;
-  const double um = 1e-3 * mm;
   cout << "entered setup for CTTL" << endl;
   
   if (cttloption.Contains("CTTLSEL1")){
@@ -116,11 +107,16 @@ void CTTLSetup(PHG4Reco *g4Reco, TString cttloption = "")
 //-----------------------------------------------------------------------------------//
 int make_forward_station(string name, PHG4Reco *g4Reco,
         double zpos, double etamin, double etamax,
-        double tSilicon) //silicon thickness
+        double tSilicon, //silicon thickness
+        double xoffset = 0 )
 {
-  //  cout
-  //      << "make_GEM_station - GEM construction with PHG4SectorSubsystem - make_GEM_station_EdgeReadout  of "
-  //      << name << endl;
+  if (etamax < etamin){
+    double t = etamax;
+    etamax = etamin;
+    etamin = t;
+  }
+  double rMin = 2 * abs(zpos) * TMath::ATan(TMath::Exp(-abs(zpos>0 ? etamax : etamin)));
+  double rMax = 2 * abs(zpos) * TMath::ATan(TMath::Exp(-abs(zpos>0 ? etamin : etamax)));
 
   // always facing the interaction point
   double polar_angle = 0;
@@ -128,39 +124,17 @@ int make_forward_station(string name, PHG4Reco *g4Reco,
     zpos = -zpos;
     polar_angle = M_PI;
   }
-  if (etamax < etamin){
-    double t = etamax;
-    etamax = etamin;
-    etamin = t;
-  }
-
-  PHG4SectorSubsystem *ttl;
-  ttl = new PHG4SectorSubsystem(name);
+  PHG4TTLSubsystem *ttl;
+  ttl = new PHG4TTLSubsystem(name);
 
   ttl->SuperDetector(name);
-
-  ttl->get_geometry().set_normal_polar_angle(polar_angle);
-  ttl->get_geometry().set_normal_start(zpos * PHG4Sector::Sector_Geometry::Unit_cm());
-  ttl->get_geometry().set_min_polar_angle(PHG4Sector::Sector_Geometry::eta_to_polar_angle(etamax));
-  ttl->get_geometry().set_max_polar_angle(PHG4Sector::Sector_Geometry::eta_to_polar_angle(etamin));
-  ttl->get_geometry().set_max_polar_edge(PHG4Sector::Sector_Geometry::ConeEdge());
-  ttl->get_geometry().set_min_polar_edge(PHG4Sector::Sector_Geometry::ConeEdge());
-  ttl->get_geometry().set_N_Sector(1);
-  ttl->get_geometry().set_material("G4_AIR");
+  ttl->set_double_param("polar_angle", polar_angle);                    //
+  ttl->set_double_param("place_z", zpos * cm);                    //
+  ttl->set_double_param("rMin", rMin * cm);                    //
+  ttl->set_double_param("rMax", rMax * cm);                    //
+  ttl->set_double_param("offset_x", xoffset * cm);                    //
+  ttl->set_double_param("tSilicon", tSilicon);                    //
   ttl->OverlapCheck(true);
-  
-  const double cm = PHG4Sector::Sector_Geometry::Unit_cm();
-  const double mm = .1 * cm;
-  const double um = 1e-3 * mm;
-  // build up layers
-
-  ttl->get_geometry().AddLayer("SiliconSensor", "G4_Si", tSilicon, true, 100);
-  ttl->get_geometry().AddLayer("Metalconnection", "G4_Al", 100 * um, false, 100);
-  ttl->get_geometry().AddLayer("HDI", "G4_KAPTON", 20 * um, false, 100);
-  ttl->get_geometry().AddLayer("Cooling", "G4_WATER", 100 * um, false, 100);
-  ttl->get_geometry().AddLayer("Support", "G4_GRAPHITE", 50 * um, false, 100);
-  ttl->get_geometry().AddLayer("Support_Gap", "G4_AIR", 1 * cm, false, 100);
-  ttl->get_geometry().AddLayer("Support2", "G4_GRAPHITE", 50 * um, false, 100);
 
   g4Reco->registerSubsystem(ttl);
   return 0;
@@ -177,9 +151,6 @@ int make_barrel_layer(string name, PHG4Reco *g4Reco,
   //build barrel layer
   //---------------------------------
   const int nSubLayer = 7;
-  const double cm = PHG4Sector::Sector_Geometry::Unit_cm();
-  const double mm = .1 * cm;
-  const double um = 1e-3 * mm;
 
   string layerName[nSubLayer] = {"SiliconSensor", "Metalconnection", "HDI", "Cooling",
                                  "Support1", "Support_Gap", "Support2"};
