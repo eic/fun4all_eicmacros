@@ -175,6 +175,7 @@ void LFHCAL_Towers()
   TowerDigitizer->set_digi_algorithm(RawTowerDigitizer::kNo_digitization);
   se->registerSubsystem(TowerDigitizer);
 
+  
   RawTowerCalibration *TowerCalibration = new RawTowerCalibration("LFHCALRawTowerCalibration");
   TowerCalibration->Detector("LFHCAL");
   TowerCalibration->Verbosity(verbosity);

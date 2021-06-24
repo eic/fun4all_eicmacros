@@ -43,7 +43,13 @@ namespace G4EEMCH
   //  double Gdz = 18. + 0.0001;  // These 2 paras are only served as the dimension of the black hole
   //  double Gz0 = -170.;
   double Gdz = 20. + 0.1;
-  double Gz0 = -211.;
+  double Gz0 = -180.;
+  
+  namespace SETTING
+  {
+    bool USEHYBRID    = true;
+    bool USECEMCGeo   = false;
+  }  // namespace SETTING
   
   // Digitization (default photon digi):
   RawTowerDigitizer::enu_digi_algorithm TowerDigi = RawTowerDigitizer::kSimple_photon_digitization;
@@ -69,14 +75,7 @@ namespace G4EEMCH
 
 void EEMCHInit()
 {
-  if (G4EEMCH::use_projective_geometry)
-  {
-    BlackHoleGeometry::max_radius = std::max(BlackHoleGeometry::max_radius, 81.);
-  }
-  else
-  {
-    BlackHoleGeometry::max_radius = std::max(BlackHoleGeometry::max_radius, 65.6);
-  }
+  BlackHoleGeometry::max_radius = std::max(BlackHoleGeometry::max_radius, 77.);
   // from towerMap_EEMC_v006.txt
   BlackHoleGeometry::min_z = std::min(BlackHoleGeometry::min_z, G4EEMCH::Gz0 - G4EEMCH::Gdz / 2.);
 }
@@ -91,7 +90,7 @@ void EEMCHSetup(PHG4Reco *g4Reco)
   /** Use dedicated EEMCH module */
   ostringstream mapping_eemc_1, mapping_eemc_2;
     
-
+  cout << "hybrid: " << G4EEMCH::SETTING::USEHYBRID <<  "\t CEMC:" << G4EEMCH::SETTING::USECEMCGeo << endl;
   
   PHG4HybridHomogeneousCalorimeterSubsystem *eemc_crystal = new PHG4HybridHomogeneousCalorimeterSubsystem("EEMC");
   eemc_crystal->SuperDetector("EEMC");
@@ -99,32 +98,51 @@ void EEMCHSetup(PHG4Reco *g4Reco)
   if (AbsorberActive)
     eemc_crystal->SetAbsorberActive();
   
-  if (!G4EEMCH::use_projective_geometry)
-  {
-    mapping_eemc_1 << getenv("CALIBRATIONROOT") << "/CrystalCalorimeter/mapping/crystal_mapping/tower_map_crystal.txt";
-    eemc_crystal->set_string_param("mappingtower", mapping_eemc_1.str());
+  if (G4EEMCH::SETTING::USEHYBRID && !G4EEMCH::SETTING::USECEMCGeo)
+    mapping_eemc_1 << getenv("CALIBRATIONROOT") << "/CrystalCalorimeter/mapping/crystal_mapping/tower_map_crystal_200cm_SciGlassBarrel.txt";
+  else if (G4EEMCH::SETTING::USEHYBRID && G4EEMCH::SETTING::USECEMCGeo)
+    mapping_eemc_1 << getenv("CALIBRATIONROOT") << "/CrystalCalorimeter/mapping/crystal_mapping/tower_map_crystal_200cm_CEMCBarrel.txt";
+  else if (!G4EEMCH::SETTING::USEHYBRID && !G4EEMCH::SETTING::USECEMCGeo)
+    mapping_eemc_1 << getenv("CALIBRATIONROOT") << "/CrystalCalorimeter/mapping/crystal_mapping/tower_map_purecrystal_200cm_SciGlassBarrel.txt";
+  else if (!G4EEMCH::SETTING::USEHYBRID && G4EEMCH::SETTING::USECEMCGeo)
+    mapping_eemc_1 << getenv("CALIBRATIONROOT") << "/CrystalCalorimeter/mapping/crystal_mapping/tower_map_purecrystal_200cm_CEMCBarrel.txt";
+  else {
+    cout << "*******************************************************************************" << endl;
+    cout << "******   ATTENTION no EEMC set as your settings aren't correct ******" << endl;
+    cout << "*******************************************************************************" << endl;
+    return;
   }
+  cout << "setting EEMC crystal mapping: " << mapping_eemc_1.str() << endl;
+  eemc_crystal->set_string_param("mappingtower", mapping_eemc_1.str());    
   eemc_crystal->OverlapCheck(OverlapCheck);
 
   g4Reco->registerSubsystem(eemc_crystal);
   
-
-  
-  
-  PHG4HybridHomogeneousCalorimeterSubsystem *eemc_glass = new PHG4HybridHomogeneousCalorimeterSubsystem("EEMC_glass");
-  eemc_glass->SuperDetector("EEMC_glass");
-  eemc_glass->SetActive();
-  if (AbsorberActive)
-    eemc_glass->SetAbsorberActive();
-
-  if (!G4EEMCH::use_projective_geometry)
-    {
-      mapping_eemc_2 << getenv("CALIBRATIONROOT") << "/CrystalCalorimeter/mapping/crystal_mapping/tower_map_glass.txt";
-      eemc_glass->set_string_param("mappingtower", mapping_eemc_2.str());
+  if (G4EEMCH::SETTING::USEHYBRID){
+    if (!G4EEMCH::SETTING::USECEMCGeo)
+      mapping_eemc_2 << getenv("CALIBRATIONROOT") << "/CrystalCalorimeter/mapping/crystal_mapping/tower_map_glass_200cm_SciGlassBarrel.txt";
+    else if ( G4EEMCH::SETTING::USECEMCGeo)
+      mapping_eemc_2 << getenv("CALIBRATIONROOT") << "/CrystalCalorimeter/mapping/crystal_mapping/tower_map_glass_200cm_CEMCBarrel.txt";
+    else {
+      cout << "*******************************************************************************" << endl;
+      cout << "******  requested hybrid option but no glass mapping set ******" << endl;
+      cout << "*******************************************************************************" << endl;
+      return;
     }
   
-  eemc_glass->OverlapCheck(OverlapCheck);
-  g4Reco->registerSubsystem(eemc_glass);
+    cout << "setting EEMC glass mapping: " << mapping_eemc_2.str() << endl;
+    PHG4HybridHomogeneousCalorimeterSubsystem *eemc_glass = new PHG4HybridHomogeneousCalorimeterSubsystem("EEMC_glass");
+    eemc_glass->SuperDetector("EEMC_glass");
+    eemc_glass->SetActive();
+    if (AbsorberActive)
+      eemc_glass->SetAbsorberActive();
+
+    eemc_glass->set_string_param("mappingtower", mapping_eemc_2.str());
+    
+    eemc_glass->OverlapCheck(OverlapCheck);
+    g4Reco->registerSubsystem(eemc_glass);
+  
+  }
   
 }
 
@@ -138,8 +156,14 @@ void EEMCH_Towers()
   Fun4AllServer *se = Fun4AllServer::instance();
 
   ostringstream mapping_eemc_1, mapping_eemc_2;
-  mapping_eemc_1 << getenv("CALIBRATIONROOT") << "/CrystalCalorimeter/mapping/crystal_mapping/tower_map_crystal.txt";
-  mapping_eemc_2 << getenv("CALIBRATIONROOT") << "/CrystalCalorimeter/mapping/crystal_mapping/tower_map_glass.txt";
+  if (G4EEMCH::SETTING::USEHYBRID && !G4EEMCH::SETTING::USECEMCGeo)
+    mapping_eemc_1 << getenv("CALIBRATIONROOT") << "/CrystalCalorimeter/mapping/crystal_mapping/tower_map_crystal_200cm_SciGlassBarrel.txt";
+  else if (G4EEMCH::SETTING::USEHYBRID && G4EEMCH::SETTING::USECEMCGeo)
+    mapping_eemc_1 << getenv("CALIBRATIONROOT") << "/CrystalCalorimeter/mapping/crystal_mapping/tower_map_crystal_200cm_CEMCBarrel.txt";
+  else if (!G4EEMCH::SETTING::USEHYBRID && !G4EEMCH::SETTING::USECEMCGeo)
+    mapping_eemc_1 << getenv("CALIBRATIONROOT") << "/CrystalCalorimeter/mapping/crystal_mapping/tower_map_purecrystal_200cm_SciGlassBarrel.txt";
+  else if (!G4EEMCH::SETTING::USEHYBRID && G4EEMCH::SETTING::USECEMCGeo)
+    mapping_eemc_1 << getenv("CALIBRATIONROOT") << "/CrystalCalorimeter/mapping/crystal_mapping/tower_map_purecrystal_200cm_CEMCBarrel.txt";
 
   // CMS lead tungstate barrel ECAL at 18 degree centrigrade: 4.5 photoelectrons per MeV
   // lead tungsten test in Orsay is 15~20 p.e. per MeV, sci-glass is 5 p.e. per MeV
@@ -181,34 +205,41 @@ void EEMCH_Towers()
   TowerCalibration_EEMC_crystal->set_pedstal_ADC(0);
   se->registerSubsystem(TowerCalibration_EEMC_crystal);
   
-  RawTowerBuilderByHitIndex *tower_EEMC_glass = new RawTowerBuilderByHitIndex("TowerBuilder_EEMC_glass");
-  tower_EEMC_glass->Detector("EEMC_glass");
-  tower_EEMC_glass->set_sim_tower_node_prefix("SIM");
-  tower_EEMC_glass->GeometryTableFile(mapping_eemc_2.str());
-  se->registerSubsystem(tower_EEMC_glass);
-
-  RawTowerDigitizer *TowerDigitizer_EEMC_glass = new RawTowerDigitizer("EEMCRawTowerDigitizer_glass");
-  TowerDigitizer_EEMC_glass->Detector("EEMC_glass");
-  TowerDigitizer_EEMC_glass->Verbosity(verbosity);
-  TowerDigitizer_EEMC_glass->set_raw_tower_node_prefix("RAW");
-  TowerDigitizer_EEMC_glass->set_digi_algorithm(G4EEMCH::TowerDigi);
-  TowerDigitizer_EEMC_glass->set_pedstal_central_ADC(0);
-  TowerDigitizer_EEMC_glass->set_pedstal_width_ADC(glass_pedestal_ADC);  // eRD1 test beam setting
-  TowerDigitizer_EEMC_glass->set_photonelec_ADC(1);     //not simulating ADC discretization error
-  TowerDigitizer_EEMC_glass->set_photonelec_yield_visible_GeV(EEMC_photoelectron_per_GeV_glass);
-  TowerDigitizer_EEMC_glass->set_zero_suppression_ADC(glass_zero_suppression_ADC);  // eRD1 test beam setting
-  se->registerSubsystem(TowerDigitizer_EEMC_glass);  
+  if (G4EEMCH::SETTING::USEHYBRID){
+    if (!G4EEMCH::SETTING::USECEMCGeo)
+      mapping_eemc_2 << getenv("CALIBRATIONROOT") << "/CrystalCalorimeter/mapping/crystal_mapping/tower_map_glass_200cm_SciGlassBarrel.txt";
+    else if ( G4EEMCH::SETTING::USECEMCGeo)
+      mapping_eemc_2 << getenv("CALIBRATIONROOT") << "/CrystalCalorimeter/mapping/crystal_mapping/tower_map_glass_200cm_CEMCBarrel.txt";
   
-  RawTowerCalibration *TowerCalibration_EEMC_glass = new RawTowerCalibration("EEMCRawTowerCalibration_glass");
-  TowerCalibration_EEMC_glass->Detector("EEMC_glass");
-  TowerCalibration_EEMC_glass->Verbosity(verbosity);
-  TowerCalibration_EEMC_glass->set_calib_algorithm(RawTowerCalibration::kSimple_linear_calibration);
-  if (G4EEMCH::TowerDigi == RawTowerDigitizer::kNo_digitization)
-    TowerCalibration_EEMC_glass->set_calib_const_GeV_ADC(1.);
-  else
-    TowerCalibration_EEMC_glass->set_calib_const_GeV_ADC(1. / EEMC_photoelectron_per_GeV_glass);
-  TowerCalibration_EEMC_glass->set_pedstal_ADC(0);
-  se->registerSubsystem(TowerCalibration_EEMC_glass);  
+    RawTowerBuilderByHitIndex *tower_EEMC_glass = new RawTowerBuilderByHitIndex("TowerBuilder_EEMC_glass");
+    tower_EEMC_glass->Detector("EEMC_glass");
+    tower_EEMC_glass->set_sim_tower_node_prefix("SIM");
+    tower_EEMC_glass->GeometryTableFile(mapping_eemc_2.str());
+    se->registerSubsystem(tower_EEMC_glass);
+
+    RawTowerDigitizer *TowerDigitizer_EEMC_glass = new RawTowerDigitizer("EEMCRawTowerDigitizer_glass");
+    TowerDigitizer_EEMC_glass->Detector("EEMC_glass");
+    TowerDigitizer_EEMC_glass->Verbosity(verbosity);
+    TowerDigitizer_EEMC_glass->set_raw_tower_node_prefix("RAW");
+    TowerDigitizer_EEMC_glass->set_digi_algorithm(G4EEMCH::TowerDigi);
+    TowerDigitizer_EEMC_glass->set_pedstal_central_ADC(0);
+    TowerDigitizer_EEMC_glass->set_pedstal_width_ADC(glass_pedestal_ADC);  // eRD1 test beam setting
+    TowerDigitizer_EEMC_glass->set_photonelec_ADC(1);     //not simulating ADC discretization error
+    TowerDigitizer_EEMC_glass->set_photonelec_yield_visible_GeV(EEMC_photoelectron_per_GeV_glass);
+    TowerDigitizer_EEMC_glass->set_zero_suppression_ADC(glass_zero_suppression_ADC);  // eRD1 test beam setting
+    se->registerSubsystem(TowerDigitizer_EEMC_glass);  
+    
+    RawTowerCalibration *TowerCalibration_EEMC_glass = new RawTowerCalibration("EEMCRawTowerCalibration_glass");
+    TowerCalibration_EEMC_glass->Detector("EEMC_glass");
+    TowerCalibration_EEMC_glass->Verbosity(verbosity);
+    TowerCalibration_EEMC_glass->set_calib_algorithm(RawTowerCalibration::kSimple_linear_calibration);
+    if (G4EEMCH::TowerDigi == RawTowerDigitizer::kNo_digitization)
+      TowerCalibration_EEMC_glass->set_calib_const_GeV_ADC(1.);
+    else
+      TowerCalibration_EEMC_glass->set_calib_const_GeV_ADC(1. / EEMC_photoelectron_per_GeV_glass);
+    TowerCalibration_EEMC_glass->set_pedstal_ADC(0);
+    se->registerSubsystem(TowerCalibration_EEMC_glass);  
+  }
 }
 
 
@@ -225,11 +256,12 @@ void EEMCH_Clusters()
     ClusterBuilder_crystal->Verbosity(2);
     se->registerSubsystem(ClusterBuilder_crystal);
     
-    RawClusterBuilderTemplate *ClusterBuilder_glass = new RawClusterBuilderTemplate("EEMCRawClusterBuilderTemplate_glass");
-    ClusterBuilder_glass->Detector("EEMC_glass");
-    ClusterBuilder_glass->Verbosity(verbosity);
-    se->registerSubsystem(ClusterBuilder_glass);
-    
+    if (G4EEMCH::SETTING::USEHYBRID){
+      RawClusterBuilderTemplate *ClusterBuilder_glass = new RawClusterBuilderTemplate("EEMCRawClusterBuilderTemplate_glass");
+      ClusterBuilder_glass->Detector("EEMC_glass");
+      ClusterBuilder_glass->Verbosity(verbosity);
+      se->registerSubsystem(ClusterBuilder_glass);
+    }
   }
   else if (G4EEMCH::Eemc_clusterizer == G4EEMCH::kEemcGraphClusterizer)
   {
@@ -240,11 +272,12 @@ void EEMCH_Clusters()
     ClusterBuilder_crystal->Verbosity(2);
     se->registerSubsystem(ClusterBuilder_crystal);
     
-    RawClusterBuilderFwd *ClusterBuilder_glass = new RawClusterBuilderFwd("EEMCRawClusterBuilderFwd_glass");
-    ClusterBuilder_glass->Detector("EEMC_glass");
-    ClusterBuilder_glass->Verbosity(verbosity);
-    se->registerSubsystem(ClusterBuilder_glass);
-    
+    if (G4EEMCH::SETTING::USEHYBRID){
+      RawClusterBuilderFwd *ClusterBuilder_glass = new RawClusterBuilderFwd("EEMCRawClusterBuilderFwd_glass");
+      ClusterBuilder_glass->Detector("EEMC_glass");
+      ClusterBuilder_glass->Verbosity(verbosity);
+      se->registerSubsystem(ClusterBuilder_glass);
+    }
   }
   else
   {
@@ -261,18 +294,26 @@ void EEMCH_Eval(const std::string &outputfile)
 
   Fun4AllServer *se = Fun4AllServer::instance();
 
-     
-  CaloEvaluator *eval_crystal = new CaloEvaluator("EEMCEVALUATOR", "EEMC", outputfile.c_str());
+  string outputroot = outputfile;
+  string remove_this = ".root";
+  size_t pos = outputroot.find(remove_this);
+  if (pos != string::npos){
+    outputroot.erase(pos, remove_this.length());
+  }
+  string outputrootc = outputroot+"_crystal.root";
+  string outputrootg = outputroot+"_glass.root";
+  
+  CaloEvaluator *eval_crystal = new CaloEvaluator("EEMCEVALUATOR", "EEMC", outputrootc.c_str());
   eval_crystal->Verbosity(verbosity);
   eval_crystal->set_do_cluster_eval(true);
   se->registerSubsystem(eval_crystal);
   
-  
-  CaloEvaluator *eval_glass = new CaloEvaluator("EEMCEVALUATOR", "EEMC_glass", outputfile.c_str());
-  eval_glass->Verbosity(verbosity);
-  eval_glass->set_do_cluster_eval(true);
-  se->registerSubsystem(eval_glass);  
-  
+  if (G4EEMCH::SETTING::USEHYBRID){
+    CaloEvaluator *eval_glass = new CaloEvaluator("EEMCGLASSEVALUATOR", "EEMC_glass", outputrootg.c_str());
+    eval_glass->Verbosity(verbosity);
+    eval_glass->set_do_cluster_eval(true);
+    se->registerSubsystem(eval_glass);  
+  }
   return;
 }
 #endif

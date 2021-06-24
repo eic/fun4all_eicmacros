@@ -221,7 +221,6 @@ void Tracking_Reco(TString specialSetting = "")
       }
     }
     
-    
     // BACKWARD DISKS
     float zBWDdisks[5]  = {-25, -49, -73, -97, -121};
     for (int i = 30; i < 35; i++) {
@@ -248,142 +247,52 @@ void Tracking_Reco(TString specialSetting = "")
   //-------------------------
   // position resol improvement 
   float posResImp = sqrt(12);
-  if (specialSetting.Contains("ACLGAD"))
+  float pitchLGAD = 500e-4;
+  if (G4TTL::SETTING::optionGran == 2)
     posResImp = sqrt(256);
+  else if (G4TTL::SETTING::optionGran == 3)
+    pitchLGAD   = 1300e-4;
+  float resLGAD   = pitchLGAD/posResImp; 
+  
   // central barrel 
   if (Enable::CTTL){
-    float pitch=500e-4;
-    float res   = pitch/posResImp;
-    int nlayer  = 2;
-    if (specialSetting.Contains("CTTLSEL1") || specialSetting.Contains("CTTLSE1") || specialSetting.Contains("CTTLSH1"))
-      nlayer    = 1;
-    if (specialSetting.Contains("CTTLLC")) 
-      pitch =1300e-4;
-    
-    for (int i = 0; i < nlayer; i++){
+    for (int i = 0; i < G4TTL::layer[1]; i++){
       kalman->add_phg4hits(Form("G4HIT_CTTL_%d", i),           //      const std::string& phg4hitsNames,
                           PHG4TrackFastSim::Cylinder,  //      const DETECTOR_TYPE phg4dettype,
                           999,                               //      const float radres,
-                          res,                    //      const float phires,
-                          res,                    //      const float lonres, *ignored in plane detector*
+                          resLGAD,                    //      const float phires,
+                          resLGAD,                    //      const float lonres, *ignored in plane detector*
                           0.95,                              //      const float eff,
                           0);                                //      const float noise
-    }
-    if (specialSetting.Contains("CTTLSEL1")) {
-      kalman -> add_cylinder_state("CTTL_0", 50);
-    } else if (specialSetting.Contains("CTTLSE1")) {
-      kalman -> add_cylinder_state("CTTL_0", 92);
-    } else if ( specialSetting.Contains("CTTLSH1") ) { 
-      kalman -> add_cylinder_state("CTTL_0", 114.7);
-    } else {
-      kalman -> add_cylinder_state("CTTL_0", 92);
-      kalman -> add_cylinder_state("CTTL_1", 114.7);
-    }
+      kalman -> add_cylinder_state(Form("CTTL_%d",i), G4TTL::positionToVtx[1][i]);
+    }    
   }
   
   // electron going direction
   if (Enable::ETTL){
-    float pitch=500e-4;
-    float res   = pitch/posResImp; 
-    int nlayer  = 2;
-    if (specialSetting.Contains("ETTLSE1")) 
-      nlayer  = 1;
-    if (specialSetting.Contains("ETTLLC")) 
-      pitch=1300e-4;
-    
-    for (int i = 0; i < 1; i++){
+    for (int i = 0; i < G4TTL::layer[0]; i++){
       kalman->add_phg4hits(Form("G4HIT_ETTL_%d", i),           //      const std::string& phg4hitsNames,
                           PHG4TrackFastSim::Vertical_Plane,  //      const DETECTOR_TYPE phg4dettype,
-                          res,                    //      const float radres,
-                          res,                    //      const float phires,
+                          resLGAD,                    //      const float radres,
+                          resLGAD,                    //      const float phires,
                           999.,                              //      const float lonres, *ignored in plane detector*
                           0.95,                              //      const float eff,
                           0);                                //      const float noise
-    }
-    
-    if (specialSetting.Contains("ETTLSE1")) {
-      kalman -> add_zplane_state("ETTL_0", -158.5);
-    } else {
-      kalman -> add_zplane_state("ETTL_0", -155.5);
-      kalman -> add_zplane_state("ETTL_1", -158.5); 
-    }
+      kalman -> add_zplane_state(Form("ETTL_%d",i), G4TTL::positionToVtx[0][i]);
+    }  
   }
 
   // forward hadron going direction
   if (Enable::FTTL){
-    float pitch = 200e-4;
-    float res   = 200e-4;
-    float zDisk[6]    = {287, 289, 340, 287, 289, 340} ;
-    int llargerPitch  = -1;
-    int nlayers       = 6;
-    
-    if (specialSetting.Contains("FTTLS3LC")){
-      nlayers         = 3; 
-      pitch           = 500e-4;
-    } else if (specialSetting.Contains("FTTLS3LVC")){
-      nlayers         = 3; 
-      pitch           = 1300e-4;
-    } else if (specialSetting.Contains("FTTLS2LF")){
-      nlayers         = 4; 
-      zDisk[0]        = 289;
-      zDisk[1]        = 340;
-      zDisk[2]        = 289;
-      zDisk[3]        = 340;
-      llargerPitch    = 2;
-    } else if (specialSetting.Contains("FTTLS2LC")){
-      nlayers         = 2; 
-      zDisk[0]        = 289;
-      zDisk[1]        = 340; 
-      pitch           = 500e-4;
-    } else if (specialSetting.Contains("FTTLDRC")){
-      nlayers         = 3; 
-      pitch           = 500e-4;
-    } else if (specialSetting.Contains("FTTLDRF")){
-      nlayers         = 2; 
-      pitch           = 500e-4;
-    } else if (specialSetting.Contains("FTTLS2LVC")){
-      nlayers         = 2; 
-      zDisk[0]        = 289;
-      zDisk[1]        = 340; 
-      pitch           = 1300e-4;
-    } else if (specialSetting.Contains("FTTLSE2LF")){
-      nlayers         = 4; 
-      zDisk[0]        = 287;
-      zDisk[1]        = 289;
-      zDisk[2]        = 287;
-      zDisk[3]        = 289;
-      llargerPitch    = 2;
-    } else if (specialSetting.Contains("FTTLSE2LC")){
-      nlayers         = 2; 
-      pitch           = 500e-4;      
-    } else if (specialSetting.Contains("FTTLSE2LVC")){
-      nlayers         = 2; 
-      pitch           = 1300e-4;
-    } else if (specialSetting.Contains("FTTLSE1LC")){
-      nlayers         = 1; 
-      zDisk[0]        = 289;
-      pitch           = 500e-4;      
-    } else if (specialSetting.Contains("FTTLSE1LVC")){
-      nlayers         = 1; 
-      zDisk[0]        = 289;
-      pitch           = 1300e-4;
-    } else {
-      llargerPitch    = 3;
-    }
-    
-    for (int i = 0; i < nlayers; i++){
-      if (llargerPitch != -1 && i >= llargerPitch)
-        pitch           = 500e-4;
-      res             = pitch/posResImp; 
+    for (int i = 0; i < G4TTL::layer[2]; i++){
       kalman->add_phg4hits(Form("G4HIT_FTTL_%d", i),           //      const std::string& phg4hitsNames,
                           PHG4TrackFastSim::Vertical_Plane,  //      const DETECTOR_TYPE phg4dettype,
-                          res,                    //      const float radres,
-                          res,                    //      const float phires,
+                          resLGAD,                    //      const float radres,
+                          resLGAD,                    //      const float phires,
                           999.,                              //      const float lonres, *ignored in plane detector*
                           0.95,                              //      const float eff,
                           0);                                //      const float noise
-      
-      kalman -> add_zplane_state(Form("FTTL_%d",i), zDisk[i]);
+      kalman -> add_zplane_state(Form("FTTL_%d",i), G4TTL::positionToVtx[2][i]);
     }
   }
 
@@ -555,35 +464,15 @@ void Tracking_Eval(const std::string &outputfile, TString specialSetting = "")
   
   // create projections on timing layers to read t and spacial coordinates
   if (Enable::FTTL){
-    
-    int layerMax = 6;
-    if (specialSetting.Contains("FTTLS3LC") || specialSetting.Contains("FTTLS3LVC")  || specialSetting.Contains("FTTLDRC"))
-      layerMax = 3;
-    else if (specialSetting.Contains("FTTLS2LF") || specialSetting.Contains("FTTLSE2LF"))
-      layerMax = 4;
-    else if (specialSetting.Contains("FTTLS2LC") || specialSetting.Contains("FTTLSE2LC") || specialSetting.Contains("FTTLS2LVC") || specialSetting.Contains("FTTLSE2LVC") || specialSetting.Contains("FTTLDRF"))
-      layerMax = 2;
-    else if (specialSetting.Contains("FTTLSE1LC") || specialSetting.Contains("FTTLSE1LVC"))
-      layerMax = 1;
-    else 
-      layerMax = 6;
-    
-    for (int l = 0; l < layerMax; l++)
+    for (int l = 0; l < G4TTL::layer[2]; l++)
       fast_sim_eval->AddProjection(Form("FTTL_%d",l));
   }
   if (Enable::ETTL){
-    int nlayer  = 2;
-    if (specialSetting.Contains("ETTLSE1")) 
-      nlayer  = 1;
-
-    for (int l = 0; l < nlayer; l++)
+    for (int l = 0; l < G4TTL::layer[0]; l++)
       fast_sim_eval->AddProjection(Form("ETTL_%d",l));
   }
   if (Enable::CTTL){
-    int nlayer  = 2;
-    if (specialSetting.Contains("CTTLSEL1") || specialSetting.Contains("CTTLSE1") || specialSetting.Contains("CTTLSH1"))
-      nlayer    = 1;
-    for (int l = 0; l < nlayer; l++)
+    for (int l = 0; l < G4TTL::layer[1]; l++)
       fast_sim_eval->AddProjection(Form("CTTL_%d",l));
   }
 
