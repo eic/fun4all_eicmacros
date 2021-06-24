@@ -44,24 +44,24 @@ PHG4Reco * DisplayOn(const char *mac = "vis.mac")
   sprintf(cmd, "/control/execute %s", mac);
   g4->ApplyCommand(cmd);
   // draw by particle type and set nice color
-  g4->ApplyCommand("/vis/modeling/trajectories/create/drawByParticleID");
-  g4->ApplyCommand("/vis/modeling/trajectories/drawByParticleID-0/set e+ steelblue");
-  g4->ApplyCommand("/vis/modeling/trajectories/drawByParticleID-0/set e- steelblue");
-  g4->ApplyCommand("/vis/modeling/trajectories/drawByParticleID-0/set pi+ red");
-  g4->ApplyCommand("/vis/modeling/trajectories/drawByParticleID-0/set pi- red");
-  g4->ApplyCommand("/vis/modeling/trajectories/drawByParticleID-0/set kaon- mediumvioletred");
-  g4->ApplyCommand("/vis/modeling/trajectories/drawByParticleID-0/set kaon+ mediumvioletred");
-  g4->ApplyCommand("/vis/modeling/trajectories/drawByParticleID-0/set kaon0 mediumvioletred");
-  g4->ApplyCommand("/vis/modeling/trajectories/drawByParticleID-0/set proton+ orange");
-  g4->ApplyCommand("/vis/modeling/trajectories/drawByParticleID-0/set proton- orange");
-  g4->ApplyCommand("/vis/modeling/trajectories/drawByParticleID-0/set neutron lightgrey");
-  g4->ApplyCommand("/vis/modeling/trajectories/drawByParticleID-0/set gamma wheat");
-  g4->ApplyCommand("/vis/scene/add/trajectories smooth rich");
+//   g4->ApplyCommand("/vis/modeling/trajectories/create/drawByParticleID");
+//   g4->ApplyCommand("/vis/modeling/trajectories/drawByParticleID-0/set e+ steelblue");
+//   g4->ApplyCommand("/vis/modeling/trajectories/drawByParticleID-0/set e- steelblue");
+//   g4->ApplyCommand("/vis/modeling/trajectories/drawByParticleID-0/set pi+ red");
+//   g4->ApplyCommand("/vis/modeling/trajectories/drawByParticleID-0/set pi- red");
+//   g4->ApplyCommand("/vis/modeling/trajectories/drawByParticleID-0/set kaon- mediumvioletred");
+//   g4->ApplyCommand("/vis/modeling/trajectories/drawByParticleID-0/set kaon+ mediumvioletred");
+//   g4->ApplyCommand("/vis/modeling/trajectories/drawByParticleID-0/set kaon0 mediumvioletred");
+//   g4->ApplyCommand("/vis/modeling/trajectories/drawByParticleID-0/set proton+ orange");
+//   g4->ApplyCommand("/vis/modeling/trajectories/drawByParticleID-0/set proton- orange");
+//   g4->ApplyCommand("/vis/modeling/trajectories/drawByParticleID-0/set neutron lightgrey");
+//   g4->ApplyCommand("/vis/modeling/trajectories/drawByParticleID-0/set gamma wheat");
+//   g4->ApplyCommand("/vis/scene/add/trajectories smooth rich");
   // remove neutrons and neutrinos
-  g4->ApplyCommand("/vis/filtering/trajectories/create/particleFilter");
-  g4->ApplyCommand("/vis/filtering/trajectories/particleFilter-0/add neutron");
-  g4->ApplyCommand("/vis/filtering/trajectories/particleFilter-0/add neutrino");
-  g4->ApplyCommand("/vis/filtering/trajectories/particleFilter-0/invert true");
+//   g4->ApplyCommand("/vis/filtering/trajectories/create/particleFilter");
+//   g4->ApplyCommand("/vis/filtering/trajectories/particleFilter-0/add neutron");
+//   g4->ApplyCommand("/vis/filtering/trajectories/particleFilter-0/add neutrino");
+//   g4->ApplyCommand("/vis/filtering/trajectories/particleFilter-0/invert true");
 
   // set background white for presentations
   g4->ApplyCommand("/vis/viewer/set/background white");

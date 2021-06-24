@@ -24,6 +24,7 @@
 #include <G4_Mvtx_EIC.C>
 #include <G4_RICH.C>
 #include <G4_TPC_EIC.C>
+#include <G4_mRICH.C>
 
 #include <G4_Tracking_Modular.C>
 
@@ -98,6 +99,7 @@ void G4Init()
   // PID
   if (Enable::DIRC) DIRCInit();
   if (Enable::RICH) RICHInit();
+  if (Enable::mRICH) mRICHInit();
   if (Enable::AEROGEL) AerogelInit();
   
   // calorimeters
@@ -197,7 +199,8 @@ int G4Setup(TString specialSetting = ""){
   if (Enable::DIRC) DIRCSetup(g4Reco);
   if (Enable::RICH) RICHSetup(g4Reco);
   if (Enable::AEROGEL) AerogelSetup(g4Reco);
-
+  if (Enable::mRICH) mRICHSetup(g4Reco);
+  
   //----------------------------------------
   // sPHENIX forward flux return door
   if (Enable::PLUGDOOR) PlugDoor(g4Reco);

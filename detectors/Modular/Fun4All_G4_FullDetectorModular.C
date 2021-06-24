@@ -36,7 +36,7 @@ int Fun4All_G4_FullDetectorModular(
     const int nEvents                 = 1,
     const double particlemomMin       = -1,
     const double particlemomMax       = -1,
-    TString specialSetting            = "ALLSILICON-FTTLS3LC-ETTL-CTTL",
+    TString specialSetting            = "ALLSILICON-TTLEM",
     TString generatorSettings         = "e10p250MB",
     const string &inputFile           = "https://www.phenix.bnl.gov/WWW/publish/phnxbld/sPHENIX/files/sPHENIX_G4Hits_sHijing_9-11fm_00000_00010.root",
     const string &outputFile          = "G4EICDetector.root",
@@ -221,7 +221,7 @@ int Fun4All_G4_FullDetectorModular(
   //======================
   // Global options (enabled for all subsystems - if implemented)
   //  Enable::ABSORBER = true;
-  //  Enable::OVERLAPCHECK = true;
+//    Enable::OVERLAPCHECK = true;
   //  Enable::VERBOSITY = 1;
 
   //  Enable::BBC = true;
@@ -268,13 +268,11 @@ int Fun4All_G4_FullDetectorModular(
   }
   
   // LGAD layers
-  if(specialSetting.Contains("FTTL"))
+  if(specialSetting.Contains("TTL")){
     Enable::FTTL = true;
-  if(specialSetting.Contains("ETTL"))
     Enable::ETTL = true;
-  if(specialSetting.Contains("CTTL"))
     Enable::CTTL = true;
-
+  }
   // mvtx/tpc tracker
   if(specialSetting.Contains("MVTX")){
     Enable::MVTX = true;
@@ -320,7 +318,7 @@ int Fun4All_G4_FullDetectorModular(
   // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   // PID detectors - RICH's
   Enable::RICH = true;
-  Enable::AEROGEL = true;
+//   Enable::AEROGEL = true;
 
   // PHENIX EMCal shashlik reuse
   Enable::FEMC = true;
@@ -338,6 +336,7 @@ int Fun4All_G4_FullDetectorModular(
   Enable::DRCALO = false;
   if(specialSetting.Contains("DRCALO")){
     Enable::DRCALO = true;
+    G4TTL::SETTING::optionDR = 1;
     if(!specialSetting.Contains("FwdConfig") && !specialSetting.Contains("FwdSquare")){
       Enable::FEMC = false;
       Enable::FHCAL = false;
@@ -360,6 +359,9 @@ int Fun4All_G4_FullDetectorModular(
   // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   // EICDetector geometry - 'electron' direction
   // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  // PID detectors - RICH's
+  Enable::mRICH = false;
+
   Enable::EEMC  = true;
   Enable::EEMCH = false;
   if (specialSetting.Contains("EEMCH")){
@@ -652,7 +654,7 @@ int Fun4All_G4_FullDetectorModular(
       eval->set_do_EHCAL(true);
     if (Enable::EEMC || Enable::EEMCH)
       eval->set_do_EEMC(true);
-    if (Enable::EEMCH)
+    if (Enable::EEMCH && G4EEMCH::SETTING::USEHYBRID)
       eval->set_do_EEMCG(true);
     if (Enable::CEMC)
       eval->set_do_CEMC(true);
@@ -835,6 +837,7 @@ void ParseTString(TString &specialSetting)
     G4FHCAL::SETTING::wDR = true;
     G4LFHCAL::SETTING::wDR = true;
     G4FEMC::SETTING::wDR = true;
+    G4TTL::SETTING::optionDR = 1;
   }
   if (specialSetting.Contains("FwdSquare")) // common for FHCAL and FEMC
   {
@@ -842,6 +845,7 @@ void ParseTString(TString &specialSetting)
     G4FHCAL::SETTING::FwdSquare = true;
     G4LFHCAL::SETTING::FwdSquare = true;
     G4FEMC::SETTING::FwdSquare = true;
+    G4TTL::SETTING::optionDR = 1;
   }
   if (specialSetting.Contains("HC2x"))
   {
@@ -890,6 +894,41 @@ void ParseTString(TString &specialSetting)
   {
     G4DRCALO::SETTING::PMMA = true;
   }  
+  
+  // EEMCH setting
+  if (specialSetting.Contains("purePbWO4"))
+    G4EEMCH::SETTING::USEHYBRID = false;
+  else 
+    G4EEMCH::SETTING::USEHYBRID = true;
+  
+  if (specialSetting.Contains("BCAL")){
+    G4EEMCH::SETTING::USECEMCGeo  = false;
+    G4DIRC::SETTING::USECEMCGeo   = false;
+    G4TTL::SETTING::optionCEMC    = false;
+  } else {
+    G4EEMCH::SETTING::USECEMCGeo  = true;
+    G4DIRC::SETTING::USECEMCGeo   = true;
+    G4TTL::SETTING::optionCEMC    = true;
+  }
+  if (specialSetting.Contains("EEMCH"))
+    G4TTL::SETTING::optionEEMCH   = true;
+  else 
+    G4TTL::SETTING::optionEEMCH   = false;
+  
+  if (specialSetting.Contains("TTLEMd"))
+    G4TTL::SETTING::optionGeo    = 1;
+  else if (specialSetting.Contains("TTLEMl"))
+    G4TTL::SETTING::optionGeo    = 2;
+  else if (specialSetting.Contains("TTLEMs"))
+    G4TTL::SETTING::optionGeo    = 3;
+  else if (specialSetting.Contains("TTLF"))
+    G4TTL::SETTING::optionGeo    = 4;
+
+  if (specialSetting.Contains("ACLGAD"))
+    G4TTL::SETTING::optionGran    = 2;
+  else if (specialSetting.Contains("LGLGAD"))
+    G4TTL::SETTING::optionGran    = 3;
+  
 }
 
 #endif
