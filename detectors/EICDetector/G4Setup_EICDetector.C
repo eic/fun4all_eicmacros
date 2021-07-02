@@ -27,6 +27,7 @@
 #include <G4_User.C>
 #include <G4_World.C>
 #include <G4_hFarFwdBeamLine_EIC.C>
+#include <G4_BECAL.C>
 
 #include <g4detectors/PHG4CylinderSubsystem.h>
 
@@ -89,6 +90,7 @@ void G4Init()
   if (Enable::TRACKING) TrackingInit();
   if (Enable::BBC) BbcInit();
   if (Enable::CEMC) CEmcInit(72);  // make it 2*2*2*3*3 so we can try other combinations
+  if (Enable::BECAL) BECALInit();
   if (Enable::HCALIN) HCalInnerInit(1);
   if (Enable::MAGNET) MagnetInit();
   MagnetFieldInit(); // We want the field - even if the magnet volume is disabled
@@ -161,6 +163,7 @@ int G4Setup()
   if (Enable::TPC) radius = TPC(g4Reco, radius);
   if (Enable::BBC) Bbc(g4Reco);
   if (Enable::CEMC) radius = CEmc(g4Reco, radius);
+  if (Enable::BECAL) BECALSetup(g4Reco);
   if (Enable::HCALIN) radius = HCalInner(g4Reco, radius, 4);
   if (Enable::MAGNET) radius = Magnet(g4Reco, radius);
   if (Enable::HCALOUT) radius = HCalOuter(g4Reco, radius, 4);
@@ -243,6 +246,13 @@ void ShowerCompress()
   compress->AddTowerContainer("TOWER_RAW_FHCAL");
   compress->AddTowerContainer("TOWER_CALIB_FHCAL");
 
+  compress->AddHitContainer("G4HIT_BECAL");
+  compress->AddHitContainer("G4HIT_ABSORBER_BECAL");
+  compress->AddCellContainer("G4CELL_BECAL");
+  compress->AddTowerContainer("TOWER_SIM_BECAL");
+  compress->AddTowerContainer("TOWER_RAW_BECAL");
+  compress->AddTowerContainer("TOWER_CALIB_BECAL");
+
   compress->AddHitContainer("G4HIT_EEMC");
   compress->AddHitContainer("G4HIT_ABSORBER_EEMC");
   compress->AddCellContainer("G4CELL_EEMC");
@@ -287,6 +297,10 @@ void DstCompress(Fun4AllDstOutputManager *out)
     out->StripNode("G4HIT_ABSORBER_FHCAL");
     out->StripNode("G4CELL_FEMC");
     out->StripNode("G4CELL_FHCAL");
+
+    out->StripNode("G4HIT_BECAL");
+    out->StripNode("G4HIT_ABSORBER_BEEMC");
+    out->StripNode("G4CELL_BECAL");
 
     out->StripNode("G4HIT_EEMC");
     out->StripNode("G4HIT_ABSORBER_EEMC");

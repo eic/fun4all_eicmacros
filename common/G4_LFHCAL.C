@@ -69,7 +69,7 @@ void LFHCALInit()
     gSystem->Exit(1);
   }
  
- BlackHoleGeometry::max_radius = std::max(BlackHoleGeometry::max_radius, G4LFHCAL::outer_radius);
+  BlackHoleGeometry::max_radius = std::max(BlackHoleGeometry::max_radius, G4LFHCAL::outer_radius);
   BlackHoleGeometry::max_z = std::max(BlackHoleGeometry::max_z, G4LFHCAL::Gz0 + G4LFHCAL::Gdz / 2.);
 }
 
@@ -115,6 +115,7 @@ void LFHCALSetup(PHG4Reco *g4Reco)
   fhcal->SetTowerMappingFile(mapping_fhcal.str());
   fhcal->OverlapCheck(OverlapCheck);
   fhcal->SetActive();
+  fhcal->SetDetailed(true);
   fhcal->SuperDetector("LFHCAL");
   if (AbsorberActive) fhcal->SetAbsorberActive();
 

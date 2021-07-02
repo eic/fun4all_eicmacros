@@ -81,6 +81,7 @@ void FEMCSetup(PHG4Reco *g4Reco, const int absorberactive = 0)
   femc->SetTowerMappingFile(mapping_femc.str());
   femc->OverlapCheck(OverlapCheck);
   femc->SetActive();
+  femc->SetDetailed(true);
   femc->SuperDetector("FEMC");
   if (AbsorberActive) femc->SetAbsorberActive(AbsorberActive);
 

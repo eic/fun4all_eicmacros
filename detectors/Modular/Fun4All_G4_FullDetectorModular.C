@@ -7,7 +7,7 @@
 #include <G4Setup_ModularDetector.C>
 #include <G4_Bbc.C>
 #include <G4_CaloTrigger.C>
-#include <G4_DSTReader_EICDetector.C>
+#include <G4_DSTReader_ModularDetector.C>
 #include <G4_FwdJets.C>
 #include <G4_Global.C>
 #include <G4_HIJetReco.C>
@@ -44,8 +44,6 @@ int Fun4All_G4_FullDetectorModular(
     const int skip                    = 0,
     const string &outdir              = ".")
 {
-  // translate the option TString into subsystem namespace options
-  ParseTString(specialSetting); 
   //---------------
   // Fun4All server
   //---------------
@@ -61,7 +59,12 @@ int Fun4All_G4_FullDetectorModular(
   // if the RANDOMSEED flag is set its value is taken as initial seed
   // which will produce identical results so you can debug your code
   //rc->set_IntFlag("RANDOMSEED", 12345);
-
+  
+  // switching IPs by comment/uncommenting the following lines
+  // used for both beamline setting and for the event generator crossing boost
+  Enable::IP6 = true;
+  // Enable::IP8 = true;
+  
   //===============
   // Input options
   //===============
@@ -119,7 +122,7 @@ int Fun4All_G4_FullDetectorModular(
                                                                               PHG4SimpleEventGenerator::Uniform);
     INPUTGENERATOR::SimpleEventGenerator[0]->set_vertex_distribution_mean(0., 0., 0.);
     INPUTGENERATOR::SimpleEventGenerator[0]->set_vertex_distribution_width(0., 0., 5.);
-    INPUTGENERATOR::SimpleEventGenerator[0]->set_eta_range(1., 3.7);
+    INPUTGENERATOR::SimpleEventGenerator[0]->set_eta_range(-1.5, 1.5);
     INPUTGENERATOR::SimpleEventGenerator[0]->set_phi_range(-M_PI, M_PI);
     INPUTGENERATOR::SimpleEventGenerator[0]->set_pt_range(particlemomMin, particlemomMax);
   }
@@ -231,6 +234,9 @@ int Fun4All_G4_FullDetectorModular(
   Enable::PIPE = true;
   // EIC beam pipe extension beyond the Be-section:
   G4PIPE::use_forward_pipes = true;
+  //EIC hadron far forward magnets and detectors. IP6 and IP8 are incompatible (pick either or);
+  Enable::HFARFWD_MAGNETS = true;
+  Enable::HFARFWD_VIRTUAL_DETECTORS = true;
 
   // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   // geometry - tracking
@@ -301,11 +307,17 @@ int Fun4All_G4_FullDetectorModular(
   // sPHENIX SPACAL reuse
   Enable::CEMC = true;
   //  Enable::CEMC_ABSORBER = true;
-
+  
   // sPHENIX HCal inner reuse
   Enable::HCALIN = true;
   //  Enable::HCALIN_ABSORBER = true;
-
+  
+  if (specialSetting.Contains("BECAL") ){
+    Enable::BECAL = true;
+    // need to switch of CEMC & HCALin
+    Enable::CEMC    = false;
+//     Enable::HCALIN  = false;
+  }
   Enable::MAGNET = true;
 
   // sPHENIX HCal outer reuse
@@ -346,21 +358,17 @@ int Fun4All_G4_FullDetectorModular(
   //  Enable::DRCALO_ABSORBER = true;
 
   // PSD like HCal
-  if ( specialSetting.Contains("LFHCAL"))
+  if ( specialSetting.Contains("LFHCAL")){
     Enable::LFHCAL = true;
-  
-  Enable::LFHCAL_ABSORBER = false;
-  Enable::LFHCAL_CELL    = Enable::LFHCAL && true;
-  Enable::LFHCAL_TOWER   = Enable::LFHCAL_CELL && true;
-  Enable::LFHCAL_CLUSTER = Enable::LFHCAL_TOWER && true;
-  Enable::LFHCAL_EVAL    = Enable::LFHCAL_CLUSTER && false;
+    Enable::LFHCAL_ABSORBER = false;
+  }
 
   
   // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   // EICDetector geometry - 'electron' direction
   // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   // PID detectors - RICH's
-  Enable::mRICH = false;
+  Enable::mRICH = true;
 
   Enable::EEMC  = true;
   Enable::EEMCH = false;
@@ -399,14 +407,16 @@ int Fun4All_G4_FullDetectorModular(
   // special settings for Calo standalone studies
   // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   // deactivate all respective detector systems for standalone studies
-  if(specialSetting.Contains("FHCALSTANDALONE") || specialSetting.Contains("FEMCSTANDALONE") || specialSetting.Contains("CALOSTANDALONE") || specialSetting.Contains("DRSTANDALONE") || specialSetting.Contains("TTLSTANDALONE")){
+  if(specialSetting.Contains("STANDALONE") ){
     Enable::PIPE = false;
     G4PIPE::use_forward_pipes = false;
     Enable::TPC_ENDCAP = false;
-    G4TRACKING::PROJECTION_CEMC = false;
-    G4TRACKING::PROJECTION_FEMC = false;
-    G4TRACKING::PROJECTION_FHCAL = false;
-    G4TRACKING::PROJECTION_EHCAL = false;
+    G4TRACKING::PROJECTION_CEMC   = false;
+    G4TRACKING::PROJECTION_FEMC   = false;
+    G4TRACKING::PROJECTION_FHCAL  = false;
+    G4TRACKING::PROJECTION_EHCAL  = false;
+    G4TRACKING::PROJECTION_DRCALO = false;
+    G4TRACKING::PROJECTION_EEMC   = false;
     Enable::MAGNET = false;
     Enable::DIRC = false;
     Enable::RICH = false;
@@ -419,6 +429,8 @@ int Fun4All_G4_FullDetectorModular(
     Enable::EEMCH = false;
     Enable::FEMC = false;
     Enable::FHCAL = false;
+    Enable::LFHCAL = false;
+    Enable::BECAL = false;
     if(specialSetting.Contains("DRSTANDALONE"))
       Enable::DRCALO = true;
     if(specialSetting.Contains("FEMCSTANDALONE"))
@@ -429,6 +441,8 @@ int Fun4All_G4_FullDetectorModular(
       Enable::FEMC = true;
       Enable::FHCAL = true;
     }
+    if(specialSetting.Contains("BECALSTANDALONE"))
+      Enable::BECAL = true;
     if(specialSetting.Contains("TTLSTANDALONE")){
       Enable::PIPE = true;
       G4PIPE::use_forward_pipes = true;
@@ -443,25 +457,25 @@ int Fun4All_G4_FullDetectorModular(
   }
 
   // Automatic settings based on previous selections:
-  Enable::CEMC_CELL = Enable::CEMC && true;
-  Enable::CEMC_TOWER = Enable::CEMC_CELL && true;
-  Enable::CEMC_CLUSTER = Enable::CEMC_TOWER && true;
-  Enable::CEMC_EVAL = Enable::CEMC_CLUSTER && false;
+  Enable::CEMC_CELL       = Enable::CEMC && true;
+  Enable::CEMC_TOWER      = Enable::CEMC_CELL && true;
+  Enable::CEMC_CLUSTER    = Enable::CEMC_TOWER && true;
+  Enable::CEMC_EVAL       = Enable::CEMC_CLUSTER && false;
 
-  Enable::HCALIN_CELL = Enable::HCALIN && true;
-  Enable::HCALIN_TOWER = Enable::HCALIN_CELL && true;
-  Enable::HCALIN_CLUSTER = Enable::HCALIN_TOWER && true;
-  Enable::HCALIN_EVAL = Enable::HCALIN_CLUSTER && false;
+  Enable::HCALIN_CELL     = Enable::HCALIN && true;
+  Enable::HCALIN_TOWER    = Enable::HCALIN_CELL && true;
+  Enable::HCALIN_CLUSTER  = Enable::HCALIN_TOWER && true;
+  Enable::HCALIN_EVAL     = Enable::HCALIN_CLUSTER && false;
 
-  Enable::HCALOUT_CELL = Enable::HCALOUT && true;
-  Enable::HCALOUT_TOWER = Enable::HCALOUT_CELL && true;
+  Enable::HCALOUT_CELL    = Enable::HCALOUT && true;
+  Enable::HCALOUT_TOWER   = Enable::HCALOUT_CELL && true;
   Enable::HCALOUT_CLUSTER = Enable::HCALOUT_TOWER && true;
-  Enable::HCALOUT_EVAL = Enable::HCALOUT_CLUSTER && false;
+  Enable::HCALOUT_EVAL    = Enable::HCALOUT_CLUSTER && false;
 
-  Enable::DRCALO_CELL = Enable::DRCALO && true;
-  Enable::DRCALO_TOWER = Enable::DRCALO_CELL && true;
-  Enable::DRCALO_CLUSTER = Enable::DRCALO_TOWER && true;
-  Enable::DRCALO_EVAL = Enable::DRCALO_CLUSTER && true;
+  Enable::DRCALO_CELL     = Enable::DRCALO && true;
+  Enable::DRCALO_TOWER    = Enable::DRCALO_CELL && true;
+  Enable::DRCALO_CLUSTER  = Enable::DRCALO_TOWER && true;
+  Enable::DRCALO_EVAL     = Enable::DRCALO_CLUSTER && true;
 
   Enable::FEMC_CELL     = Enable::FEMC && true;
   Enable::FEMC_TOWER    = Enable::FEMC_CELL && true;
@@ -488,7 +502,16 @@ int Fun4All_G4_FullDetectorModular(
   Enable::EHCAL_CLUSTER = Enable::EHCAL_TOWER && true;
   Enable::EHCAL_EVAL    = Enable::EHCAL_CLUSTER && false;
 
+  Enable::LFHCAL_CELL    = Enable::LFHCAL && true;
+  Enable::LFHCAL_TOWER   = Enable::LFHCAL_CELL && true;
+  Enable::LFHCAL_CLUSTER = Enable::LFHCAL_TOWER && true;
+  Enable::LFHCAL_EVAL    = Enable::LFHCAL_CLUSTER && false;
 
+  Enable::BECAL_CELL    = Enable::BECAL && true;
+  Enable::BECAL_TOWER   = Enable::BECAL_CELL && true;
+  Enable::BECAL_CLUSTER = Enable::BECAL_TOWER && true;
+  Enable::BECAL_EVAL    = Enable::BECAL_CLUSTER && false;
+  
   // Other options
   Enable::GLOBAL_RECO = true;
   Enable::GLOBAL_FASTSIM = true;
@@ -538,6 +561,9 @@ int Fun4All_G4_FullDetectorModular(
   // $OFFLINE_MAIN/include/g4decayer/EDecayType.hh
   // default is All:
   // G4P6DECAYER::decayType = EDecayType::kAll;
+
+  // translate the option TString into subsystem namespace options
+  ParseTString(specialSetting); 
 
   // Initialize the selected subsystems
   G4Init();
@@ -598,6 +624,9 @@ int Fun4All_G4_FullDetectorModular(
   if (Enable::EHCAL_TOWER) EHCAL_Towers();
   if (Enable::EHCAL_CLUSTER) EHCAL_Clusters();
 
+  if (Enable::BECAL_TOWER) BECAL_Towers();
+  if (Enable::BECAL_CLUSTER) BECAL_Clusters();
+  
   if (Enable::DSTOUT_COMPRESS) ShowerCompress();
 
   //--------------
@@ -639,6 +668,7 @@ int Fun4All_G4_FullDetectorModular(
   if(doFullEventTree){
     EventEvaluator *eval = new EventEvaluator("EVENTEVALUATOR",  outputroot + "_eventtree.root");
     eval->set_reco_tracing_energy_threshold(0.05);
+    eval->set_reco_tracing_energy_threshold_BECAL(0.005);
     eval->Verbosity(0);
     if(specialSetting.Contains("GEOMETRYTREE"))
       eval->set_do_GEOMETRY(true);
@@ -660,11 +690,13 @@ int Fun4All_G4_FullDetectorModular(
       eval->set_do_CEMC(true);
     if (Enable::HCALIN)
       eval->set_do_HCALIN(true);
+    if (Enable::BECAL)
+      eval->set_do_BECAL(true);
     if (Enable::HCALOUT)
       eval->set_do_HCALOUT(true);
     if (Enable::FHCAL || Enable::FEMC || Enable::EHCAL || Enable::EEMC ||  Enable::EEMCH || Enable::CEMC || Enable::HCALIN || Enable::HCALOUT )
       eval->set_do_CLUSTERS(true);
-    
+    this 
     if (Enable::TRACKING){
       eval->set_do_TRACKS(true);
       eval->set_do_HITS(true);
@@ -806,45 +838,45 @@ void ParseTString(TString &specialSetting)
   // FHCAL/FEMC settings
   if (specialSetting.Contains("fsPHENIX"))
   {
-    G4FEMC::SETTING::fsPHENIX = true;
+    G4FEMC::SETTING::fsPHENIX = Enable::FEMC && true;
   }
   else if (specialSetting.Contains("EC2x"))
   {
-    G4FEMC::SETTING::EC2x = true;
+    G4FEMC::SETTING::EC2x = Enable::FEMC && true;
   }
   
   if (specialSetting.Contains("FullEtaAcc")) // common for FHCAL and FEMC
   {
-    G4FHCAL::SETTING::FullEtaAcc = true;
+    G4FHCAL::SETTING::FullEtaAcc = Enable::FHCAL && true;
     G4FEMC::SETTING::FullEtaAcc = true;
   }
   if (specialSetting.Contains("ASYM")) // common for FHCAL and FEMC
   {
-    G4FHCAL::SETTING::asymmetric = true;
-    G4LFHCAL::SETTING::asymmetric = true;
-    G4FEMC::SETTING::asymmetric = true;
+    G4FHCAL::SETTING::asymmetric = Enable::FHCAL && true;
+    G4LFHCAL::SETTING::asymmetric = Enable::LFHCAL &&true;
+    G4FEMC::SETTING::asymmetric = Enable::FEMC && true;
   }
   if (specialSetting.Contains("wDR")) // common for FHCAL and FEMC
   {
-    G4FHCAL::SETTING::wDR = true;
-    G4LFHCAL::SETTING::wDR = true;
-    G4FEMC::SETTING::wDR = true;
+    G4FHCAL::SETTING::wDR = Enable::FHCAL && true;
+    G4LFHCAL::SETTING::wDR = Enable::LFHCAL && true;
+    G4FEMC::SETTING::wDR = Enable::FEMC && true;
   }
 
   if (specialSetting.Contains("FwdConfig")) // common for FHCAL and FEMC
   {
-    G4DRCALO::SETTING::FwdConfig = true;
-    G4FHCAL::SETTING::wDR = true;
-    G4LFHCAL::SETTING::wDR = true;
-    G4FEMC::SETTING::wDR = true;
+    G4DRCALO::SETTING::FwdConfig = Enable::DRCALO && true;
+    G4FHCAL::SETTING::wDR = Enable::FHCAL && true;
+    G4LFHCAL::SETTING::wDR = Enable::LFHCAL && true;
+    G4FEMC::SETTING::wDR = Enable::FEMC && true;
     G4TTL::SETTING::optionDR = 1;
   }
   if (specialSetting.Contains("FwdSquare")) // common for FHCAL and FEMC
   {
-    G4DRCALO::SETTING::FwdSquare = true;
-    G4FHCAL::SETTING::FwdSquare = true;
-    G4LFHCAL::SETTING::FwdSquare = true;
-    G4FEMC::SETTING::FwdSquare = true;
+    G4DRCALO::SETTING::FwdSquare = Enable::DRCALO &&true;
+    G4FHCAL::SETTING::FwdSquare = Enable::DRCALO && true;
+    G4LFHCAL::SETTING::FwdSquare = Enable::LFHCAL && true;
+    G4FEMC::SETTING::FwdSquare = Enable::FEMC &&true;
     G4TTL::SETTING::optionDR = 1;
   }
   if (specialSetting.Contains("HC2x"))
@@ -862,37 +894,37 @@ void ParseTString(TString &specialSetting)
   } 
   else if (specialSetting.Contains("HC4x"))
   {
-    G4FHCAL::SETTING::HC4x = true;
+    G4FHCAL::SETTING::HC4x = Enable::FHCAL && true;
   }
 
   if (specialSetting.Contains("towercalib1"))
   {
-    G4FHCAL::SETTING::towercalib1 = true;
+    G4FHCAL::SETTING::towercalib1 = Enable::FHCAL &&true;
   }
   else if (specialSetting.Contains("towercalibSiPM"))
   {
-    G4FHCAL::SETTING::towercalibSiPM = true;
+    G4FHCAL::SETTING::towercalibSiPM = Enable::FHCAL &&true;
   }
   else if (specialSetting.Contains("towercalibHCALIN"))
   {
-    G4FHCAL::SETTING::towercalibHCALIN = true;
+    G4FHCAL::SETTING::towercalibHCALIN = Enable::FHCAL &&true;
   }
   else if (specialSetting.Contains("towercalib3"))
   {
-    G4FHCAL::SETTING::towercalib3 = true;
+    G4FHCAL::SETTING::towercalib3 = Enable::FHCAL &&true;
   }
   // DRCALO settings
   if (specialSetting.Contains("DRTungsten"))
   {
-    G4DRCALO::SETTING::Tungsten = true;
+    G4DRCALO::SETTING::Tungsten = Enable::DRCALO && true;
   }
   if (specialSetting.Contains("DRQuartz"))
   {
-    G4DRCALO::SETTING::Quartz = true;
+    G4DRCALO::SETTING::Quartz = Enable::DRCALO && true;
   }
   if (specialSetting.Contains("DRPMMA"))
   {
-    G4DRCALO::SETTING::PMMA = true;
+    G4DRCALO::SETTING::PMMA = Enable::DRCALO &&true;
   }  
   
   // EEMCH setting
@@ -901,14 +933,16 @@ void ParseTString(TString &specialSetting)
   else 
     G4EEMCH::SETTING::USEHYBRID = true;
   
-  if (specialSetting.Contains("BCAL")){
+  if (specialSetting.Contains("BECAL")){
     G4EEMCH::SETTING::USECEMCGeo  = false;
     G4DIRC::SETTING::USECEMCGeo   = false;
     G4TTL::SETTING::optionCEMC    = false;
+    G4HCALIN::SETTING::USECEMCGeo = false;
   } else {
     G4EEMCH::SETTING::USECEMCGeo  = true;
     G4DIRC::SETTING::USECEMCGeo   = true;
     G4TTL::SETTING::optionCEMC    = true;
+    G4HCALIN::SETTING::USECEMCGeo = true;
   }
   if (specialSetting.Contains("EEMCH"))
     G4TTL::SETTING::optionEEMCH   = true;
@@ -928,6 +962,9 @@ void ParseTString(TString &specialSetting)
     G4TTL::SETTING::optionGran    = 2;
   else if (specialSetting.Contains("LGLGAD"))
     G4TTL::SETTING::optionGran    = 3;
+  
+  if (specialSetting.Contains("ALLSILICONV3"))
+    G4ALLSILICON::SETTING::geomVersion = 3;
   
 }
 
