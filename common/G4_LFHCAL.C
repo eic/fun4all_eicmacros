@@ -3,10 +3,10 @@
 
 #include <GlobalVariables.C>
 
-#include <g4calo/RawTowerBuilderByHitIndexLHCal.h>
 #include <g4calo/RawTowerDigitizer.h>
 
 #include <g4eiccalos/PHG4LFHcalSubsystem.h>
+#include <g4eiccalos/RawTowerBuilderByHitIndexLHCal.h>
 
 #include <g4eval/CaloEvaluator.h>
 

@@ -696,7 +696,6 @@ int Fun4All_G4_FullDetectorModular(
       eval->set_do_HCALOUT(true);
     if (Enable::FHCAL || Enable::FEMC || Enable::EHCAL || Enable::EEMC ||  Enable::EEMCH || Enable::CEMC || Enable::HCALIN || Enable::HCALOUT )
       eval->set_do_CLUSTERS(true);
-    this 
     if (Enable::TRACKING){
       eval->set_do_TRACKS(true);
       eval->set_do_HITS(true);

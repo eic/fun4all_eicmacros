@@ -3,10 +3,10 @@
 
 #include <GlobalVariables.C>
 
-#include <g4calo/RawTowerBuilderByHitIndex.h>
 #include <g4calo/RawTowerDigitizer.h>
 
 #include <g4eiccalos/PHG4BarrelEcalSubsystem.h>
+#include <g4eiccalos/RawTowerBuilderByHitIndexBECAL.h>
 
 #include <g4eval/CaloEvaluator.h>
 
@@ -110,7 +110,7 @@ void BECAL_Towers()
   
   const double photoelectron_per_GeV = 5000;
 
-  RawTowerBuilderByHitIndex *tower_BECAL = new RawTowerBuilderByHitIndex("TowerBuilder_BECAL");
+  RawTowerBuilderByHitIndexBECAL *tower_BECAL = new RawTowerBuilderByHitIndexBECAL("TowerBuilder_BECAL");
   tower_BECAL->Detector("BECAL");
   tower_BECAL->set_sim_tower_node_prefix("SIM");
   tower_BECAL->EminCut(1e-7);
@@ -120,7 +120,7 @@ void BECAL_Towers()
 
   RawTowerDigitizer *TowerDigitizer_BECAL = new RawTowerDigitizer("BECALRawTowerDigitizer");
   TowerDigitizer_BECAL->Detector("BECAL");
-  TowerDigitizer_BECAL->Verbosity(1);
+  TowerDigitizer_BECAL->Verbosity(verbosity);
 //   TowerDigitizer_BECAL->Verbosity(verbosity);
   TowerDigitizer_BECAL->set_digi_algorithm(G4BECAL::TowerDigi);
   TowerDigitizer_BECAL->set_raw_tower_node_prefix("RAW");
