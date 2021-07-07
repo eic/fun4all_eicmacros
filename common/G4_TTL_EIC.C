@@ -153,7 +153,7 @@ int make_forward_station(string name, PHG4Reco *g4Reco,
   }
   PHG4TTLSubsystem *ttl;
   ttl = new PHG4TTLSubsystem(name);
-
+  ttl->SetDetailed(false);
   ttl->SuperDetector(name);
   ttl->set_double_param("polar_angle", polar_angle);                    //
   ttl->set_double_param("place_z", zpos * cm);                    //

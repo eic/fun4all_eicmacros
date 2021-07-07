@@ -19,18 +19,21 @@
 #include <G4_FHCAL.C>
 #include <G4_LFHCAL.C>
 #include <G4_EHCAL.C>
-#include <G4_HcalIn_ref.C>
+#include <G4_HCalIn_EIC.C>
 #include <G4_HcalOut_ref.C>
 #include <G4_Mvtx_EIC.C>
-#include <G4_RICH.C>
+// #include <G4_RICH.C>
+#include <G4_dRICH.C>
 #include <G4_TPC_EIC.C>
 #include <G4_mRICH.C>
+#include <G4_BECAL.C>
 
 #include <G4_Tracking_Modular.C>
 
 #include <G4_BlackHole.C>
 #include <G4_Magnet.C>
 #include <G4_Pipe_EIC.C>
+#include <G4_hFarFwdBeamLine_EIC.C>
 #include <G4_PlugDoor_EIC.C>
 #include <G4_User.C>
 #include <G4_World.C>
@@ -78,7 +81,10 @@ void G4Init()
     cout << "FGEM and FTTL cannot be enabled together" << endl;
     gSystem->Exit(1);
   } else if ( (Enable::EEMC && Enable::EEMCH) ) {
-    cout << "two different versions of the EEMC are enabled together, pleas fix" << endl;
+    cout << "two different versions of the EEMC are enabled together, please fix" << endl;
+    gSystem->Exit(1);
+  } else if ( (Enable::CEMC && Enable::BECAL) ) {
+    cout << "two different versions of the barrel ECal are enabled together, please fix" << endl;
     gSystem->Exit(1);
   }
 
@@ -87,6 +93,7 @@ void G4Init()
   if (Enable::MAGNET) MagnetInit();
   MagnetFieldInit(); // We want the field - even if the magnet volume is disabled
   if (Enable::PIPE) PipeInit();
+  if (Enable::HFARFWD_MAGNETS) hFarFwdBeamLineInit();
   // trackers
   if (Enable::EGEM) EGEM_Init();
   if (Enable::FGEM) FGEM_Init();
@@ -113,6 +120,8 @@ void G4Init()
   if (Enable::EHCAL) EHCALInit();
   if (Enable::EEMC) EEMCInit();
   if (Enable::EEMCH) EEMCHInit();
+  if (Enable::BECAL) BECALInit();
+  
   // very forward detectors
   if (Enable::BBC) BbcInit();
   
@@ -164,6 +173,10 @@ int G4Setup(TString specialSetting = ""){
 // clear how well this works nowadays but it doesn't hurt either
   double radius = 0.;
   if (Enable::PIPE) radius = Pipe(g4Reco, radius);
+  if (Enable::HFARFWD_MAGNETS_IP6 || Enable::HFARFWD_MAGNETS_IP8) hFarFwdDefineMagnets(g4Reco);
+  if (Enable::HFARFWD_VIRTUAL_DETECTORS_IP6) hFarFwdDefineDetectorsIP6(g4Reco);
+  if (Enable::HFARFWD_VIRTUAL_DETECTORS_IP8) hFarFwdDefineDetectorsIP8(g4Reco);
+
   //----------------------------------------
   // trackers
   if (Enable::EGEM) EGEMSetup(g4Reco);
@@ -183,6 +196,7 @@ int G4Setup(TString specialSetting = ""){
   //----------------------------------------
   // calos
   if (Enable::CEMC) radius = CEmc(g4Reco, radius);
+  if (Enable::BECAL) BECALSetup(g4Reco);
   if (Enable::HCALIN) radius = HCalInner(g4Reco, radius, 4);
   if (Enable::MAGNET) radius = Magnet(g4Reco, radius);
   if (Enable::HCALOUT) radius = HCalOuter(g4Reco, radius, 4);
@@ -296,6 +310,20 @@ void ShowerCompress(){
   compress->AddTowerContainer("TOWER_RAW_EEMC");
   compress->AddTowerContainer("TOWER_CALIB_EEMC");
 
+  compress->AddHitContainer("G4HIT_EEMC_glass");
+  compress->AddHitContainer("G4HIT_ABSORBER_EEMC_glass");
+  compress->AddCellContainer("G4CELL_EEMC_glass");
+  compress->AddTowerContainer("TOWER_SIM_EEMC_glass");
+  compress->AddTowerContainer("TOWER_RAW_EEMC_glass");
+  compress->AddTowerContainer("TOWER_CALIB_EEMC_glass");
+  
+  compress->AddHitContainer("G4HIT_BECAL");
+  compress->AddHitContainer("G4HIT_ABSORBER_BECAL");
+  compress->AddCellContainer("G4CELL_BECAL");
+  compress->AddTowerContainer("TOWER_SIM_BECAL");
+  compress->AddTowerContainer("TOWER_RAW_BECAL");
+  compress->AddTowerContainer("TOWER_CALIB_BECAL");
+
   se->registerSubsystem(compress);
 
   return;
@@ -348,6 +376,15 @@ void DstCompress(Fun4AllDstOutputManager *out){
     out->StripNode("G4HIT_EEMC");
     out->StripNode("G4HIT_ABSORBER_EEMC");
     out->StripNode("G4CELL_EEMC");
+
+    out->StripNode("G4HIT_EEMC_glass");
+    out->StripNode("G4HIT_ABSORBER_EEMC_glass");
+    out->StripNode("G4CELL_EEMC_glass");
+
+    out->StripNode("G4HIT_BECAL");
+    out->StripNode("G4HIT_ABSORBER_BECAL");
+    out->StripNode("G4CELL_BECAL");
+
   }
 }
 #endif

@@ -15,7 +15,7 @@
 #include <G4_HcalOut_ref.C>
 #include <G4_Magnet.C>
 #include <G4_Mvtx_EIC.C>
-#include <G4_RICH.C>
+#include <G4_dRICH.C>
 #include <G4_TPC_EIC.C>
 #include <G4_BECAL.C>
 

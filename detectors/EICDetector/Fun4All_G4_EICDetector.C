@@ -77,13 +77,13 @@ int Fun4All_G4_EICDetector(
   //  Input::PYTHIA8 = true;
 
   // Use Pythia 6
-    Input::PYTHIA6 = true;
+    Input::PYTHIA6 = false;
 
   // Use Sartre
   //   Input::SARTRE = true;
 
   // Simple multi particle generator in eta/phi/pt ranges
-//   Input::SIMPLE = true;
+     Input::SIMPLE = true;
   // Input::SIMPLE_NUMBER = 2; // if you need 2 of them
   // Input::SIMPLE_VERBOSITY = 1;
 
@@ -122,7 +122,7 @@ int Fun4All_G4_EICDetector(
   // add the settings for other with [1], next with [2]...
   if (Input::SIMPLE)
   {
-    INPUTGENERATOR::SimpleEventGenerator[0]->add_particles("pi-", 5);
+    INPUTGENERATOR::SimpleEventGenerator[0]->add_particles("e-", 1);
     if (Input::HEPMC || Input::EMBED)
     {
       INPUTGENERATOR::SimpleEventGenerator[0]->set_reuse_existing_vertex(true);
@@ -136,9 +136,9 @@ int Fun4All_G4_EICDetector(
       INPUTGENERATOR::SimpleEventGenerator[0]->set_vertex_distribution_mean(0., 0., 0.);
       INPUTGENERATOR::SimpleEventGenerator[0]->set_vertex_distribution_width(0., 0., 5.);
     }
-    INPUTGENERATOR::SimpleEventGenerator[0]->set_eta_range(-3, 3);
+    INPUTGENERATOR::SimpleEventGenerator[0]->set_eta_range(-0.2, 0.2);
     INPUTGENERATOR::SimpleEventGenerator[0]->set_phi_range(-M_PI, M_PI);
-    INPUTGENERATOR::SimpleEventGenerator[0]->set_pt_range(0.1, 20.);
+    INPUTGENERATOR::SimpleEventGenerator[0]->set_pt_range(10, 10.);
   }
   // Upsilons
   // if you run more than one of these Input::UPSILON_NUMBER > 1
@@ -228,7 +228,7 @@ int Fun4All_G4_EICDetector(
   Enable::DSTOUT_COMPRESS = false;  // Compress DST files
 
   //Option to convert DST to human command readable TTree for quick poke around the outputs
-//  Enable::DSTREADER = true;
+  // Enable::DSTREADER = true;
 
   // turn the display on (default off)
   Enable::DISPLAY = false;
@@ -285,6 +285,10 @@ int Fun4All_G4_EICDetector(
   Enable::CEMC_CLUSTER = Enable::CEMC_TOWER && true;
   Enable::CEMC_EVAL = Enable::CEMC_CLUSTER && true;
 
+  Enable::BECAL = false;
+  Enable::BECAL_TOWER = Enable::BECAL && true;
+  Enable::BECAL_EVAL  = Enable::BECAL_TOWER && true;
+  
   Enable::HCALIN = true;
   //  Enable::HCALIN_ABSORBER = true;
   Enable::HCALIN_CELL = Enable::HCALIN && true;
@@ -327,7 +331,7 @@ int Fun4All_G4_EICDetector(
   Enable::EEMC_CLUSTER = Enable::EEMC_TOWER && true;
   Enable::EEMC_EVAL = Enable::EEMC_CLUSTER && true;
 
-  Enable::PLUGDOOR = true;
+  Enable::PLUGDOOR = false;
 
   // Other options
   Enable::GLOBAL_RECO = true;
@@ -337,10 +341,10 @@ int Fun4All_G4_EICDetector(
 
   // Select only one jet reconstruction- they currently use the same
   // output collections on the node tree!
-  Enable::JETS = true;
+  Enable::JETS = false;
   Enable::JETS_EVAL = Enable::JETS && true;
 
-  Enable::FWDJETS = true;
+  Enable::FWDJETS = false;
   Enable::FWDJETS_EVAL = Enable::FWDJETS && true;
 
   // HI Jet Reco for jet simulations in Au+Au (default is false for
@@ -408,6 +412,13 @@ int Fun4All_G4_EICDetector(
 
   if (Enable::CEMC_TOWER) CEMC_Towers();
   if (Enable::CEMC_CLUSTER) CEMC_Clusters();
+
+  //-----------------------------
+  // BECAL towering and clustering
+  //-----------------------------
+
+  if (Enable::BECAL_TOWER) BECAL_Towers();
+  if (Enable::BECAL_CLUSTER) BECAL_Clusters();
 
   //-----------------------------
   // HCAL towering and clustering
@@ -485,6 +496,8 @@ int Fun4All_G4_EICDetector(
   if (Enable::TRACKING_EVAL) Tracking_Eval(outputroot + "_g4tracking_eval.root");
 
   if (Enable::CEMC_EVAL) CEMC_Eval(outputroot + "_g4cemc_eval.root");
+
+  if (Enable::BECAL_EVAL) BECAL_Eval(outputroot + "_g4becal_eval.root");
 
   if (Enable::HCALIN_EVAL) HCALInner_Eval(outputroot + "_g4hcalin_eval.root");
 

@@ -131,6 +131,7 @@ void EHCALSetup(PHG4Reco *g4Reco)
   ehcal->SetTowerMappingFile(mapping_EHCAL.str());
   ehcal->OverlapCheck(OverlapCheck);
   ehcal->SetActive();
+  ehcal->SetDetailed(false);
   ehcal->SuperDetector("EHCAL");
   if (AbsorberActive) ehcal->SetAbsorberActive();
 
@@ -186,7 +187,7 @@ void EHCAL_Towers()
   tower_EHCAL->Detector("EHCAL");
   tower_EHCAL->set_sim_tower_node_prefix("SIM");
   tower_EHCAL->GeometryTableFile(mapping_EHCAL.str());
-
+  
   se->registerSubsystem(tower_EHCAL);
 
   // enable usage of different tower calibrations for systematic studies
