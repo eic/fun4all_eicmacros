@@ -138,7 +138,7 @@ double HCalInner(PHG4Reco *g4Reco,
   //     close to cryostat. 
 
   if (!G4HCALIN::SETTING::USECEMCGeo){
-    double z_end = G4HCALIN::support_ring_z_ring2 - 13.5 + (G4HCALIN::dz/2.0);
+    double z_end = G4HCALIN::support_ring_z_ring2 - 12.5 + (G4HCALIN::dz/2.0);
     double z_start = -287-30; // DIRC prizm beginning
     double length = z_end - z_start;
     double z_shift = 0.5 * (z_end + z_start);
@@ -147,10 +147,14 @@ double HCalInner(PHG4Reco *g4Reco,
     hcal->set_double_param("scinti_outer_radius", 138.0);
     hcal->set_double_param("inner_radius", 134.0);
     hcal->set_double_param("tilt_angle", 36.15);
+    hcal->set_int_param("n_scinti_tiles", 0);
+    hcal->set_int_param("n_scinti_tiles_pos", 12);
+    hcal->set_int_param("n_scinti_tiles_neg", 15);
     hcal->set_double_param("size_z", length);
-    hcal->set_int_param("n_scinti_tiles", 12);
     hcal->set_double_param("place_z", z_shift);
-    hcal->set_double_param("scinti_eta_coverage", 1.1);
+    hcal->set_double_param("scinti_eta_coverage", 0.0);
+    hcal->set_double_param("scinti_eta_coverage_pos", 1.15);
+    hcal->set_double_param("scinti_eta_coverage_neg", 1.45);
   }
   hcal->SetActive();
   hcal->SuperDetector("HCALIN");
@@ -185,8 +189,8 @@ void HCalInner_SupportRing(PHG4Reco *g4Reco)
   double z_rings[] =
       {-G4HCALIN::support_ring_z_ring2, -z_ring1, z_ring1, G4HCALIN::support_ring_z_ring2};
   if (!G4HCALIN::SETTING::USECEMCGeo){
-    z_rings[2] =  z_ring1 - 13.5;
-    z_rings[3] = G4HCALIN::support_ring_z_ring2 - 13.5;
+    z_rings[2] =  z_ring1 - 12.5;
+    z_rings[3] = G4HCALIN::support_ring_z_ring2 - 12.5;
   }
       
       
