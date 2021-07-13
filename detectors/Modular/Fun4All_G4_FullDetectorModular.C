@@ -26,9 +26,10 @@
 #include <PHPy6JetTrigger.h>
 #include <phool/recoConsts.h>
 
-#include <g4eval/EventEvaluator.h>
+#include <eiceval/EventEvaluatorEIC.h>
 
 R__LOAD_LIBRARY(libfun4all.so)
+R__LOAD_LIBRARY(libeiceval.so)
 
 void ParseTString(TString &specialSetting);
 
@@ -122,7 +123,7 @@ int Fun4All_G4_FullDetectorModular(
                                                                               PHG4SimpleEventGenerator::Uniform);
     INPUTGENERATOR::SimpleEventGenerator[0]->set_vertex_distribution_mean(0., 0., 0.);
     INPUTGENERATOR::SimpleEventGenerator[0]->set_vertex_distribution_width(0., 0., 5.);
-    INPUTGENERATOR::SimpleEventGenerator[0]->set_eta_range(-1.5, 1.5);
+    INPUTGENERATOR::SimpleEventGenerator[0]->set_eta_range(1.4, 4.0);
     INPUTGENERATOR::SimpleEventGenerator[0]->set_phi_range(-M_PI, M_PI);
     INPUTGENERATOR::SimpleEventGenerator[0]->set_pt_range(particlemomMin, particlemomMax);
   }
@@ -441,6 +442,8 @@ int Fun4All_G4_FullDetectorModular(
       Enable::FEMC = true;
       Enable::FHCAL = true;
     }
+    if(specialSetting.Contains("LFHCALSTANDALONE"))
+      Enable::LFHCAL = true;
     if(specialSetting.Contains("BECALSTANDALONE"))
       Enable::BECAL = true;
     if(specialSetting.Contains("TTLSTANDALONE")){
@@ -666,7 +669,7 @@ int Fun4All_G4_FullDetectorModular(
   //----------------------
   bool doFullEventTree = true;
   if(doFullEventTree){
-    EventEvaluator *eval = new EventEvaluator("EVENTEVALUATOR",  outputroot + "_eventtree.root");
+    EventEvaluatorEIC *eval = new EventEvaluatorEIC("EVENTEVALUATOR",  outputroot + "_eventtree.root");
     eval->set_reco_tracing_energy_threshold(0.05);
     eval->set_reco_tracing_energy_threshold_BECAL(0.005);
     eval->Verbosity(0);
