@@ -110,6 +110,8 @@ int Fun4All_G4_FullDetectorModular(
       INPUTGENERATOR::SimpleEventGenerator[0]->add_particles("proton", 1);
     else if (generatorSettings.Contains("SimplePhoton"))
       INPUTGENERATOR::SimpleEventGenerator[0]->add_particles("gamma", 1);
+    else if (generatorSettings.Contains("SimpleNeutron"))
+      INPUTGENERATOR::SimpleEventGenerator[0]->add_particles("neutron", 1);
     else if (generatorSettings.Contains("SimpleElectron"))
       INPUTGENERATOR::SimpleEventGenerator[0]->add_particles("e-", 1);    
     else if (generatorSettings.Contains("SimplePiZero"))
@@ -125,16 +127,17 @@ int Fun4All_G4_FullDetectorModular(
     INPUTGENERATOR::SimpleEventGenerator[0]->set_vertex_distribution_width(0., 0., 5.);
     INPUTGENERATOR::SimpleEventGenerator[0]->set_eta_range(1.4, 4.0);
     INPUTGENERATOR::SimpleEventGenerator[0]->set_phi_range(-M_PI, M_PI);
-    INPUTGENERATOR::SimpleEventGenerator[0]->set_pt_range(particlemomMin, particlemomMax);
+    INPUTGENERATOR::SimpleEventGenerator[0]->set_p_range(particlemomMin, particlemomMax);
   }
   if(particlemomMin>-1 && particlemomMax == -1){
     PHG4ParticleGenerator *gen = new PHG4ParticleGenerator("PGENERATOR");
     gen->set_name("pi-");
     // gen->set_name("pi0");
     gen->set_vtx(0, 0, 0);
-    gen->set_eta_range(2.5, 4.2);            // around midrapidity
+    gen->set_eta_range(1, 3.7);            // around midrapidity
     if(particlemomMin > -1)
       gen->set_mom_range(particlemomMin, particlemomMin);                   // fixed 4 GeV/c
+      // gen->set_mom_range(particlemomMin, particlemomMax);                   // fixed 4 GeV/c
     else
       gen->set_mom_range(1, 60);                   // fixed 4 GeV/c
     gen->set_phi_range(0., 2* M_PI);  // 0-90 deg
@@ -147,6 +150,8 @@ int Fun4All_G4_FullDetectorModular(
       INPUTGENERATOR::Pythia6->set_config_file(string(getenv("CALIBRATIONROOT")) + "/Generators/phpythia6_ep.cfg");
     else if (generatorSettings.Contains("e10p250pTHard5") )
       INPUTGENERATOR::Pythia6->set_config_file(string(getenv("CALIBRATIONROOT")) + "/Generators/phpythia6_ep_MinPartonP5GeV.cfg");
+    else if (generatorSettings.Contains("e10p250pTQ210"))
+      INPUTGENERATOR::Pythia6->set_config_file(string(getenv("CALIBRATIONROOT")) + "/Generators/phpythia6_ep_QSquare10GeV.cfg");
     else if (generatorSettings.Contains("e10p250pTHard10"))
       INPUTGENERATOR::Pythia6->set_config_file(string(getenv("CALIBRATIONROOT")) + "/Generators/phpythia6_ep_MinPartonP10GeV.cfg");
     else if (generatorSettings.Contains("e10p250pTHard20"))
@@ -317,7 +322,7 @@ int Fun4All_G4_FullDetectorModular(
     Enable::BECAL = true;
     // need to switch of CEMC & HCALin
     Enable::CEMC    = false;
-//     Enable::HCALIN  = false;
+    Enable::HCALIN  = false; // for now deactivated due to crash
   }
   Enable::MAGNET = true;
 
@@ -411,6 +416,8 @@ int Fun4All_G4_FullDetectorModular(
   if(specialSetting.Contains("STANDALONE") ){
     Enable::PIPE = false;
     G4PIPE::use_forward_pipes = false;
+    Enable::HFARFWD_MAGNETS = false;
+    Enable::HFARFWD_VIRTUAL_DETECTORS = false;
     Enable::TPC_ENDCAP = false;
     G4TRACKING::PROJECTION_CEMC   = false;
     G4TRACKING::PROJECTION_FEMC   = false;
@@ -421,6 +428,7 @@ int Fun4All_G4_FullDetectorModular(
     Enable::MAGNET = false;
     Enable::DIRC = false;
     Enable::RICH = false;
+    Enable::mRICH = false;
     Enable::AEROGEL = false;
     Enable::CEMC = false;
     Enable::HCALOUT = false;
@@ -432,6 +440,8 @@ int Fun4All_G4_FullDetectorModular(
     Enable::FHCAL = false;
     Enable::LFHCAL = false;
     Enable::BECAL = false;
+    if(specialSetting.Contains("CEMCSTANDALONE"))
+      Enable::CEMC = true;
     if(specialSetting.Contains("DRSTANDALONE"))
       Enable::DRCALO = true;
     if(specialSetting.Contains("FEMCSTANDALONE"))
@@ -705,9 +715,11 @@ int Fun4All_G4_FullDetectorModular(
       eval->set_do_PROJECTIONS(true);
       if (G4TRACKING::DISPLACED_VERTEX) eval->set_do_VERTEX(true);
     }
-    eval->set_do_HEPMC(true);
+    if (Input::PYTHIA6){
+      eval->set_do_HEPMC(true);
+      eval->set_do_store_event_level_info(true);
+    }
     eval->set_do_MCPARTICLES(true);
-    eval->set_do_store_event_level_info(true);
     se->registerSubsystem(eval);
   }
 
