@@ -390,6 +390,14 @@ void Tracking_Reco(TString specialSetting = "")
     kalman->add_state_name("FHCAL");
   //   kalman->add_zplane_state("FHCAL", 350);
   }
+
+  //-------------------------
+  // LFHCAL
+  //-------------------------
+  if (Enable::LFHCAL) {
+    // kalman->add_state_name("FHCAL");
+    kalman->add_zplane_state("LFHCAL", 350);
+  }
   //-------------------------
   // CEMC
   //-------------------------
@@ -399,11 +407,56 @@ void Tracking_Reco(TString specialSetting = "")
   }
   
   //-------------------------
+  // BECAL
+  //-------------------------
+
+  if (Enable::BECAL){
+    // kalman->add_state_name("BECAL");
+    kalman -> add_cylinder_state("BECAL", 105);
+  }
+  
+  //-------------------------
+  // HCALIN
+  //-------------------------
+
+  if (Enable::HCALIN){
+    kalman->add_state_name("HCALIN");
+  }
+  
+  
+  //-------------------------
+  // HCALOUT
+  //-------------------------
+
+  if (Enable::HCALOUT){
+    kalman->add_state_name("HCALOUT");
+  }
+  
+  //-------------------------
   // EEMC
   //-------------------------
   if ((Enable::EEMC || Enable::EEMCH ) )
   {
     kalman->add_state_name("EEMC");
+  }
+  
+  
+  //-------------------------
+  // EEMC
+  //-------------------------
+  if ((Enable::EEMCH ) )
+  {
+    // kalman->add_state_name("EEMCG");
+    kalman->add_zplane_state("EEMCG", -210);
+  }
+  
+  //-------------------------
+  // EEMC
+  //-------------------------
+  if ((Enable::EHCAL ) )
+  {
+    // kalman->add_state_name("EHCAL");
+    kalman->add_zplane_state("EHCAL", -350);
   }
 
 
