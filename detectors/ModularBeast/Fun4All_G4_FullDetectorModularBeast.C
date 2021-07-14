@@ -27,9 +27,10 @@
 #include <phool/recoConsts.h>
 #include <phool/PHRandomSeed.h>
 
-#include <g4eval/EventEvaluator.h>
+#include <eiceval/EventEvaluatorEIC.h>
 
 R__LOAD_LIBRARY(libfun4all.so)
+R__LOAD_LIBRARY(libeiceval.so)
 R__LOAD_LIBRARY(libg4testbench.so)
 
 void ParseTString(TString &specialSetting);
@@ -550,7 +551,7 @@ int Fun4All_G4_FullDetectorModularBeast(
   //----------------------
   Bool_t doFullEventTree = kTRUE;
   if(doFullEventTree){
-    EventEvaluator *eval = new EventEvaluator("EVENTEVALUATOR", outputroot + "_eventtree.root");
+    EventEvaluatorEIC *eval = new EventEvaluatorEIC("EVENTEVALUATOR", outputroot + "_eventtree.root");
     eval->set_reco_tracing_energy_threshold(0.05);
     eval->Verbosity(0);
     if(specialSetting.Contains("FHCALSTANDALONE")){
