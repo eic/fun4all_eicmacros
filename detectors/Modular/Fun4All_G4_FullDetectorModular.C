@@ -454,7 +454,7 @@ int Fun4All_G4_FullDetectorModular(
       Enable::FEMC = true;
     if(specialSetting.Contains("FHCAL") && !specialSetting.Contains("LFHCAL"))
       Enable::FHCAL = true;
-    if(specialSetting.Contains("CALO")){
+    if(specialSetting.Contains("FWDCALO")){
       Enable::FEMC = true;
       Enable::FHCAL = true;
     }
