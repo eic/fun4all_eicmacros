@@ -60,6 +60,7 @@ namespace G4FHCAL
     bool HC2x = false;
     bool HC4x = false;
     bool asymmetric = false;
+    bool extradepth = false;
     bool wDR = false;
     bool FwdSquare = false;
     bool towercalib1 = false;
@@ -131,12 +132,18 @@ void FHCALSetup(PHG4Reco *g4Reco)
   // HCal Fe-Scint surrounding dual readout calorimeter R>50cm
   else if (G4FHCAL::SETTING::FwdSquare)
   {
-    mapping_fhcal << getenv("CALIBRATIONROOT") << "/ForwardHcal/mapping/towerMap_FHCAL_FwdSquare.txt";
+    if (G4FHCAL::SETTING::extradepth)
+      mapping_fhcal << getenv("CALIBRATIONROOT") << "/ForwardHcal/mapping/towerMap_FHCAL_FwdSquare_XL.txt";
+    else
+      mapping_fhcal << getenv("CALIBRATIONROOT") << "/ForwardHcal/mapping/towerMap_FHCAL_FwdSquare.txt";
   }
   // full HCal Fe-Scint with asymmetric centering around beampipe
   else if (G4FHCAL::SETTING::asymmetric)
   {
-    mapping_fhcal << getenv("CALIBRATIONROOT") << "/ForwardHcal/mapping/towerMap_FHCAL_asymmetric.txt";
+    if (G4FHCAL::SETTING::extradepth)
+      mapping_fhcal << getenv("CALIBRATIONROOT") << "/ForwardHcal/mapping/towerMap_FHCAL_asymmetric_XL.txt";
+    else
+      mapping_fhcal << getenv("CALIBRATIONROOT") << "/ForwardHcal/mapping/towerMap_FHCAL_asymmetric.txt";
   }
   // full HCal Fe-Scint with nominal acceptance
   else if (G4FHCAL::SETTING::FullEtaAcc)
@@ -202,12 +209,18 @@ void FHCAL_Towers()
   // HCal Fe-Scint surrounding dual readout calorimeter R>50cm
   else if (G4FHCAL::SETTING::FwdSquare)
   {
-    mapping_fhcal << getenv("CALIBRATIONROOT") << "/ForwardHcal/mapping/towerMap_FHCAL_FwdSquare.txt";
+    if (G4FHCAL::SETTING::extradepth)
+      mapping_fhcal << getenv("CALIBRATIONROOT") << "/ForwardHcal/mapping/towerMap_FHCAL_FwdSquare_XL.txt";
+    else
+      mapping_fhcal << getenv("CALIBRATIONROOT") << "/ForwardHcal/mapping/towerMap_FHCAL_FwdSquare.txt";
   }
   // full HCal Fe-Scint with asymmetric centering around beampipe
   else if (G4FHCAL::SETTING::asymmetric)
   {
-    mapping_fhcal << getenv("CALIBRATIONROOT") << "/ForwardHcal/mapping/towerMap_FHCAL_asymmetric.txt";
+    if (G4FHCAL::SETTING::extradepth)
+      mapping_fhcal << getenv("CALIBRATIONROOT") << "/ForwardHcal/mapping/towerMap_FHCAL_asymmetric_XL.txt";
+    else
+      mapping_fhcal << getenv("CALIBRATIONROOT") << "/ForwardHcal/mapping/towerMap_FHCAL_asymmetric.txt";
   }
   // full HCal Fe-Scint with nominal acceptance
   else if (G4FHCAL::SETTING::FullEtaAcc)
@@ -339,7 +352,7 @@ void FHCAL_Towers()
     TowerCalibration->Detector("FHCAL");
     TowerCalibration->Verbosity(verbosity);
     TowerCalibration->set_calib_algorithm(RawTowerCalibration::kSimple_linear_calibration);
-    TowerCalibration->set_calib_const_GeV_ADC(1. / G4FHCAL::sampling_fraction);
+    TowerCalibration->set_calib_const_GeV_ADC(1. / (G4FHCAL::sampling_fraction * 0.5)); // temporary factor 0.5 to fix calibration for new tower design
     TowerCalibration->set_pedstal_ADC(0);
     se->registerSubsystem(TowerCalibration);
   }
