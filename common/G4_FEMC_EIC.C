@@ -56,6 +56,7 @@ namespace G4FEMC
     bool FullEtaAcc = false;
     bool fsPHENIX = false;
     bool EC2x = false;
+    bool readoutsplit = false;
     bool asymmetric = false;
     bool wDR = false;
     bool FwdSquare = false;
@@ -105,12 +106,18 @@ void FEMCSetup(PHG4Reco *g4Reco)
   // asymmetric ECAL around beampipe
   else if (G4FEMC::SETTING::asymmetric)
   {
-    mapping_femc << getenv("CALIBRATIONROOT") << "/ForwardEcal/mapping/towerMap_FEMC_asymmetric.txt";
+    if (G4FEMC::SETTING::readoutsplit)
+      mapping_femc << getenv("CALIBRATIONROOT") << "/ForwardEcal/mapping/towerMap_FEMC_asymmetric_ROS.txt";
+    else
+      mapping_femc << getenv("CALIBRATIONROOT") << "/ForwardEcal/mapping/towerMap_FEMC_asymmetric.txt";
   }
   // ECAL surrounding dual readout calorimeter
   else if (G4FEMC::SETTING::FwdSquare)
   {
-    mapping_femc << getenv("CALIBRATIONROOT") << "/ForwardEcal/mapping/towerMap_FEMC_FwdSquare.txt";
+    if (G4FEMC::SETTING::readoutsplit)
+      mapping_femc << getenv("CALIBRATIONROOT") << "/ForwardEcal/mapping/towerMap_FEMC_FwdSquare_ROS.txt";
+    else
+      mapping_femc << getenv("CALIBRATIONROOT") << "/ForwardEcal/mapping/towerMap_FEMC_FwdSquare.txt";
   }
   // ECAL surrounding dual readout calorimeter
   else if (G4FEMC::SETTING::wDR)
@@ -178,7 +185,18 @@ void FEMC_Towers()
   // asymmetric ECAL around beampipe
   else if (G4FEMC::SETTING::asymmetric)
   {
-    mapping_femc << getenv("CALIBRATIONROOT") << "/ForwardEcal/mapping/towerMap_FEMC_asymmetric.txt";
+    if (G4FEMC::SETTING::readoutsplit)
+      mapping_femc << getenv("CALIBRATIONROOT") << "/ForwardEcal/mapping/towerMap_FEMC_asymmetric_ROS.txt";
+    else
+      mapping_femc << getenv("CALIBRATIONROOT") << "/ForwardEcal/mapping/towerMap_FEMC_asymmetric.txt";
+  }
+  // ECAL surrounding dual readout calorimeter
+  else if (G4FEMC::SETTING::FwdSquare)
+  {
+    if (G4FEMC::SETTING::readoutsplit)
+      mapping_femc << getenv("CALIBRATIONROOT") << "/ForwardEcal/mapping/towerMap_FEMC_FwdSquare_ROS.txt";
+    else
+      mapping_femc << getenv("CALIBRATIONROOT") << "/ForwardEcal/mapping/towerMap_FEMC_FwdSquare.txt";
   }
   // PbScint ECAL with enlarged beam pipe opening for Mar 2020 beam pipe
   else

@@ -302,7 +302,7 @@ void EHCAL_Towers()
     TowerCalibration->Detector("EHCAL");
     TowerCalibration->Verbosity(verbosity);
     TowerCalibration->set_calib_algorithm(RawTowerCalibration::kSimple_linear_calibration);
-    TowerCalibration->set_calib_const_GeV_ADC(1. / 0.03898);  // calibrated with muons
+    TowerCalibration->set_calib_const_GeV_ADC(1. / (0.03898*0.5));  // temporary factor 0.5 to fix calibration for new tower design
     TowerCalibration->set_pedstal_ADC(0);
     se->registerSubsystem(TowerCalibration);
   }
