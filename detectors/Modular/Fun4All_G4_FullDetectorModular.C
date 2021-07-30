@@ -125,8 +125,17 @@ int Fun4All_G4_FullDetectorModular(
                                                                               PHG4SimpleEventGenerator::Uniform);
     INPUTGENERATOR::SimpleEventGenerator[0]->set_vertex_distribution_mean(0., 0., 0.);
     INPUTGENERATOR::SimpleEventGenerator[0]->set_vertex_distribution_width(0., 0., 5.);
+<<<<<<< HEAD
     // INPUTGENERATOR::SimpleEventGenerator[0]->set_eta_range(-3.5, -1.5);
     INPUTGENERATOR::SimpleEventGenerator[0]->set_eta_range(1.4, 4.0);
+=======
+    if (generatorSettings.Contains("central"))
+      INPUTGENERATOR::SimpleEventGenerator[0]->set_eta_range(-1.8, 1.2);
+    else if (generatorSettings.Contains("bck"))
+      INPUTGENERATOR::SimpleEventGenerator[0]->set_eta_range(-4, -1.7);
+    else 
+      INPUTGENERATOR::SimpleEventGenerator[0]->set_eta_range(1.1, 4.0);
+>>>>>>> added option for longer lfhcal
     INPUTGENERATOR::SimpleEventGenerator[0]->set_phi_range(-M_PI, M_PI);
     INPUTGENERATOR::SimpleEventGenerator[0]->set_p_range(particlemomMin, particlemomMax);
   }
@@ -242,8 +251,8 @@ int Fun4All_G4_FullDetectorModular(
   // EIC beam pipe extension beyond the Be-section:
   G4PIPE::use_forward_pipes = true;
   //EIC hadron far forward magnets and detectors. IP6 and IP8 are incompatible (pick either or);
-  Enable::HFARFWD_MAGNETS = true;
-  Enable::HFARFWD_VIRTUAL_DETECTORS = true;
+  Enable::HFARFWD_MAGNETS = false;
+  Enable::HFARFWD_VIRTUAL_DETECTORS = false;
 
   // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   // geometry - tracking
@@ -454,14 +463,36 @@ int Fun4All_G4_FullDetectorModular(
       Enable::FEMC = true;
     if(specialSetting.Contains("FHCAL") && !specialSetting.Contains("LFHCAL"))
       Enable::FHCAL = true;
-    if(specialSetting.Contains("FWDCALO")){
-      Enable::FEMC = true;
-      Enable::FHCAL = true;
-    }
     if(specialSetting.Contains("LFHCAL"))
       Enable::LFHCAL = true;
     if(specialSetting.Contains("BECAL"))
       Enable::BECAL = true;
+    if(specialSetting.Contains("EHCAL"))
+      Enable::EHCAL = true;
+    if(specialSetting.Contains("EEMCH"))
+      Enable::EEMCH = true;
+    if(specialSetting.Contains("CHCAL")){
+      Enable::HCALIN   = true;
+      Enable::HCALOUT  = true;
+    }
+      
+    if(specialSetting.Contains("FWDCALO")){
+      Enable::FEMC    = true;
+      Enable::FHCAL   = true;
+
+    if(specialSetting.Contains("FWDLCALO")){
+      Enable::FEMC    = true;
+      Enable::LFHCAL  = true;
+    }
+    if(specialSetting.Contains("BARCALO")){
+      Enable::BECAL    = true;
+      Enable::HCALIN   = true;
+      Enable::HCALOUT  = true;
+    }
+    if(specialSetting.Contains("BCKCALO")){
+      Enable::EHCAL    = true;
+      Enable::EEMCH    = true;
+    }
     if(specialSetting.Contains("TTL")){
       // Enable::PIPE = true;
       // G4PIPE::use_forward_pipes = true;
@@ -884,7 +915,8 @@ void ParseTString(TString &specialSetting)
   }
   if (specialSetting.Contains("XDEPTH")) // common for FHCAL and FEMC
   {
-    G4FHCAL::SETTING::extradepth = Enable::FHCAL && true;
+    G4FHCAL::SETTING::extradepth  = Enable::FHCAL && true;
+    G4FHCAL::SETTING::longer      = Enable::LFHCAL && true;
   }
   if (specialSetting.Contains("wDR")) // common for FHCAL and FEMC
   {
@@ -909,6 +941,7 @@ void ParseTString(TString &specialSetting)
     G4FEMC::SETTING::FwdSquare = Enable::FEMC &&true;
     G4TTL::SETTING::optionDR = 1;
   }
+  
   if (specialSetting.Contains("HC2x"))
   {
     G4FHCAL::SETTING::HC2x = true;
