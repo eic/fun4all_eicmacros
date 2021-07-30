@@ -16,6 +16,8 @@ int make_forward_station(string name, PHG4Reco *g4Reco, double zpos, double Rmin
                           double Rmax,double tSilicon, double xoffset=0);
 int make_barrel_layer(string name, PHG4Reco *g4Reco, 
                       double radius, double halflength, double tSilicon, double zOffset);
+int make_barrel_layer2(string name, PHG4Reco *g4Reco, 
+                      double radius, double halflength, double tSilicon, double zOffset);
 
 //-----------------------------------------------------------------------------------//
 namespace Enable
@@ -131,8 +133,9 @@ void CTTLSetup(PHG4Reco *g4Reco, TString cttloption = "")
   const double um = 1e-3 * mm;
   
   for (Int_t i = 0; i < G4TTL::layer[1]; i++){
-    cout << G4TTL::positionToVtx[1][i] << "\t" << G4TTL::minExtension[1][i] << "\t" << G4TTL::maxExtension[1][i] << endl;
-    make_barrel_layer(Form("CTTL_%d",i), g4Reco, G4TTL::positionToVtx[1][i],  G4TTL::minExtension[1][i], 85*um, G4TTL::maxExtension[1][i]);     
+    cout << "Radius: " << G4TTL::positionToVtx[1][i] << "\tLength: " << G4TTL::minExtension[1][i] << "\tz-Offset: " << G4TTL::maxExtension[1][i] << endl;
+    // make_barrel_layer(Form("CTTL_%d",i), g4Reco, G4TTL::positionToVtx[1][i],  G4TTL::minExtension[1][i], 85*um, G4TTL::maxExtension[1][i]);     
+    make_barrel_layer2(Form("CTTL_%d",i), g4Reco, G4TTL::positionToVtx[1][i],  G4TTL::minExtension[1][i], 85*um, G4TTL::maxExtension[1][i]);     
   }
 }
 
@@ -156,10 +159,37 @@ int make_forward_station(string name, PHG4Reco *g4Reco,
   ttl->SetDetailed(false);
   ttl->SuperDetector(name);
   ttl->set_double_param("polar_angle", polar_angle);                    //
+  ttl->set_int_param("isForward", 1);                    //
   ttl->set_double_param("place_z", zpos * cm);                    //
   ttl->set_double_param("rMin", rMin * cm);                    //
   ttl->set_double_param("rMax", rMax * cm);                    //
   ttl->set_double_param("offset_x", xoffset * cm);                    //
+  ttl->set_double_param("tSilicon", tSilicon);                    //
+  ttl->OverlapCheck(true);
+
+  g4Reco->registerSubsystem(ttl);
+  return 0;
+}
+
+
+
+//-----------------------------------------------------------------------------------//
+int make_barrel_layer2(string name, PHG4Reco *g4Reco, 
+                      double radius, double halflength, double tSilicon, double zOffset )
+{
+  // cout << "r min: " << rMin << "\t r max: " << rMax << "\t z: " <<  zpos << endl;
+  radius = 87.5;
+
+  PHG4TTLSubsystem *ttl;
+  ttl = new PHG4TTLSubsystem(name);
+  ttl->SetDetailed(false);
+  ttl->SuperDetector(name);
+  ttl->set_int_param("isForward", 0);                    //
+  ttl->set_double_param("place_z", zOffset * cm);                    //
+  ttl->set_double_param("rMin", radius * cm);                    //
+  ttl->set_double_param("length", 2.0 * halflength * cm);
+  // ttl->set_double_param("rMax", rMax * cm);                    //
+  // ttl->set_double_param("offset_x", xoffset * cm);                    //
   ttl->set_double_param("tSilicon", tSilicon);                    //
   ttl->OverlapCheck(true);
 

@@ -139,10 +139,10 @@ int Fun4All_G4_FullDetectorModular(
     gen->set_name("pi-");
     // gen->set_name("pi0");
     gen->set_vtx(0, 0, 0);
-    gen->set_eta_range(1, 3.7);            // around midrapidity
+    // gen->set_eta_range(1, 3.7);            // around midrapidity
+    gen->set_eta_range(-3.5, 3.5);            // around midrapidity
     if(particlemomMin > -1)
       gen->set_mom_range(particlemomMin, particlemomMin);                   // fixed 4 GeV/c
-      // gen->set_mom_range(particlemomMin, particlemomMax);                   // fixed 4 GeV/c
     else
       gen->set_mom_range(1, 60);                   // fixed 4 GeV/c
     gen->set_phi_range(0., 2* M_PI);  // 0-90 deg
@@ -789,10 +789,10 @@ int Fun4All_G4_FullDetectorModular(
   // Event processing
   //-----------------
   if (Enable::DISPLAY){
-    DisplayOn();
-    // gROOT->ProcessLine("PHG4Reco *g4 = QTGui();"); // alternative to DisplayOn
-    gROOT->ProcessLine("Fun4AllServer *se = Fun4AllServer::instance();");
-    gROOT->ProcessLine("PHG4Reco *g4 = (PHG4Reco *) se->getSubsysReco(\"PHG4RECO\");");
+    // DisplayOn();
+    gROOT->ProcessLine("PHG4Reco *g4 = QTGui();"); // alternative to DisplayOn
+    // gROOT->ProcessLine("Fun4AllServer *se = Fun4AllServer::instance();");
+    // gROOT->ProcessLine("PHG4Reco *g4 = (PHG4Reco *) se->getSubsysReco(\"PHG4RECO\");");
 
     cout << "-------------------------------------------------" << endl;
     cout << "You are in event display mode. Run one event with" << endl;
