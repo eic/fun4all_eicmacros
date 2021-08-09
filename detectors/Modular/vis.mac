@@ -28,7 +28,7 @@
 #/vis/open OGLIX
 /vis/open OGL 1200x900-0+0
 # increase display limit for more complex detectors
-/vis/ogl/set/displayListLimit 500000
+/vis/ogl/set/displayListLimit 5000000
 /vis/viewer/set/viewpointThetaPhi 260 -40
 /vis/viewer/addCutawayPlane 0 0 0 m 1 0 0
 /vis/viewer/addCutawayPlane 0 0 0 m 0 -1 0

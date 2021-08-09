@@ -125,17 +125,12 @@ int Fun4All_G4_FullDetectorModular(
                                                                               PHG4SimpleEventGenerator::Uniform);
     INPUTGENERATOR::SimpleEventGenerator[0]->set_vertex_distribution_mean(0., 0., 0.);
     INPUTGENERATOR::SimpleEventGenerator[0]->set_vertex_distribution_width(0., 0., 5.);
-<<<<<<< HEAD
-    // INPUTGENERATOR::SimpleEventGenerator[0]->set_eta_range(-3.5, -1.5);
-    INPUTGENERATOR::SimpleEventGenerator[0]->set_eta_range(1.4, 4.0);
-=======
     if (generatorSettings.Contains("central"))
       INPUTGENERATOR::SimpleEventGenerator[0]->set_eta_range(-1.8, 1.2);
     else if (generatorSettings.Contains("bck"))
       INPUTGENERATOR::SimpleEventGenerator[0]->set_eta_range(-4, -1.7);
     else 
       INPUTGENERATOR::SimpleEventGenerator[0]->set_eta_range(1.1, 4.0);
->>>>>>> added option for longer lfhcal
     INPUTGENERATOR::SimpleEventGenerator[0]->set_phi_range(-M_PI, M_PI);
     INPUTGENERATOR::SimpleEventGenerator[0]->set_p_range(particlemomMin, particlemomMax);
   }
@@ -332,7 +327,7 @@ int Fun4All_G4_FullDetectorModular(
     Enable::BECAL = true;
     // need to switch of CEMC & HCALin
     Enable::CEMC    = false;
-    Enable::HCALIN  = false; // for now deactivated due to crash
+    Enable::HCALIN  = true; // for now deactivated due to crash
   }
   Enable::MAGNET = true;
 
@@ -453,6 +448,12 @@ int Fun4All_G4_FullDetectorModular(
     Enable::FTTL = false;
     Enable::CTTL = false;
     Enable::ETTL = false;
+    if(specialSetting.Contains("PIPE")){
+      Enable::PIPE = true;
+      G4PIPE::use_forward_pipes = true;    
+    }
+    if(specialSetting.Contains("Magnet"))
+      Enable::MAGNET = true;
     if(specialSetting.Contains("ALLSILICON"))
       Enable::ALLSILICON = true;
     if(specialSetting.Contains("CEMC"))
@@ -475,11 +476,13 @@ int Fun4All_G4_FullDetectorModular(
       Enable::HCALIN   = true;
       Enable::HCALOUT  = true;
     }
-      
+    if(specialSetting.Contains("DIRC"))
+      Enable::DIRC = true;
+    
     if(specialSetting.Contains("FWDCALO")){
       Enable::FEMC    = true;
       Enable::FHCAL   = true;
-
+    }
     if(specialSetting.Contains("FWDLCALO")){
       Enable::FEMC    = true;
       Enable::LFHCAL  = true;
@@ -719,8 +722,6 @@ int Fun4All_G4_FullDetectorModular(
   bool doFullEventTree = true;
   if(doFullEventTree){
     EventEvaluatorEIC *eval = new EventEvaluatorEIC("EVENTEVALUATOR",  outputroot + "_eventtree.root");
-    eval->set_reco_tracing_energy_threshold(0.05);
-    eval->set_reco_tracing_energy_threshold_BECAL(0.005);
     eval->Verbosity(0);
     if(specialSetting.Contains("GEOMETRYTREE"))
       eval->set_do_GEOMETRY(true);
@@ -916,7 +917,7 @@ void ParseTString(TString &specialSetting)
   if (specialSetting.Contains("XDEPTH")) // common for FHCAL and FEMC
   {
     G4FHCAL::SETTING::extradepth  = Enable::FHCAL && true;
-    G4FHCAL::SETTING::longer      = Enable::LFHCAL && true;
+    G4LFHCAL::SETTING::longer     = Enable::LFHCAL && true;
   }
   if (specialSetting.Contains("wDR")) // common for FHCAL and FEMC
   {

@@ -90,7 +90,7 @@ TString GetMappingFile(){
   else if (G4LFHCAL::SETTING::asymmetric)
   {
     if (G4LFHCAL::SETTING::longer)
-      mappinFileName += "/LFHcal/mapping/towerMap_LFHCAL_asymmetric.txt";
+      mappinFileName += "/LFHcal/mapping/towerMap_LFHCAL_asymmetric-long.txt";
     else 
       mappinFileName += "/LFHcal/mapping/towerMap_LFHCAL_asymmetric.txt";
       
@@ -136,8 +136,11 @@ void LFHCALSetup(PHG4Reco *g4Reco)
   PHG4LFHcalSubsystem *fhcal = new PHG4LFHcalSubsystem("LFHCAL");
 
   TString mapping_fhcal = GetMappingFile();
-  cout << mapping_fhcal.Data() << endl;
-  fhcal->SetTowerMappingFile(mapping_fhcal);
+  cout << "LFHCAL: "<< mapping_fhcal.Data() << endl;
+  ostringstream mapping_fhcal_s;
+  mapping_fhcal_s << mapping_fhcal.Data();
+  
+  fhcal->SetTowerMappingFile(mapping_fhcal_s.str());
   fhcal->OverlapCheck(OverlapCheck);
   fhcal->SetActive();
   fhcal->SetDetailed(true);
@@ -161,11 +164,13 @@ void LFHCAL_Towers()
   // Switch to desired calo setup;
   // PSD like HCal Fe-Scint with doubled granularity  
   TString mapping_fhcal = GetMappingFile();
+  ostringstream mapping_fhcal_s;
+  mapping_fhcal_s << mapping_fhcal.Data();
 
   RawTowerBuilderByHitIndexLHCal *tower_LFHCAL = new RawTowerBuilderByHitIndexLHCal("TowerBuilder_LFHCAL");
   tower_LFHCAL->Detector("LFHCAL");
   tower_LFHCAL->set_sim_tower_node_prefix("SIM");
-  tower_LFHCAL->GeometryTableFile(mapping_fhcal);
+  tower_LFHCAL->GeometryTableFile(mapping_fhcal_s.str());
 
   se->registerSubsystem(tower_LFHCAL);
 
@@ -181,7 +186,7 @@ void LFHCAL_Towers()
   TowerCalibration->Detector("LFHCAL");
   TowerCalibration->Verbosity(verbosity);
   TowerCalibration->set_calib_algorithm(RawTowerCalibration::kSimple_linear_calibration);
-  TowerCalibration->set_calib_const_GeV_ADC(1. / 0.03898);  // calibrated with muons
+  TowerCalibration->set_calib_const_GeV_ADC(1. / (0.03898*0.93));  // temporary factor 0.93 to fix calibration for new tower design
   TowerCalibration->set_pedstal_ADC(0);
   se->registerSubsystem(TowerCalibration);
 }
