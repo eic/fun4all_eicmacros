@@ -40,13 +40,10 @@ namespace Enable
 namespace G4BECAL
 {
 
-  //double minz =  -273.6*cm;
-  //double maxz =  142.4*cm;
   double minz = -453;
   double maxz = 371;
-  double topradius =  138;
-  double radius =  85;
-
+  double topradius =  140;
+  double radius =  84;
   // this is default set to -1.5<eta<1.24 for 2018 Letter of Intent
   // if the user changes these, the z position of the
 
