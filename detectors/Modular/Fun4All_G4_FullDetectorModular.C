@@ -289,6 +289,7 @@ int Fun4All_G4_FullDetectorModular(
     Enable::FTTL = true;
     Enable::ETTL = true;
     Enable::CTTL = true;
+    G4TTL::SETTING::optionCEMC    = true;
   }
   // mvtx/tpc tracker
   if(specialSetting.Contains("MVTX")){
@@ -314,6 +315,7 @@ int Fun4All_G4_FullDetectorModular(
   // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   // PID detectors
   Enable::DIRC = true;
+  G4DIRC::SETTING::USECEMCGeo   = true;
   
   // sPHENIX SPACAL reuse
   Enable::CEMC = true;
@@ -321,6 +323,7 @@ int Fun4All_G4_FullDetectorModular(
   
   // sPHENIX HCal inner reuse
   Enable::HCALIN = true;
+  G4HCALIN::SETTING::USECEMCGeo = true;
   //  Enable::HCALIN_ABSORBER = true;
   
   if (specialSetting.Contains("BECAL") ){
@@ -386,6 +389,7 @@ int Fun4All_G4_FullDetectorModular(
   if (specialSetting.Contains("EEMCH")){
     Enable::EEMCH = true;
     Enable::EEMC  = false;
+    G4EEMCH::SETTING::USECEMCGeo  = true;
   }
   Enable::EHCAL = true;
   if(specialSetting.Contains("noEHCAL"))
@@ -507,7 +511,11 @@ int Fun4All_G4_FullDetectorModular(
         Enable::ETTL = true;
       if(specialSetting.Contains("CTTL")){
         Enable::CTTL = true;
-        Enable::DIRC = true;
+        // Enable::DIRC = true;
+        // Enable::BECAL = true;
+        // Enable::ALLSILICON = true;
+        G4DIRC::SETTING::USECEMCGeo   = false;
+        G4TTL::SETTING::optionCEMC    = false;
       }
     }
   }
@@ -1003,11 +1011,6 @@ void ParseTString(TString &specialSetting)
     G4DIRC::SETTING::USECEMCGeo   = false;
     G4TTL::SETTING::optionCEMC    = false;
     G4HCALIN::SETTING::USECEMCGeo = false;
-  } else {
-    G4EEMCH::SETTING::USECEMCGeo  = true;
-    G4DIRC::SETTING::USECEMCGeo   = true;
-    G4TTL::SETTING::optionCEMC    = true;
-    G4HCALIN::SETTING::USECEMCGeo = true;
   }
   if (specialSetting.Contains("EEMCH"))
     G4TTL::SETTING::optionEEMCH   = true;
@@ -1022,6 +1025,8 @@ void ParseTString(TString &specialSetting)
     G4TTL::SETTING::optionGeo    = 3;
   else if (specialSetting.Contains("TTLF"))
     G4TTL::SETTING::optionGeo    = 4;
+  else if (specialSetting.Contains("TTLBasicGeo"))
+    G4TTL::SETTING::optionBasicGeo    = true;
 
   if (specialSetting.Contains("ACLGAD"))
     G4TTL::SETTING::optionGran    = 2;
