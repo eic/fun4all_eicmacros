@@ -491,6 +491,7 @@ int Fun4All_G4_FullDetectorModular(
       Enable::BECAL    = true;
       Enable::HCALIN   = true;
       Enable::HCALOUT  = true;
+      Enable::MAGNET = true;
     }
     if(specialSetting.Contains("BCKCALO")){
       Enable::EHCAL    = true;
