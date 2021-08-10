@@ -58,8 +58,12 @@ void TTL_Init()
   
   if (G4TTL::SETTING::optionCEMC){
     G4TTL::maxExtension[0][0]   = 80.;
-    G4TTL::maxExtension[0][1]   = 80.;    
+    G4TTL::maxExtension[0][1]   = 80.;
     G4TTL::positionToVtx[1][0]  = 92.;
+    if(!G4TTL::SETTING::optionBasicGeo){
+      cout << "!!!!!!! G4TTL::SETTING::optionBasicGeo is required to run with CEMC. Otherwise BECAL has to be used!!!!!!" << endl;
+      gSystem->Exit(1);
+    }
   } 
   
   if(G4TTL::SETTING::optionBasicGeo){
@@ -91,6 +95,7 @@ void TTL_Init()
     cout << "TTL setup infront of ECals  with 2 layers fwd/bwd & 1 layer barrel, 1 layer before HCals everywhere" << endl;  
     G4TTL::layer[0]    = 3;
     G4TTL::layer[1]    = 2;
+    if(!G4TTL::SETTING::optionBasicGeo) G4TTL::layer[1]    = 1;
     G4TTL::layer[2]    = 3;
   }
 
@@ -174,7 +179,7 @@ int make_forward_station(string name, PHG4Reco *g4Reco,
   ttl->set_double_param("rMax", rMax * cm);                    //
   ttl->set_double_param("offset_x", xoffset * cm);                    //
   ttl->set_double_param("tSilicon", tSilicon);                    //
-  ttl->OverlapCheck(true);
+  ttl->OverlapCheck(false);
 
   g4Reco->registerSubsystem(ttl);
   return 0;
@@ -187,7 +192,9 @@ int make_barrel_layer2(string name, PHG4Reco *g4Reco,
                       double radius, double halflength, double tSilicon, double zOffset )
 {
   // cout << "r min: " << rMin << "\t r max: " << rMax << "\t z: " <<  zpos << endl;
-  cout << "The improved barrel TTL layer is placed at a fixed radius of rMin = 80 * cm and is meant to only be used with the BECAL!" << endl;
+  if(G4TTL::SETTING::optionCEMC){
+    cout << "The improved barrel TTL layer is placed at a fixed radius of rMin = 80 * cm and is meant to only be used with the BECAL!" << endl;
+  }
   PHG4TTLSubsystem *ttl;
   ttl = new PHG4TTLSubsystem(name);
   ttl->SetDetailed(false);
