@@ -272,7 +272,10 @@ void FEMC_Towers()
   TowerCalibration2->TowerType(2);
   TowerCalibration2->Verbosity(verbosity);
   TowerCalibration2->set_calib_algorithm(RawTowerCalibration::kSimple_linear_calibration);
-  TowerCalibration2->set_calib_const_GeV_ADC(1.0 / 0.249);  // sampling fraction = 0.249 for e-
+  if (G4FEMC::SETTING::readoutsplit)
+    TowerCalibration2->set_calib_const_GeV_ADC(1.0 / (0.249*0.84));  // sampling fraction = 0.249 for e-
+  else 
+    TowerCalibration2->set_calib_const_GeV_ADC(1.0 / 0.249);  // sampling fraction = 0.249 for e-
   TowerCalibration2->set_pedstal_ADC(0);
   se->registerSubsystem(TowerCalibration2);
 
