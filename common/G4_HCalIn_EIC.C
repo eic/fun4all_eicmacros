@@ -138,8 +138,9 @@ double HCalInner(PHG4Reco *g4Reco,
   //     close to cryostat. 
 
   if (!G4HCALIN::SETTING::USECEMCGeo){
+    cout << "Setting up with inner HCAL for BECAL setup" << endl;
     double z_end = G4HCALIN::support_ring_z_ring2 - 12.5 + (G4HCALIN::dz/2.0);
-    double z_start = -287-30; // DIRC prizm beginning
+    double z_start = -287; // DIRC prizm beginning
     double length = z_end - z_start;
     double z_shift = 0.5 * (z_end + z_start);
 

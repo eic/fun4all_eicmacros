@@ -57,11 +57,64 @@ namespace G4LFHCAL
     bool asymmetric = false;
     bool wDR = false;
     bool FwdSquare = false;
+    bool longer = false;
   }  // namespace SETTING
 }  // namespace G4LFHCAL
 
+TString GetMappingFile(){
+  TString mappinFileName = getenv("CALIBRATIONROOT");
+  if (G4LFHCAL::SETTING::HC2x )
+  {
+    if (G4LFHCAL::SETTING::longer)
+      mappinFileName += "/LFHcal/mapping/towerMap_LFHCAL_2x-long.txt";
+    else 
+      mappinFileName +=  "/LFHcal/mapping/towerMap_LFHCAL_2x.txt";
+  }
+  // HCal Fe-Scint surrounding dual readout calorimeter R>50cm
+  else if (G4LFHCAL::SETTING::wDR)
+  {
+    if (G4LFHCAL::SETTING::longer)
+      mappinFileName +=  "/LFHcal/mapping/towerMap_LFHCAL_wDR-long.txt";
+    else 
+      mappinFileName +=  "/LFHcal/mapping/towerMap_LFHCAL_wDR.txt";
+  }
+  // HCal Fe-Scint surrounding dual readout calorimeter R>50cm
+  else if (G4LFHCAL::SETTING::FwdSquare)
+  {
+    if (G4LFHCAL::SETTING::longer)
+      mappinFileName += "/LFHcal/mapping/towerMap_LFHCAL_FwdSquare-long.txt";
+    else 
+      mappinFileName += "/LFHcal/mapping/towerMap_LFHCAL_FwdSquare.txt";
+  }
+  // full HCal Fe-Scint with asymmetric centering around beampipe
+  else if (G4LFHCAL::SETTING::asymmetric)
+  {
+    if (G4LFHCAL::SETTING::longer)
+      mappinFileName += "/LFHcal/mapping/towerMap_LFHCAL_asymmetric-long.txt";
+    else 
+      mappinFileName += "/LFHcal/mapping/towerMap_LFHCAL_asymmetric.txt";
+      
+  }
+  //  PSD like HCal Fe-Scint with enlarged beam pipe opening for Mar 2020 beam pipe
+  else
+  {
+    if (G4LFHCAL::SETTING::longer)
+      mappinFileName +=  "/LFHcal/mapping/towerMap_LFHCAL_default-long.txt";
+    else
+      mappinFileName +=  "/LFHcal/mapping/towerMap_LFHCAL_default.txt";
+  }
+
+  return mappinFileName;
+  
+}
+
+
 void LFHCALInit()
 {
+  if (G4LFHCAL::SETTING::longer){
+    G4LFHCAL::Gz0 = 420;
+    G4LFHCAL::Gdz = 140;
+  }
   // simple way to check if only 1 of the settings is true
   if ((G4LFHCAL::SETTING::FullEtaAcc ? 1 : 0) + (G4LFHCAL::SETTING::HC2x ? 1 : 0) > 1)
   {
@@ -82,37 +135,12 @@ void LFHCALSetup(PHG4Reco *g4Reco)
   /** Use dedicated LFHCAL module */
   PHG4LFHcalSubsystem *fhcal = new PHG4LFHcalSubsystem("LFHCAL");
 
-  ostringstream mapping_fhcal;
-
-  // Switch to desired calo setup;
-  // PSD like HCal Fe-Scint with doubled granularity  
-  if (G4LFHCAL::SETTING::HC2x )
-  {
-    mapping_fhcal << getenv("CALIBRATIONROOT") << "/LFHcal/mapping/towerMap_LFHCAL_2x.txt";
-  }
-  // HCal Fe-Scint surrounding dual readout calorimeter R>50cm
-  else if (G4LFHCAL::SETTING::wDR)
-  {
-    mapping_fhcal << getenv("CALIBRATIONROOT") << "/LFHcal/mapping/towerMap_LFHCAL_wDR.txt";
-  }
-  // HCal Fe-Scint surrounding dual readout calorimeter R>50cm
-  else if (G4LFHCAL::SETTING::FwdSquare)
-  {
-    mapping_fhcal << getenv("CALIBRATIONROOT") << "/LFHcal/mapping/towerMap_LFHCAL_FwdSquare.txt";
-  }
-  // full HCal Fe-Scint with asymmetric centering around beampipe
-  else if (G4LFHCAL::SETTING::asymmetric)
-  {
-    mapping_fhcal << getenv("CALIBRATIONROOT") << "/LFHcal/mapping/towerMap_LFHCAL_asymmetric.txt";
-  }
-  //  PSD like HCal Fe-Scint with enlarged beam pipe opening for Mar 2020 beam pipe
-  else
-  {
-    mapping_fhcal << getenv("CALIBRATIONROOT") << "/LFHcal/mapping/towerMap_LFHCAL_default.txt";
-  }
-
-
-  fhcal->SetTowerMappingFile(mapping_fhcal.str());
+  TString mapping_fhcal = GetMappingFile();
+  cout << "LFHCAL: "<< mapping_fhcal.Data() << endl;
+  ostringstream mapping_fhcal_s;
+  mapping_fhcal_s << mapping_fhcal.Data();
+  
+  fhcal->SetTowerMappingFile(mapping_fhcal_s.str());
   fhcal->OverlapCheck(OverlapCheck);
   fhcal->SetActive();
   fhcal->SetDetailed(true);
@@ -133,39 +161,16 @@ void LFHCAL_Towers()
 
   Fun4AllServer *se = Fun4AllServer::instance();
 
-  ostringstream mapping_fhcal;
-
   // Switch to desired calo setup;
   // PSD like HCal Fe-Scint with doubled granularity  
-  if (G4LFHCAL::SETTING::HC2x )
-  {
-    mapping_fhcal << getenv("CALIBRATIONROOT") << "/LFHcal/mapping/towerMap_LFHCAL_2x.txt";
-  }
-  // HCal Fe-Scint surrounding dual readout calorimeter R>50cm
-  else if (G4LFHCAL::SETTING::wDR)
-  {
-    mapping_fhcal << getenv("CALIBRATIONROOT") << "/LFHcal/mapping/towerMap_LFHCAL_wDR.txt";
-  }
-  // HCal Fe-Scint surrounding dual readout calorimeter R>50cm
-  else if (G4LFHCAL::SETTING::FwdSquare)
-  {
-    mapping_fhcal << getenv("CALIBRATIONROOT") << "/LFHcal/mapping/towerMap_LFHCAL_FwdSquare.txt";
-  }
-  // full HCal Fe-Scint with asymmetric centering around beampipe
-  else if (G4LFHCAL::SETTING::asymmetric)
-  {
-    mapping_fhcal << getenv("CALIBRATIONROOT") << "/LFHcal/mapping/towerMap_LFHCAL_asymmetric.txt";
-  }
-  //  PSD like HCal Fe-Scint with enlarged beam pipe opening for Mar 2020 beam pipe
-  else
-  {
-    mapping_fhcal << getenv("CALIBRATIONROOT") << "/LFHcal/mapping/towerMap_LFHCAL_default.txt";
-  }
+  TString mapping_fhcal = GetMappingFile();
+  ostringstream mapping_fhcal_s;
+  mapping_fhcal_s << mapping_fhcal.Data();
 
   RawTowerBuilderByHitIndexLHCal *tower_LFHCAL = new RawTowerBuilderByHitIndexLHCal("TowerBuilder_LFHCAL");
   tower_LFHCAL->Detector("LFHCAL");
   tower_LFHCAL->set_sim_tower_node_prefix("SIM");
-  tower_LFHCAL->GeometryTableFile(mapping_fhcal.str());
+  tower_LFHCAL->GeometryTableFile(mapping_fhcal_s.str());
 
   se->registerSubsystem(tower_LFHCAL);
 
@@ -181,7 +186,7 @@ void LFHCAL_Towers()
   TowerCalibration->Detector("LFHCAL");
   TowerCalibration->Verbosity(verbosity);
   TowerCalibration->set_calib_algorithm(RawTowerCalibration::kSimple_linear_calibration);
-  TowerCalibration->set_calib_const_GeV_ADC(1. / 0.03898);  // calibrated with muons
+  TowerCalibration->set_calib_const_GeV_ADC(1. / (0.03898*0.93));  // temporary factor 0.93 to fix calibration for new tower design
   TowerCalibration->set_pedstal_ADC(0);
   se->registerSubsystem(TowerCalibration);
 }

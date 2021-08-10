@@ -32,8 +32,8 @@
 
 #include <G4_BlackHole.C>
 #include <G4_Magnet.C>
-#include <G4_Pipe_EIC.C>
 #include <G4_hFarFwdBeamLine_EIC.C>
+#include <G4_Pipe_EIC_simple.C>
 #include <G4_PlugDoor_EIC.C>
 #include <G4_User.C>
 #include <G4_World.C>

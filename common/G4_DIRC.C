@@ -126,8 +126,12 @@ double DIRCSetup(PHG4Reco *g4Reco)
   // simple approximation for DIRC prism
   PHG4ConeSubsystem *cone = new PHG4ConeSubsystem("DIRC_Prism");
   cone->set_color(0, 1, 0);
+//   cone->SetR1(radiator_R, radiator_R + 20);
+//   cone->SetR2(radiator_R, radiator_R + 2);
+
   cone->SetR1(radiator_R, radiator_R + 20);
   cone->SetR2(radiator_R, radiator_R + 2);
+
   cone->SetZlength(0.5 * G4DIRC::z_prism);
   cone->SetPlaceZ(G4DIRC::z_start - 0.5 * G4DIRC::z_prism);
   cone->SetMaterial("Quartz");
