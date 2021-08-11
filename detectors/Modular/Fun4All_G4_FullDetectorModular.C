@@ -139,10 +139,9 @@ int Fun4All_G4_FullDetectorModular(
     gen->set_name("pi-");
     // gen->set_name("pi0");
     gen->set_vtx(0, 0, 0);
-    gen->set_eta_range(1, 3.7);            // around midrapidity
+    gen->set_eta_range(-3.5, 3.5);            // around midrapidity
     if(particlemomMin > -1)
       gen->set_mom_range(particlemomMin, particlemomMin);                   // fixed 4 GeV/c
-      // gen->set_mom_range(particlemomMin, particlemomMax);                   // fixed 4 GeV/c
     else
       gen->set_mom_range(1, 60);                   // fixed 4 GeV/c
     gen->set_phi_range(0., 2* M_PI);  // 0-90 deg
@@ -289,6 +288,7 @@ int Fun4All_G4_FullDetectorModular(
     Enable::FTTL = true;
     Enable::ETTL = true;
     Enable::CTTL = true;
+    G4TTL::SETTING::optionCEMC    = true;
   }
   // mvtx/tpc tracker
   if(specialSetting.Contains("MVTX")){
@@ -314,6 +314,7 @@ int Fun4All_G4_FullDetectorModular(
   // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   // PID detectors
   Enable::DIRC = true;
+  G4DIRC::SETTING::USECEMCGeo   = true;
   
   // sPHENIX SPACAL reuse
   Enable::CEMC = true;
@@ -321,6 +322,7 @@ int Fun4All_G4_FullDetectorModular(
   
   // sPHENIX HCal inner reuse
   Enable::HCALIN = true;
+  G4HCALIN::SETTING::USECEMCGeo = true;
   //  Enable::HCALIN_ABSORBER = true;
   
   if (specialSetting.Contains("BECAL") ){
@@ -386,6 +388,7 @@ int Fun4All_G4_FullDetectorModular(
   if (specialSetting.Contains("EEMCH")){
     Enable::EEMCH = true;
     Enable::EEMC  = false;
+    G4EEMCH::SETTING::USECEMCGeo  = true;
   }
   Enable::EHCAL = true;
   if(specialSetting.Contains("noEHCAL"))
@@ -507,7 +510,12 @@ int Fun4All_G4_FullDetectorModular(
         Enable::ETTL = true;
       if(specialSetting.Contains("CTTL")){
         Enable::CTTL = true;
-        Enable::DIRC = true;
+        // Enable::DIRC = true;
+        // Enable::CEMC = true;
+        // Enable::BECAL = true;
+        // Enable::ALLSILICON = true;
+        G4DIRC::SETTING::USECEMCGeo   = false;
+        G4TTL::SETTING::optionCEMC    = false;
       }
     }
   }
@@ -1003,11 +1011,6 @@ void ParseTString(TString &specialSetting)
     G4DIRC::SETTING::USECEMCGeo   = false;
     G4TTL::SETTING::optionCEMC    = false;
     G4HCALIN::SETTING::USECEMCGeo = false;
-  } else {
-    G4EEMCH::SETTING::USECEMCGeo  = true;
-    G4DIRC::SETTING::USECEMCGeo   = true;
-    G4TTL::SETTING::optionCEMC    = true;
-    G4HCALIN::SETTING::USECEMCGeo = true;
   }
   if (specialSetting.Contains("EEMCH"))
     G4TTL::SETTING::optionEEMCH   = true;
@@ -1022,6 +1025,13 @@ void ParseTString(TString &specialSetting)
     G4TTL::SETTING::optionGeo    = 3;
   else if (specialSetting.Contains("TTLF"))
     G4TTL::SETTING::optionGeo    = 4;
+
+  if (specialSetting.Contains("TTLBasicGeo")){
+    G4TTL::SETTING::optionBasicGeo    = true;
+  } else {
+    // deactivate DIRC basic supports in case the updated TTL is used -> already contains supports
+    G4DIRC::SETTING::USEskinSupports = false;
+  }
 
   if (specialSetting.Contains("ACLGAD"))
     G4TTL::SETTING::optionGran    = 2;

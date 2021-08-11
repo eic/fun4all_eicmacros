@@ -16,6 +16,8 @@ int make_forward_station(string name, PHG4Reco *g4Reco, double zpos, double Rmin
                           double Rmax,double tSilicon, double xoffset=0);
 int make_barrel_layer(string name, PHG4Reco *g4Reco, 
                       double radius, double halflength, double tSilicon, double zOffset);
+int make_barrel_layer2(string name, PHG4Reco *g4Reco, 
+                      double radius, double halflength, double tSilicon, double zOffset);
 
 //-----------------------------------------------------------------------------------//
 namespace Enable
@@ -29,12 +31,13 @@ namespace G4TTL
 {
   int layer[3]                  = { 2, 1, 2};
   double positionToVtx[3][3]    = { {-185.5, -188.5, -309.5}, {80., 114.7, 0. }, { 287., 289., 340.} };
-  double minExtension[3][3]     = { {10, 10, 15.3}, {180, 180, 0 }, {11.62, 11.7, 13.8 } };
-  double maxExtension[3][3]     = { {67., 67. , 200}, {-25, 0, 0 }, {170., 170., 250  } };
+  double minExtension[3][3]     = { {10, 10, 15.3}, {218, 180, 0 }, {11.62, 11.7, 13.8 } };
+  double maxExtension[3][3]     = { {67., 67. , 200}, {-40, 0, 0 }, {170., 170., 250  } };
   namespace SETTING
   {
     bool optionCEMC  = true;
     bool optionEEMCH = true;
+    bool optionBasicGeo    = false;
     int optionDR    = 0;
     int optionGeo   = 1;
     int optionGran  = 1;
@@ -45,7 +48,7 @@ namespace G4TTL
 //-----------------------------------------------------------------------------------//
 void TTL_Init()
 {
-  BlackHoleGeometry::max_radius = std::max(BlackHoleGeometry::max_radius, 200.);
+  BlackHoleGeometry::max_radius = std::max(BlackHoleGeometry::max_radius, 250.);
   BlackHoleGeometry::max_z = std::max(BlackHoleGeometry::max_z, 350.);
   
   if (!G4TTL::SETTING::optionEEMCH){
@@ -55,20 +58,28 @@ void TTL_Init()
   
   if (G4TTL::SETTING::optionCEMC){
     G4TTL::maxExtension[0][0]   = 80.;
-    G4TTL::maxExtension[0][1]   = 80.;    
+    G4TTL::maxExtension[0][1]   = 80.;
     G4TTL::positionToVtx[1][0]  = 92.;
+    if(!G4TTL::SETTING::optionBasicGeo) G4TTL::positionToVtx[1][0] = 89.;
   } 
-    
+  
+  if(G4TTL::SETTING::optionBasicGeo){
+    G4TTL::minExtension[1][0]   = 180;
+    G4TTL::maxExtension[1][0]   = -25;
+  }
+
   if (G4TTL::SETTING::optionGeo == 1){
     cout << "TTL setup infront of ECals with 2 layers fwd/bwd & 1 layer barrel" << endl;  
   } if (G4TTL::SETTING::optionGeo == 2){
     cout << "TTL setup infront of ECals with 2 layers fwd/bwd & 1 layer barrel, lower barrel layer" << endl;  
     G4TTL::positionToVtx[1][0] = 50.;
+    if(!G4TTL::SETTING::optionBasicGeo) G4TTL::positionToVtx[1][0] = 65.;
     G4TTL::minExtension[1][0]  = 100.;
     G4TTL::maxExtension[1][0]  = 0.;
   } if (G4TTL::SETTING::optionGeo == 3){
     cout << "TTL setup infront of ECals with 1 layers fwd/bwd & 1 layer barrel, lower barrel layer" << endl;  
     G4TTL::positionToVtx[1][0] = 50.;
+    if(!G4TTL::SETTING::optionBasicGeo) G4TTL::positionToVtx[1][0] = 65.;
     G4TTL::minExtension[1][0]  = 100.;
     G4TTL::maxExtension[1][0]  = 0.;
     G4TTL::layer[0]            = 1;
@@ -83,6 +94,7 @@ void TTL_Init()
     cout << "TTL setup infront of ECals  with 2 layers fwd/bwd & 1 layer barrel, 1 layer before HCals everywhere" << endl;  
     G4TTL::layer[0]    = 3;
     G4TTL::layer[1]    = 2;
+    if(!G4TTL::SETTING::optionBasicGeo) G4TTL::layer[1]    = 1;
     G4TTL::layer[2]    = 3;
   }
 
@@ -106,8 +118,8 @@ void FTTLSetup(PHG4Reco *g4Reco, TString fttloption = "")
 
   for (Int_t i = 0; i < G4TTL::layer[2]; i++){
     cout << G4TTL::positionToVtx[2][i] << "\t" << G4TTL::minExtension[2][i] << "\t" << G4TTL::maxExtension[2][i] << endl;
-    make_forward_station(Form("FTTL_%d", i), g4Reco, G4TTL::positionToVtx[2][i],  G4TTL::minExtension[2][i], G4TTL::maxExtension[2][i], 85*um, 6);
-  }  
+    make_forward_station(Form("FTTL_%d", i), g4Reco, G4TTL::positionToVtx[2][i],  G4TTL::minExtension[2][i], G4TTL::maxExtension[2][i], 85*um, 5.5);
+  }
 }
 
 
@@ -129,10 +141,14 @@ void CTTLSetup(PHG4Reco *g4Reco, TString cttloption = "")
   const double cm = PHG4Sector::Sector_Geometry::Unit_cm();
   const double mm = .1 * cm;
   const double um = 1e-3 * mm;
-  
+
   for (Int_t i = 0; i < G4TTL::layer[1]; i++){
-    cout << G4TTL::positionToVtx[1][i] << "\t" << G4TTL::minExtension[1][i] << "\t" << G4TTL::maxExtension[1][i] << endl;
-    make_barrel_layer(Form("CTTL_%d",i), g4Reco, G4TTL::positionToVtx[1][i],  G4TTL::minExtension[1][i], 85*um, G4TTL::maxExtension[1][i]);     
+    cout << "Radius: " << G4TTL::positionToVtx[1][i] << "\tLength: " << G4TTL::minExtension[1][i] << "\tz-Offset: " << G4TTL::maxExtension[1][i] << endl;
+    if(G4TTL::SETTING::optionBasicGeo){
+      make_barrel_layer(Form("CTTL_%d",i), g4Reco, G4TTL::positionToVtx[1][i],  G4TTL::minExtension[1][i], 85*um, G4TTL::maxExtension[1][i]);
+    } else {
+      make_barrel_layer2(Form("CTTL_%d",i), g4Reco, G4TTL::positionToVtx[1][i],  G4TTL::minExtension[1][i], 85*um, G4TTL::maxExtension[1][i]);
+    }
   }
 }
 
@@ -156,12 +172,38 @@ int make_forward_station(string name, PHG4Reco *g4Reco,
   ttl->SetDetailed(false);
   ttl->SuperDetector(name);
   ttl->set_double_param("polar_angle", polar_angle);                    //
+  ttl->set_int_param("isForward", 1);                    //
   ttl->set_double_param("place_z", zpos * cm);                    //
   ttl->set_double_param("rMin", rMin * cm);                    //
   ttl->set_double_param("rMax", rMax * cm);                    //
   ttl->set_double_param("offset_x", xoffset * cm);                    //
   ttl->set_double_param("tSilicon", tSilicon);                    //
-  ttl->OverlapCheck(true);
+  ttl->OverlapCheck(false);
+
+  g4Reco->registerSubsystem(ttl);
+  return 0;
+}
+
+
+
+//-----------------------------------------------------------------------------------//
+int make_barrel_layer2(string name, PHG4Reco *g4Reco, 
+                      double radius, double halflength, double tSilicon, double zOffset )
+{
+  // cout << "r min: " << rMin << "\t r max: " << rMax << "\t z: " <<  zpos << endl;
+  if(G4TTL::SETTING::optionCEMC){
+    cout << "The improved barrel TTL layer is placed at a fixed radius of rMin = 80 * cm and is meant to only be used with the BECAL!" << endl;
+  }
+  PHG4TTLSubsystem *ttl;
+  ttl = new PHG4TTLSubsystem(name);
+  ttl->SetDetailed(false);
+  ttl->SuperDetector(name);
+  ttl->set_int_param("isForward", 0);                    //
+  ttl->set_double_param("place_z", zOffset * cm);                    //
+  ttl->set_double_param("rMin", radius * cm);                    //
+  ttl->set_double_param("length", 2.0 * halflength * cm);
+  ttl->set_double_param("tSilicon", tSilicon);                    //
+  ttl->OverlapCheck(false);
 
   g4Reco->registerSubsystem(ttl);
   return 0;
