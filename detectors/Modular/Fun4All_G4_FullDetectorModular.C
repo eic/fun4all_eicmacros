@@ -129,8 +129,10 @@ int Fun4All_G4_FullDetectorModular(
       INPUTGENERATOR::SimpleEventGenerator[0]->set_eta_range(-1.8, 1.2);
     else if (generatorSettings.Contains("bck"))
       INPUTGENERATOR::SimpleEventGenerator[0]->set_eta_range(-4, -1.7);
-    else 
+    else if (generatorSettings.Contains("fwd"))
       INPUTGENERATOR::SimpleEventGenerator[0]->set_eta_range(1.1, 4.0);
+    else 
+      INPUTGENERATOR::SimpleEventGenerator[0]->set_eta_range(-4.0, 4.0);
     INPUTGENERATOR::SimpleEventGenerator[0]->set_phi_range(-M_PI, M_PI);
     INPUTGENERATOR::SimpleEventGenerator[0]->set_p_range(particlemomMin, particlemomMax);
   }
