@@ -42,6 +42,7 @@ namespace G4DIRC
   namespace SETTING
   {
     bool USECEMCGeo = true;
+    bool USEskinSupports = true;
   }
   
 }  // namespace G4DIRC
@@ -94,35 +95,37 @@ double DIRCSetup(PHG4Reco *g4Reco)
 
   double inner_R    = G4DIRC::outer_skin_radius-G4DIRC::dInSkin;
   // Inner skin:
-  cyl = new PHG4CylinderSubsystem("DIRC_CST_Inner_Skin", 10);
-  cyl->set_double_param("radius", inner_R);
-  cyl->set_double_param("length", G4DIRC::length + G4DIRC::z_prism);
-  cyl->set_string_param("material", "G4_Al");
-  cyl->set_double_param("thickness", 0.127);
-  cyl->set_double_param("place_x", 0.);
-  cyl->set_double_param("place_y", 0.);
-  cyl->set_double_param("place_z", G4DIRC::z_shift - G4DIRC::z_prism * 0.5);
-  cyl->SetActive(0);
-  cyl->SuperDetector("DIRC");
-  cyl->OverlapCheck(OverlapCheck);
 
-  g4Reco->registerSubsystem(cyl);
+  if (G4DIRC::SETTING::USEskinSupports){
+    cyl = new PHG4CylinderSubsystem("DIRC_CST_Inner_Skin", 10);
+    cyl->set_double_param("radius", inner_R);
+    cyl->set_double_param("length", G4DIRC::length + G4DIRC::z_prism);
+    cyl->set_string_param("material", "G4_Al");
+    cyl->set_double_param("thickness", 0.127);
+    cyl->set_double_param("place_x", 0.);
+    cyl->set_double_param("place_y", 0.);
+    cyl->set_double_param("place_z", G4DIRC::z_shift - G4DIRC::z_prism * 0.5);
+    cyl->SetActive(0);
+    cyl->SuperDetector("DIRC");
+    cyl->OverlapCheck(OverlapCheck);
 
-  // Outer skin:
-  cyl = new PHG4CylinderSubsystem("DIRC_CST_Outer_Skin", 11);
-  cyl->set_double_param("radius", G4DIRC::outer_skin_radius - 0.076);
-  cyl->set_double_param("length", G4DIRC::length);
-  cyl->set_string_param("material", "G4_Al");
-  cyl->set_double_param("thickness", 0.076);
-  cyl->set_double_param("place_x", 0.);
-  cyl->set_double_param("place_y", 0.);
-  cyl->set_double_param("place_z", G4DIRC::z_shift);
-  cyl->SetActive(0);
-  cyl->SuperDetector("DIRC");
-  cyl->OverlapCheck(OverlapCheck);
+    g4Reco->registerSubsystem(cyl);
 
-  g4Reco->registerSubsystem(cyl);
+    // Outer skin:
+    cyl = new PHG4CylinderSubsystem("DIRC_CST_Outer_Skin", 11);
+    cyl->set_double_param("radius", G4DIRC::outer_skin_radius - 0.076);
+    cyl->set_double_param("length", G4DIRC::length);
+    cyl->set_string_param("material", "G4_Al");
+    cyl->set_double_param("thickness", 0.076);
+    cyl->set_double_param("place_x", 0.);
+    cyl->set_double_param("place_y", 0.);
+    cyl->set_double_param("place_z", G4DIRC::z_shift);
+    cyl->SetActive(0);
+    cyl->SuperDetector("DIRC");
+    cyl->OverlapCheck(OverlapCheck);
 
+    g4Reco->registerSubsystem(cyl);
+  }
   // simple approximation for DIRC prism
   PHG4ConeSubsystem *cone = new PHG4ConeSubsystem("DIRC_Prism");
   cone->set_color(0, 1, 0);

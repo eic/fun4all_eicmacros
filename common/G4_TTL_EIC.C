@@ -60,10 +60,7 @@ void TTL_Init()
     G4TTL::maxExtension[0][0]   = 80.;
     G4TTL::maxExtension[0][1]   = 80.;
     G4TTL::positionToVtx[1][0]  = 92.;
-    if(!G4TTL::SETTING::optionBasicGeo){
-      cout << "!!!!!!! G4TTL::SETTING::optionBasicGeo is required to run with CEMC. Otherwise BECAL has to be used!!!!!!" << endl;
-      gSystem->Exit(1);
-    }
+    if(!G4TTL::SETTING::optionBasicGeo) G4TTL::positionToVtx[1][0] = 89.;
   } 
   
   if(G4TTL::SETTING::optionBasicGeo){
@@ -76,11 +73,13 @@ void TTL_Init()
   } if (G4TTL::SETTING::optionGeo == 2){
     cout << "TTL setup infront of ECals with 2 layers fwd/bwd & 1 layer barrel, lower barrel layer" << endl;  
     G4TTL::positionToVtx[1][0] = 50.;
+    if(!G4TTL::SETTING::optionBasicGeo) G4TTL::positionToVtx[1][0] = 65.;
     G4TTL::minExtension[1][0]  = 100.;
     G4TTL::maxExtension[1][0]  = 0.;
   } if (G4TTL::SETTING::optionGeo == 3){
     cout << "TTL setup infront of ECals with 1 layers fwd/bwd & 1 layer barrel, lower barrel layer" << endl;  
     G4TTL::positionToVtx[1][0] = 50.;
+    if(!G4TTL::SETTING::optionBasicGeo) G4TTL::positionToVtx[1][0] = 65.;
     G4TTL::minExtension[1][0]  = 100.;
     G4TTL::maxExtension[1][0]  = 0.;
     G4TTL::layer[0]            = 1;

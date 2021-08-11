@@ -511,6 +511,7 @@ int Fun4All_G4_FullDetectorModular(
       if(specialSetting.Contains("CTTL")){
         Enable::CTTL = true;
         // Enable::DIRC = true;
+        // Enable::CEMC = true;
         // Enable::BECAL = true;
         // Enable::ALLSILICON = true;
         G4DIRC::SETTING::USECEMCGeo   = false;
@@ -1024,8 +1025,13 @@ void ParseTString(TString &specialSetting)
     G4TTL::SETTING::optionGeo    = 3;
   else if (specialSetting.Contains("TTLF"))
     G4TTL::SETTING::optionGeo    = 4;
-  else if (specialSetting.Contains("TTLBasicGeo"))
+
+  if (specialSetting.Contains("TTLBasicGeo")){
     G4TTL::SETTING::optionBasicGeo    = true;
+  } else {
+    // deactivate DIRC basic supports in case the updated TTL is used -> already contains supports
+    G4DIRC::SETTING::USEskinSupports = false;
+  }
 
   if (specialSetting.Contains("ACLGAD"))
     G4TTL::SETTING::optionGran    = 2;
