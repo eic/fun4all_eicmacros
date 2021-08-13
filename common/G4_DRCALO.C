@@ -78,6 +78,7 @@ void DRCALOInit()
 
   BlackHoleGeometry::max_radius = std::max(BlackHoleGeometry::max_radius, G4DRCALO::outer_radius);
   BlackHoleGeometry::max_z = std::max(BlackHoleGeometry::max_z, G4DRCALO::Gz0 + G4DRCALO::Gdz / 2.);
+  BlackHoleGeometry::min_z = std::min(BlackHoleGeometry::min_z, -10*cm);
 }
 
 void DRCALOSetup(PHG4Reco *g4Reco)

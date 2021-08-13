@@ -73,6 +73,8 @@ void EEMCInit()
   }
   // from towerMap_EEMC_v006.txt
   BlackHoleGeometry::min_z = std::min(BlackHoleGeometry::min_z, G4EEMC::Gz0 - G4EEMC::Gdz / 2.);
+  BlackHoleGeometry::max_z = std::max(BlackHoleGeometry::max_z, 10*cm);
+
 }
 
 void EEMCSetup(PHG4Reco *g4Reco)
