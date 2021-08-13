@@ -999,6 +999,10 @@ void ParseTString(TString &specialSetting)
   {
     G4DRCALO::SETTING::PMMA = Enable::DRCALO &&true;
   }  
+  if (specialSetting.Contains("DRTUBES"))
+  {
+    G4DRCALO::SETTING::Tubes = Enable::DRCALO &&true;
+  }  
   
   // EEMCH setting
   if (specialSetting.Contains("purePbWO4"))

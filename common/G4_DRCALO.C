@@ -56,6 +56,7 @@ namespace G4DRCALO
     bool Tungsten = false;
     bool Quartz = false;
     bool PMMA = false;
+    bool Tubes = false;
     bool FwdConfig = false;
     bool FwdSquare = false;
   }  // namespace SETTING
@@ -110,12 +111,25 @@ void DRCALOSetup(PHG4Reco *g4Reco)
     else
       mapping_drcalo << getenv("CALIBRATIONROOT") << "/DRCALO/mapping/towerMap_DRCALO_PMMA.txt";
   } else { // NOTCHED design with PMMA cerenkov fiber
-    if (G4DRCALO::SETTING::FwdConfig)
-      mapping_drcalo << getenv("CALIBRATIONROOT") << "/DRCALO/mapping/towerMap_DRCALO_default_FwdConfig.txt";
-    else if (G4DRCALO::SETTING::FwdSquare)
-      mapping_drcalo << getenv("CALIBRATIONROOT") << "/DRCALO/mapping/towerMap_DRCALO_default_FwdSquare.txt";
-    else
-      mapping_drcalo << getenv("CALIBRATIONROOT") << "/DRCALO/mapping/towerMap_DRCALO_default.txt";
+    if (G4DRCALO::SETTING::FwdConfig){
+      if(G4DRCALO::SETTING::Tubes){
+        mapping_drcalo << getenv("CALIBRATIONROOT") << "/DRCALO/mapping/towerMap_DRCALO_Tubes_FwdConfig.txt";
+      } else {
+        mapping_drcalo << getenv("CALIBRATIONROOT") << "/DRCALO/mapping/towerMap_DRCALO_default_FwdConfig.txt";
+      }
+    }else if (G4DRCALO::SETTING::FwdSquare){
+      if(G4DRCALO::SETTING::Tubes){
+        mapping_drcalo << getenv("CALIBRATIONROOT") << "/DRCALO/mapping/towerMap_DRCALO_Tubes_FwdSquare.txt";
+      } else {
+        mapping_drcalo << getenv("CALIBRATIONROOT") << "/DRCALO/mapping/towerMap_DRCALO_default_FwdSquare.txt";
+      }
+    } else{
+      if(G4DRCALO::SETTING::Tubes){
+        mapping_drcalo << getenv("CALIBRATIONROOT") << "/DRCALO/mapping/towerMap_DRCALO_Tubes.txt";
+      } else {
+        mapping_drcalo << getenv("CALIBRATIONROOT") << "/DRCALO/mapping/towerMap_DRCALO_default.txt";
+      }
+    }
   }
 
   hhcal->SetTowerMappingFile(mapping_drcalo.str());
@@ -176,7 +190,7 @@ void DRCALO_Towers()
   cout << "def: using default for DRCALO towers" << endl;
   RawTowerDigitizer *TowerDigitizer = new RawTowerDigitizer("DRCALORawTowerDigitizer");
   TowerDigitizer->Detector("DRCALO");
-  TowerDigitizer->Verbosity(1);
+  TowerDigitizer->Verbosity(0);
   TowerDigitizer->set_digi_algorithm(RawTowerDigitizer::kNo_digitization);
   se->registerSubsystem(TowerDigitizer);
 

@@ -14,9 +14,11 @@ R__LOAD_LIBRARY(libg4detectors.so)
 
 int make_forward_station(string name, PHG4Reco *g4Reco, double zpos, double Rmin,
                           double Rmax,double tSilicon, double xoffset=0);
-int make_barrel_layer(string name, PHG4Reco *g4Reco, 
+int make_forward_station_basic(string name, PHG4Reco *g4Reco, double zpos, double Rmin,
+                          double Rmax,double tSilicon);
+int make_barrel_layer_basic(string name, PHG4Reco *g4Reco, 
                       double radius, double halflength, double tSilicon, double zOffset);
-int make_barrel_layer2(string name, PHG4Reco *g4Reco, 
+int make_barrel_layer(string name, PHG4Reco *g4Reco, 
                       double radius, double halflength, double tSilicon, double zOffset);
 
 //-----------------------------------------------------------------------------------//
@@ -118,7 +120,11 @@ void FTTLSetup(PHG4Reco *g4Reco, TString fttloption = "")
 
   for (Int_t i = 0; i < G4TTL::layer[2]; i++){
     cout << G4TTL::positionToVtx[2][i] << "\t" << G4TTL::minExtension[2][i] << "\t" << G4TTL::maxExtension[2][i] << endl;
-    make_forward_station(Form("FTTL_%d", i), g4Reco, G4TTL::positionToVtx[2][i],  G4TTL::minExtension[2][i], G4TTL::maxExtension[2][i], 85*um, 5.5);
+    if(!G4TTL::SETTING::optionBasicGeo){
+      make_forward_station(Form("FTTL_%d", i), g4Reco, G4TTL::positionToVtx[2][i],  G4TTL::minExtension[2][i], G4TTL::maxExtension[2][i], 85*um, 5.5);
+    } else {
+      make_forward_station_basic(Form("FTTL_%d", i), g4Reco, G4TTL::positionToVtx[2][i],  G4TTL::minExtension[2][i], G4TTL::maxExtension[2][i], 85*um);
+    }
   }
 }
 
@@ -131,7 +137,11 @@ void ETTLSetup(PHG4Reco *g4Reco, TString ettloption = "")
   const double um = 1e-3 * mm;
   for (Int_t i = 0; i < G4TTL::layer[0]; i++){
     cout << G4TTL::positionToVtx[0][i] << "\t" << G4TTL::minExtension[0][i] << "\t" << G4TTL::maxExtension[0][i] << endl;
-    make_forward_station(Form("ETTL_%d", i), g4Reco, G4TTL::positionToVtx[0][i],  G4TTL::minExtension[0][i], G4TTL::maxExtension[0][i], 85*um);
+    if(!G4TTL::SETTING::optionBasicGeo){
+      make_forward_station(Form("ETTL_%d", i), g4Reco, G4TTL::positionToVtx[0][i],  G4TTL::minExtension[0][i], G4TTL::maxExtension[0][i], 85*um);
+    } else {
+      make_forward_station_basic(Form("ETTL_%d", i), g4Reco, G4TTL::positionToVtx[0][i],  G4TTL::minExtension[0][i], G4TTL::maxExtension[0][i], 85*um);
+    }
   }
 }
 
@@ -145,9 +155,9 @@ void CTTLSetup(PHG4Reco *g4Reco, TString cttloption = "")
   for (Int_t i = 0; i < G4TTL::layer[1]; i++){
     cout << "Radius: " << G4TTL::positionToVtx[1][i] << "\tLength: " << G4TTL::minExtension[1][i] << "\tz-Offset: " << G4TTL::maxExtension[1][i] << endl;
     if(G4TTL::SETTING::optionBasicGeo){
-      make_barrel_layer(Form("CTTL_%d",i), g4Reco, G4TTL::positionToVtx[1][i],  G4TTL::minExtension[1][i], 85*um, G4TTL::maxExtension[1][i]);
+      make_barrel_layer_basic(Form("CTTL_%d",i), g4Reco, G4TTL::positionToVtx[1][i],  G4TTL::minExtension[1][i], 85*um, G4TTL::maxExtension[1][i]);
     } else {
-      make_barrel_layer2(Form("CTTL_%d",i), g4Reco, G4TTL::positionToVtx[1][i],  G4TTL::minExtension[1][i], 85*um, G4TTL::maxExtension[1][i]);
+      make_barrel_layer(Form("CTTL_%d",i), g4Reco, G4TTL::positionToVtx[1][i],  G4TTL::minExtension[1][i], 85*um, G4TTL::maxExtension[1][i]);
     }
   }
 }
@@ -185,9 +195,66 @@ int make_forward_station(string name, PHG4Reco *g4Reco,
 }
 
 
+//-----------------------------------------------------------------------------------//
+int make_forward_station_basic(string name, PHG4Reco *g4Reco,
+        double zpos, double rmin, double rmax,
+        double tSilicon) //silicon thickness
+{
+  //  cout
+  //      << "make_GEM_station - GEM construction with PHG4SectorSubsystem - make_GEM_station_EdgeReadout  of "
+  //      << name << endl;
+
+  // always facing the interaction point
+  double etamin = -TMath::Log(TMath::Tan(rmin/TMath::Abs(zpos)/2));
+  double etamax = -TMath::Log(TMath::Tan(rmax/TMath::Abs(zpos)/2));
+
+  double polar_angle = 0;
+  if (zpos < 0){
+    zpos = -zpos;
+    polar_angle = M_PI;
+    etamin = -etamin;
+    etamax = -etamax;
+  }
+  if (etamax < etamin){
+    double t = etamax;
+    etamax = etamin;
+    etamin = t;
+  }
+
+  PHG4SectorSubsystem *ttl;
+  ttl = new PHG4SectorSubsystem(name);
+
+  ttl->SuperDetector(name);
+
+  ttl->get_geometry().set_normal_polar_angle(polar_angle);
+  ttl->get_geometry().set_normal_start(zpos * PHG4Sector::Sector_Geometry::Unit_cm());
+  ttl->get_geometry().set_min_polar_angle(PHG4Sector::Sector_Geometry::eta_to_polar_angle(etamax));
+  ttl->get_geometry().set_max_polar_angle(PHG4Sector::Sector_Geometry::eta_to_polar_angle(etamin));
+  ttl->get_geometry().set_max_polar_edge(PHG4Sector::Sector_Geometry::ConeEdge());
+  ttl->get_geometry().set_min_polar_edge(PHG4Sector::Sector_Geometry::ConeEdge());
+  ttl->get_geometry().set_N_Sector(1);
+  ttl->get_geometry().set_material("G4_AIR");
+  ttl->OverlapCheck(true);
+  
+  const double cm = PHG4Sector::Sector_Geometry::Unit_cm();
+  const double mm = .1 * cm;
+  const double um = 1e-3 * mm;
+  // build up layers
+
+  ttl->get_geometry().AddLayer("SiliconSensor", "G4_Si", tSilicon, true, 100);
+  ttl->get_geometry().AddLayer("Metalconnection", "G4_Al", 100 * um, false, 100);
+  ttl->get_geometry().AddLayer("HDI", "G4_KAPTON", 20 * um, false, 100);
+  ttl->get_geometry().AddLayer("Cooling", "G4_WATER", 100 * um, false, 100);
+  ttl->get_geometry().AddLayer("Support", "G4_GRAPHITE", 50 * um, false, 100);
+  ttl->get_geometry().AddLayer("Support_Gap", "G4_AIR", 1 * cm, false, 100);
+  ttl->get_geometry().AddLayer("Support2", "G4_GRAPHITE", 50 * um, false, 100);
+
+  g4Reco->registerSubsystem(ttl);
+  return 0;
+}
 
 //-----------------------------------------------------------------------------------//
-int make_barrel_layer2(string name, PHG4Reco *g4Reco, 
+int make_barrel_layer(string name, PHG4Reco *g4Reco, 
                       double radius, double halflength, double tSilicon, double zOffset )
 {
   // cout << "r min: " << rMin << "\t r max: " << rMax << "\t z: " <<  zpos << endl;
@@ -213,7 +280,7 @@ int make_barrel_layer2(string name, PHG4Reco *g4Reco,
 
 
 //-----------------------------------------------------------------------------------//
-int make_barrel_layer(string name, PHG4Reco *g4Reco, 
+int make_barrel_layer_basic(string name, PHG4Reco *g4Reco, 
                       double radius, double halflength, double tSilicon, double zOffset){
 
   //---------------------------------
