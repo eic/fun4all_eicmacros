@@ -39,9 +39,9 @@ namespace Enable
 namespace G4EHCAL
 {
   // from ForwardHcal/mapping/towerMap_EHCAL_v005.txt
-  double Gz0 = 400.;
+  double Gz0 = -360.0;
   double Gdz = 100.;
-  double outer_radius = 262.;
+  double outer_radius = 260.;
   enum enu_EHCAL_clusterizer
   {
     kEHCALGraphClusterizer,
@@ -81,7 +81,10 @@ void EHCALInit()
   }
 
   BlackHoleGeometry::max_radius = std::max(BlackHoleGeometry::max_radius, G4EHCAL::outer_radius);
-  BlackHoleGeometry::max_z = std::max(BlackHoleGeometry::max_z, G4EHCAL::Gz0 + G4EHCAL::Gdz / 2.);
+  BlackHoleGeometry::min_z = std::min(BlackHoleGeometry::min_z, G4EHCAL::Gz0 - G4EHCAL::Gdz / 2.);
+  BlackHoleGeometry::max_z = std::max(BlackHoleGeometry::max_z, 10*cm);
+
+
 }
 
 void EHCALSetup(PHG4Reco *g4Reco)

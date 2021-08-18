@@ -89,6 +89,7 @@ void FHCALInit()
 
   BlackHoleGeometry::max_radius = std::max(BlackHoleGeometry::max_radius, G4FHCAL::outer_radius);
   BlackHoleGeometry::max_z = std::max(BlackHoleGeometry::max_z, G4FHCAL::Gz0 + G4FHCAL::Gdz / 2.);
+  BlackHoleGeometry::min_z = std::min(BlackHoleGeometry::min_z, -10*cm);
 }
 
 void FHCALSetup(PHG4Reco *g4Reco)
