@@ -799,11 +799,13 @@ int Fun4All_G4_FullDetectorModular(
   // Event processing
   //-----------------
   if (Enable::DISPLAY){
-    DisplayOn();
-    // gROOT->ProcessLine("PHG4Reco *g4 = QTGui();"); // alternative to DisplayOn
-    gROOT->ProcessLine("Fun4AllServer *se = Fun4AllServer::instance();");
-    gROOT->ProcessLine("PHG4Reco *g4 = (PHG4Reco *) se->getSubsysReco(\"PHG4RECO\");");
-
+    if (specialSetting.Contains("viewer")){
+      gROOT->ProcessLine("PHG4Reco *g4 = QTGui();"); // alternative to DisplayOn
+    } else {
+      DisplayOn();
+      gROOT->ProcessLine("Fun4AllServer *se = Fun4AllServer::instance();");
+      gROOT->ProcessLine("PHG4Reco *g4 = (PHG4Reco *) se->getSubsysReco(\"PHG4RECO\");");
+    }
     cout << "-------------------------------------------------" << endl;
     cout << "You are in event display mode. Run one event with" << endl;
     cout << "se->run(1)" << endl;
@@ -941,7 +943,7 @@ void ParseTString(TString &specialSetting)
   {
     G4DRCALO::SETTING::FwdConfig = Enable::DRCALO && true;
     G4FHCAL::SETTING::wDR = Enable::FHCAL && true;
-    G4LFHCAL::SETTING::wDR = Enable::LFHCAL && true;
+    G4LFHCAL::SETTING::FwdConfig = Enable::LFHCAL && true;
     G4FEMC::SETTING::wDR = Enable::FEMC && true;
     G4TTL::SETTING::optionDR = 1;
   }

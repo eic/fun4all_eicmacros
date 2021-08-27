@@ -57,6 +57,7 @@ namespace G4LFHCAL
     bool asymmetric = false;
     bool wDR = false;
     bool FwdSquare = false;
+    bool FwdConfig = false;
     bool longer = false;
   }  // namespace SETTING
 }  // namespace G4LFHCAL
@@ -77,6 +78,14 @@ TString GetMappingFile(){
       mappinFileName +=  "/LFHcal/mapping/towerMap_LFHCAL_wDR-long.txt";
     else 
       mappinFileName +=  "/LFHcal/mapping/towerMap_LFHCAL_wDR.txt";
+  }
+  // HCal Fe-Scint surrounding dual readout calorimeter R>50cm
+  else if (G4LFHCAL::SETTING::FwdConfig)
+  {
+    if (G4LFHCAL::SETTING::longer)
+      mappinFileName += "/LFHcal/mapping/towerMap_LFHCAL_FwdConfig-long.txt";
+    else 
+      mappinFileName += "/LFHcal/mapping/towerMap_LFHCAL_FwdConfig.txt";
   }
   // HCal Fe-Scint surrounding dual readout calorimeter R>50cm
   else if (G4LFHCAL::SETTING::FwdSquare)
