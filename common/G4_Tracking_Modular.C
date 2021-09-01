@@ -455,8 +455,8 @@ void Tracking_Reco(TString specialSetting = "")
   //-------------------------
   if ((Enable::EHCAL ) )
   {
-    // kalman->add_state_name("EHCAL");
-    kalman->add_zplane_state("EHCAL", -350);
+    kalman->add_state_name("EHCAL");
+    // kalman->add_zplane_state("EHCAL", -350);
   }
 
 
