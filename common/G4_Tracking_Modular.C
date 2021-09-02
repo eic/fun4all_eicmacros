@@ -458,6 +458,15 @@ void Tracking_Reco(TString specialSetting = "")
     kalman->add_state_name("EHCAL");
     // kalman->add_zplane_state("EHCAL", -350);
   }
+  
+  //-------------------------
+  // DIRC
+  //-------------------------
+  if ((Enable::DIRC ) )
+  {
+    // kalman->add_state_name("DIRC");
+    kalman->add_zplane_state("DIRC", 185);
+  }
 
 
   for (auto k : kalmanTrackers) {
@@ -532,6 +541,8 @@ void Tracking_Eval(const std::string &outputfile, TString specialSetting = "")
   if(Enable::FHCAL && G4TRACKING::PROJECTION_FHCAL) fast_sim_eval->AddProjection("FHCAL");
   if(Enable::FEMC && G4TRACKING::PROJECTION_FEMC) fast_sim_eval->AddProjection("FEMC");
   // if(Enable::DRCALO && G4TRACKING::PROJECTION_DRCALO) fast_sim_eval->AddProjection("DRCALO_0");
+
+  if(Enable::DIRC) fast_sim_eval->AddProjection("DIRC");
 
   // write to output file
   fast_sim_eval->set_filename(outputfile);

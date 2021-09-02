@@ -32,9 +32,9 @@ namespace Enable
 namespace G4TTL
 {
   int layer[3]                  = { 2, 1, 2};
-  double positionToVtx[3][3]    = { {-185.5, -188.5, -309.5}, {80., 114.7, 0. }, { 287., 289., 340.} };
-  double minExtension[3][3]     = { {10, 10, 15.3}, {218, 180, 0 }, {11.62, 11.7, 13.8 } };
-  double maxExtension[3][3]     = { {67., 67. , 200}, {-40, 0, 0 }, {170., 170., 250  } };
+  double positionToVtx[3][3]    = { {-169., -172., -309.5}, {80., 114.7, 0. }, { 287., 289., 340.} };
+  double minExtension[3][3]     = { {8, 8, 15.3}, {218, 180, 0 }, {11.62, 11.7, 13.8 } };
+  double maxExtension[3][3]     = { {61., 61. , 200}, {-40, 0, 0 }, {170., 170., 250  } };
   namespace SETTING
   {
     bool optionCEMC  = true;
@@ -121,7 +121,7 @@ void FTTLSetup(PHG4Reco *g4Reco, TString fttloption = "")
   for (Int_t i = 0; i < G4TTL::layer[2]; i++){
     cout << G4TTL::positionToVtx[2][i] << "\t" << G4TTL::minExtension[2][i] << "\t" << G4TTL::maxExtension[2][i] << endl;
     if(!G4TTL::SETTING::optionBasicGeo){
-      make_forward_station(Form("FTTL_%d", i), g4Reco, G4TTL::positionToVtx[2][i],  G4TTL::minExtension[2][i], G4TTL::maxExtension[2][i], 85*um, 5.5);
+      make_forward_station(Form("FTTL_%d", i), g4Reco, G4TTL::positionToVtx[2][i],  G4TTL::minExtension[2][i], G4TTL::maxExtension[2][i], 85*um, 6.0);
     } else {
       make_forward_station_basic(Form("FTTL_%d", i), g4Reco, G4TTL::positionToVtx[2][i],  G4TTL::minExtension[2][i], G4TTL::maxExtension[2][i], 85*um);
     }
@@ -138,7 +138,7 @@ void ETTLSetup(PHG4Reco *g4Reco, TString ettloption = "")
   for (Int_t i = 0; i < G4TTL::layer[0]; i++){
     cout << G4TTL::positionToVtx[0][i] << "\t" << G4TTL::minExtension[0][i] << "\t" << G4TTL::maxExtension[0][i] << endl;
     if(!G4TTL::SETTING::optionBasicGeo){
-      make_forward_station(Form("ETTL_%d", i), g4Reco, G4TTL::positionToVtx[0][i],  G4TTL::minExtension[0][i], G4TTL::maxExtension[0][i], 85*um);
+      make_forward_station(Form("ETTL_%d", i), g4Reco, G4TTL::positionToVtx[0][i],  G4TTL::minExtension[0][i], G4TTL::maxExtension[0][i], 85*um, 0);
     } else {
       make_forward_station_basic(Form("ETTL_%d", i), g4Reco, G4TTL::positionToVtx[0][i],  G4TTL::minExtension[0][i], G4TTL::maxExtension[0][i], 85*um);
     }
