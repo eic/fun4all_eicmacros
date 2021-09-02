@@ -7,6 +7,7 @@
 #include <g4detectors/PHG4SectorSubsystem.h>
 #include <g4detectors/PHG4ConeSubsystem.h>
 
+#include <g4eicdirc/G4EicDircSubsystem.h>
 #include <g4main/PHG4Reco.h>
 
 #include <cmath>
@@ -43,6 +44,7 @@ namespace G4DIRC
   {
     bool USECEMCGeo = true;
     bool USEskinSupports = true;
+    bool NEWDIRC = true;
   }
   
 }  // namespace G4DIRC
@@ -64,6 +66,8 @@ void DIRCInit()
   BlackHoleGeometry::min_z = std::min(BlackHoleGeometry::min_z, G4DIRC::z_start- G4DIRC::z_prism);
 }
 
+
+
 //! Babar DIRC (Without most of support structure)
 //! Ref: I. Adam et al. The DIRC particle identification system for the BaBar experiment.
 //! Nucl. Instrum. Meth., A538:281-357, 2005. doi:10.1016/j.nima.2004.08.129.
@@ -71,78 +75,91 @@ double DIRCSetup(PHG4Reco *g4Reco)
 {
   bool OverlapCheck = Enable::OVERLAPCHECK || Enable::DIRC_OVERLAPCHECK;
 
-  double radiator_R = G4DIRC::outer_skin_radius-G4DIRC::dRad;
-  
-  PHG4SectorSubsystem *dirc;
-  dirc = new PHG4SectorSubsystem("DIRC");
-  dirc->get_geometry().set_normal_polar_angle(M_PI / 2);
-  dirc->get_geometry().set_normal_start(radiator_R * PHG4Sector::Sector_Geometry::Unit_cm());
-  dirc->get_geometry().set_min_polar_angle(atan2(radiator_R, G4DIRC::z_end));
-  dirc->get_geometry().set_max_polar_angle(atan2(radiator_R, G4DIRC::z_start));
-  dirc->get_geometry().set_min_polar_edge(PHG4Sector::Sector_Geometry::FlatEdge());
-  dirc->get_geometry().set_max_polar_edge(PHG4Sector::Sector_Geometry::FlatEdge());
-  dirc->get_geometry().set_material("Quartz");
-  dirc->get_geometry().set_N_Sector(12);
-  dirc->OverlapCheck(OverlapCheck);
-  dirc->get_geometry().AddLayer("Radiator", "Quartz", 1.7 * PHG4Sector::Sector_Geometry::Unit_cm(), true);
-  g4Reco->registerSubsystem(dirc);
+  if(G4DIRC::SETTING::NEWDIRC){
+    // double z = 185;
+    // double dz = 40;
 
-  PHG4CylinderSubsystem *cyl;
+    G4EicDircSubsystem *dircSubsys = new G4EicDircSubsystem("hpDIRC");
+    dircSubsys->SuperDetector("hpDIRC");
+    //dircSubsys->set_double_param("place_z", z + dz * 0.5);// relative position to mother vol.
+    dircSubsys->OverlapCheck(OverlapCheck);
+    dircSubsys->Verbosity(0);
+    dircSubsys->SetActive();
 
-  //  The cylinder skins provide most of the strength
-  //  and stiffness of the CST. The thickness of the inner
-  //  and outer skins is 1.27 and 0.76 mm, respectively
+    g4Reco->registerSubsystem(dircSubsys);
+  } else {
+    double radiator_R = G4DIRC::outer_skin_radius-G4DIRC::dRad;
 
-  double inner_R    = G4DIRC::outer_skin_radius-G4DIRC::dInSkin;
-  // Inner skin:
+    PHG4SectorSubsystem *dirc;
+    dirc = new PHG4SectorSubsystem("DIRC");
+    dirc->get_geometry().set_normal_polar_angle(M_PI / 2);
+    dirc->get_geometry().set_normal_start(radiator_R * PHG4Sector::Sector_Geometry::Unit_cm());
+    dirc->get_geometry().set_min_polar_angle(atan2(radiator_R, G4DIRC::z_end));
+    dirc->get_geometry().set_max_polar_angle(atan2(radiator_R, G4DIRC::z_start));
+    dirc->get_geometry().set_min_polar_edge(PHG4Sector::Sector_Geometry::FlatEdge());
+    dirc->get_geometry().set_max_polar_edge(PHG4Sector::Sector_Geometry::FlatEdge());
+    dirc->get_geometry().set_material("Quartz");
+    dirc->get_geometry().set_N_Sector(12);
+    dirc->OverlapCheck(OverlapCheck);
+    dirc->get_geometry().AddLayer("Radiator", "Quartz", 1.7 * PHG4Sector::Sector_Geometry::Unit_cm(), true);
+    g4Reco->registerSubsystem(dirc);
 
-  if (G4DIRC::SETTING::USEskinSupports){
-    cyl = new PHG4CylinderSubsystem("DIRC_CST_Inner_Skin", 10);
-    cyl->set_double_param("radius", inner_R);
-    cyl->set_double_param("length", G4DIRC::length + G4DIRC::z_prism);
-    cyl->set_string_param("material", "G4_Al");
-    cyl->set_double_param("thickness", 0.127);
-    cyl->set_double_param("place_x", 0.);
-    cyl->set_double_param("place_y", 0.);
-    cyl->set_double_param("place_z", G4DIRC::z_shift - G4DIRC::z_prism * 0.5);
-    cyl->SetActive(0);
-    cyl->SuperDetector("DIRC");
-    cyl->OverlapCheck(OverlapCheck);
+    PHG4CylinderSubsystem *cyl;
 
-    g4Reco->registerSubsystem(cyl);
+    //  The cylinder skins provide most of the strength
+    //  and stiffness of the CST. The thickness of the inner
+    //  and outer skins is 1.27 and 0.76 mm, respectively
 
-    // Outer skin:
-    cyl = new PHG4CylinderSubsystem("DIRC_CST_Outer_Skin", 11);
-    cyl->set_double_param("radius", G4DIRC::outer_skin_radius - 0.076);
-    cyl->set_double_param("length", G4DIRC::length);
-    cyl->set_string_param("material", "G4_Al");
-    cyl->set_double_param("thickness", 0.076);
-    cyl->set_double_param("place_x", 0.);
-    cyl->set_double_param("place_y", 0.);
-    cyl->set_double_param("place_z", G4DIRC::z_shift);
-    cyl->SetActive(0);
-    cyl->SuperDetector("DIRC");
-    cyl->OverlapCheck(OverlapCheck);
+    double inner_R    = G4DIRC::outer_skin_radius-G4DIRC::dInSkin;
+    // Inner skin:
 
-    g4Reco->registerSubsystem(cyl);
+    if (G4DIRC::SETTING::USEskinSupports){
+      cyl = new PHG4CylinderSubsystem("DIRC_CST_Inner_Skin", 10);
+      cyl->set_double_param("radius", inner_R);
+      cyl->set_double_param("length", G4DIRC::length + G4DIRC::z_prism);
+      cyl->set_string_param("material", "G4_Al");
+      cyl->set_double_param("thickness", 0.127);
+      cyl->set_double_param("place_x", 0.);
+      cyl->set_double_param("place_y", 0.);
+      cyl->set_double_param("place_z", G4DIRC::z_shift - G4DIRC::z_prism * 0.5);
+      cyl->SetActive(0);
+      cyl->SuperDetector("DIRC");
+      cyl->OverlapCheck(OverlapCheck);
+
+      g4Reco->registerSubsystem(cyl);
+
+      // Outer skin:
+      cyl = new PHG4CylinderSubsystem("DIRC_CST_Outer_Skin", 11);
+      cyl->set_double_param("radius", G4DIRC::outer_skin_radius - 0.076);
+      cyl->set_double_param("length", G4DIRC::length);
+      cyl->set_string_param("material", "G4_Al");
+      cyl->set_double_param("thickness", 0.076);
+      cyl->set_double_param("place_x", 0.);
+      cyl->set_double_param("place_y", 0.);
+      cyl->set_double_param("place_z", G4DIRC::z_shift);
+      cyl->SetActive(0);
+      cyl->SuperDetector("DIRC");
+      cyl->OverlapCheck(OverlapCheck);
+
+      g4Reco->registerSubsystem(cyl);
+    }
+    // simple approximation for DIRC prism
+    PHG4ConeSubsystem *cone = new PHG4ConeSubsystem("DIRC_Prism");
+    cone->set_color(0, 1, 0);
+  //   cone->SetR1(radiator_R, radiator_R + 20);
+  //   cone->SetR2(radiator_R, radiator_R + 2);
+
+    cone->SetR1(radiator_R, radiator_R + 20);
+    cone->SetR2(radiator_R, radiator_R + 2);
+
+    cone->SetZlength(0.5 * G4DIRC::z_prism);
+    cone->SetPlaceZ(G4DIRC::z_start - 0.5 * G4DIRC::z_prism);
+    cone->SetMaterial("Quartz");
+    cone->SetActive(0);
+    cone->SuperDetector("DIRC");
+    cone->OverlapCheck(OverlapCheck);
+    g4Reco->registerSubsystem(cone);
   }
-  // simple approximation for DIRC prism
-  PHG4ConeSubsystem *cone = new PHG4ConeSubsystem("DIRC_Prism");
-  cone->set_color(0, 1, 0);
-//   cone->SetR1(radiator_R, radiator_R + 20);
-//   cone->SetR2(radiator_R, radiator_R + 2);
-
-  cone->SetR1(radiator_R, radiator_R + 20);
-  cone->SetR2(radiator_R, radiator_R + 2);
-
-  cone->SetZlength(0.5 * G4DIRC::z_prism);
-  cone->SetPlaceZ(G4DIRC::z_start - 0.5 * G4DIRC::z_prism);
-  cone->SetMaterial("Quartz");
-  cone->SetActive(0);
-  cone->SuperDetector("DIRC");
-  cone->OverlapCheck(OverlapCheck);
-  g4Reco->registerSubsystem(cone);
-  
   // Done
   return G4DIRC::outer_skin_radius;
 }
