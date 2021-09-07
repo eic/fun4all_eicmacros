@@ -34,7 +34,6 @@ namespace G4TTL
   int layer[3]                  = { 2, 1, 2};
   double positionToVtx[3][3]    = { {-169., -172., -309.5}, {80., 114.7, 0. }, { 287., 289., 340.} };
   double minExtension[3][3]     = { {8, 8, 15.3}, {218, 180, 0 }, {11.62, 11.7, 13.8 } };
-  double minExtension[3][3]     = { {8, 8, 15.3}, {218, 180, 0 }, {11.62, 11.7, 13.8 } };
   double maxExtension[3][3]     = { {61., 61. , 200}, {-40, 0, 0 }, {170., 170., 250  } };
   namespace SETTING
   {
