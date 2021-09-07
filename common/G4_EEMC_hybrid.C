@@ -103,7 +103,8 @@ void EEMCHSetup(PHG4Reco *g4Reco)
   else if (G4EEMCH::SETTING::USEHYBRID && G4EEMCH::SETTING::USECEMCGeo)
     mapping_eemc_1 << getenv("CALIBRATIONROOT") << "/CrystalCalorimeter/mapping/crystal_mapping/tower_map_crystal_200cm_CEMCBarrel.txt";
   else if (!G4EEMCH::SETTING::USEHYBRID && !G4EEMCH::SETTING::USECEMCGeo)
-    mapping_eemc_1 << getenv("CALIBRATIONROOT") << "/CrystalCalorimeter/mapping/crystal_mapping/tower_map_purecrystal_200cm_SciGlassBarrel.txt";
+//     mapping_eemc_1 << getenv("CALIBRATIONROOT") << "/CrystalCalorimeter/mapping/crystal_mapping/tower_map_purecrystal_200cm_SciGlassBarrel.txt";
+    mapping_eemc_1 << getenv("CALIBRATIONROOT") << "/CrystalCalorimeter/mapping/crystal_mapping/tower_map_purecrystal_185cm.txt";
   else if (!G4EEMCH::SETTING::USEHYBRID && G4EEMCH::SETTING::USECEMCGeo)
     mapping_eemc_1 << getenv("CALIBRATIONROOT") << "/CrystalCalorimeter/mapping/crystal_mapping/tower_map_purecrystal_200cm_CEMCBarrel.txt";
   else {
@@ -114,8 +115,9 @@ void EEMCHSetup(PHG4Reco *g4Reco)
   }
   cout << "setting EEMC crystal mapping: " << mapping_eemc_1.str() << endl;
   eemc_crystal->set_string_param("mappingtower", mapping_eemc_1.str());    
-  eemc_crystal->OverlapCheck(OverlapCheck);
-
+//   eemc_crystal->OverlapCheck(OverlapCheck);
+  eemc_crystal->OverlapCheck(true);
+  
   g4Reco->registerSubsystem(eemc_crystal);
   
   if (G4EEMCH::SETTING::USEHYBRID){
@@ -161,7 +163,8 @@ void EEMCH_Towers()
   else if (G4EEMCH::SETTING::USEHYBRID && G4EEMCH::SETTING::USECEMCGeo)
     mapping_eemc_1 << getenv("CALIBRATIONROOT") << "/CrystalCalorimeter/mapping/crystal_mapping/tower_map_crystal_200cm_CEMCBarrel.txt";
   else if (!G4EEMCH::SETTING::USEHYBRID && !G4EEMCH::SETTING::USECEMCGeo)
-    mapping_eemc_1 << getenv("CALIBRATIONROOT") << "/CrystalCalorimeter/mapping/crystal_mapping/tower_map_purecrystal_200cm_SciGlassBarrel.txt";
+//     mapping_eemc_1 << getenv("CALIBRATIONROOT") << "/CrystalCalorimeter/mapping/crystal_mapping/tower_map_purecrystal_200cm_SciGlassBarrel.txt";
+    mapping_eemc_1 << getenv("CALIBRATIONROOT") << "/CrystalCalorimeter/mapping/crystal_mapping/tower_map_purecrystal_185cm.txt";
   else if (!G4EEMCH::SETTING::USEHYBRID && G4EEMCH::SETTING::USECEMCGeo)
     mapping_eemc_1 << getenv("CALIBRATIONROOT") << "/CrystalCalorimeter/mapping/crystal_mapping/tower_map_purecrystal_200cm_CEMCBarrel.txt";
 

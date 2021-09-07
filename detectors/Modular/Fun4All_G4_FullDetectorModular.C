@@ -382,7 +382,7 @@ int Fun4All_G4_FullDetectorModular(
   // EICDetector geometry - 'electron' direction
   // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   // PID detectors - RICH's
-  Enable::mRICH = true;
+  Enable::mRICH = false;
 
   Enable::EEMC  = true;
   Enable::EEMCH = false;
