@@ -4,6 +4,7 @@
 #include "GlobalVariables.C"
 
 #include <g4ttl/PHG4TTLSubsystem.h>
+#include <g4ttl/RawDigitBuilderTTL.h>
 #include <g4detectors/PHG4CylinderSubsystem.h>
 
 #include <g4main/PHG4Reco.h>
@@ -18,6 +19,8 @@ int make_forward_station_basic(string name, PHG4Reco *g4Reco, double zpos, doubl
                           double Rmax,double tSilicon);
 int make_barrel_layer_basic(string name, PHG4Reco *g4Reco, 
                       double radius, double halflength, double tSilicon, double zOffset);
+int make_barrel_layer_LYSO_basic(string name, PHG4Reco *g4Reco, 
+                      double radius, double halflength, double tSilicon, double zOffset);
 int make_barrel_layer(string name, PHG4Reco *g4Reco, 
                       double radius, double halflength, double tSilicon, double zOffset);
 
@@ -27,6 +30,8 @@ namespace Enable
   bool FTTL = false;
   bool ETTL = false;
   bool CTTL = false;
+  bool FTTL_CLUSTER = false;
+  bool ETTL_CLUSTER = false;
 }
 
 namespace G4TTL
@@ -40,6 +45,7 @@ namespace G4TTL
     bool optionCEMC  = true;
     bool optionEEMCH = true;
     bool optionBasicGeo    = false;
+    bool optionLYSO    = false;
     int optionDR    = 0;
     int optionGeo   = 1;
     int optionGran  = 1;
@@ -154,7 +160,9 @@ void CTTLSetup(PHG4Reco *g4Reco, TString cttloption = "")
 
   for (Int_t i = 0; i < G4TTL::layer[1]; i++){
     cout << "Radius: " << G4TTL::positionToVtx[1][i] << "\tLength: " << G4TTL::minExtension[1][i] << "\tz-Offset: " << G4TTL::maxExtension[1][i] << endl;
-    if(G4TTL::SETTING::optionBasicGeo){
+    if(G4TTL::SETTING::optionBasicGeo && G4TTL::SETTING::optionLYSO){
+      make_barrel_layer_LYSO_basic(Form("CTTL_%d",i), g4Reco, G4TTL::positionToVtx[1][i],  G4TTL::minExtension[1][i], 85*um, G4TTL::maxExtension[1][i]);
+    } else if(G4TTL::SETTING::optionBasicGeo){
       make_barrel_layer_basic(Form("CTTL_%d",i), g4Reco, G4TTL::positionToVtx[1][i],  G4TTL::minExtension[1][i], 85*um, G4TTL::maxExtension[1][i]);
     } else {
       make_barrel_layer(Form("CTTL_%d",i), g4Reco, G4TTL::positionToVtx[1][i],  G4TTL::minExtension[1][i], 85*um, G4TTL::maxExtension[1][i]);
@@ -177,6 +185,7 @@ int make_forward_station(string name, PHG4Reco *g4Reco,
     zpos = -zpos;
     polar_angle = M_PI;
   }
+
   PHG4TTLSubsystem *ttl;
   ttl = new PHG4TTLSubsystem(name);
   ttl->SetDetailed(false);
@@ -323,6 +332,79 @@ int make_barrel_layer_basic(string name, PHG4Reco *g4Reco,
 
   return 0;
 }
+
+//-----------------------------------------------------------------------------------//
+int make_barrel_layer_LYSO_basic(string name, PHG4Reco *g4Reco, 
+                      double radius, double halflength, double tSilicon, double zOffset){
+
+  //---------------------------------
+  //build barrel layer
+  //---------------------------------
+  const int nSubLayer = 4;
+
+  string layerName[nSubLayer] = {"Cooling", "Crystal","SiliconSensor", "Motherboard"};
+  string material[nSubLayer] = {"G4_Al", "LSO", "G4_Si", "FR4"};
+  double thickness[nSubLayer] = {0.031 * cm, 0.029 * cm, tSilicon, 0.033 * cm};
+
+  double max_bh_radius = 0.;
+  PHG4CylinderSubsystem* cyl;
+//   cout << "started to create cylinder layer: " << name << endl;
+  
+  double currRadius = radius;
+//   cout << currRadius << endl;
+  for (int l = 0; l < nSubLayer; l++) {
+//     cout << name <<"_"<< layerName[l] << endl;
+    cyl = new PHG4CylinderSubsystem(name + "_" + layerName[l],l);
+    cyl->SuperDetector(name);
+    cyl->set_double_param("radius", currRadius);
+    cyl->set_double_param("length", 2.0 * halflength);
+    cyl->set_string_param("material", material[l]);
+    cyl->set_double_param("thickness", thickness[l]);
+    cyl->set_double_param("place_x", 0.);
+    cyl->set_double_param("place_y", 0.);
+    cyl->set_double_param("place_z", zOffset);
+
+    if (l == 2) cyl->SetActive();  //only the Silicon Sensor is active
+    cyl->OverlapCheck(true);
+    g4Reco->registerSubsystem(cyl);
+    currRadius = currRadius+thickness[l];
+//     cout << currRadius << endl;
+  }
+
+  return 0;
+}
+
+
+void FTTL_Clustering()
+{
+  // int verbosity = std::max(Enable::VERBOSITY, Enable::MVTX_VERBOSITY);
+  Fun4AllServer* se = Fun4AllServer::instance();
+
+  for (Int_t i = 0; i < G4TTL::layer[2]; i++){
+    if(!G4TTL::SETTING::optionBasicGeo){
+      RawDigitBuilderTTL *digits_FTTL = new RawDigitBuilderTTL(Form("DigitBuilder_FTTL%d",i));
+      digits_FTTL->Detector(Form("FTTL_%d", i));
+      // digits_FTTL->set_sim_tower_node_prefix("SIM");
+      se->registerSubsystem(digits_FTTL);
+    }
+  }
+}
+
+void ETTL_Clustering()
+{
+  // int verbosity = std::max(Enable::VERBOSITY, Enable::MVTX_VERBOSITY);
+  Fun4AllServer* se = Fun4AllServer::instance();
+
+  for (Int_t i = 0; i < G4TTL::layer[0]; i++){
+    if(!G4TTL::SETTING::optionBasicGeo){
+      RawDigitBuilderTTL *digits_ETTL = new RawDigitBuilderTTL(Form("DigitBuilder_ETTL%d",i));
+      digits_ETTL->Detector(Form("ETTL_%d", i));
+      // digits_ETTL->set_sim_tower_node_prefix("SIM");
+      se->registerSubsystem(digits_ETTL);
+    }
+  }
+}
+
 
 #endif
 
