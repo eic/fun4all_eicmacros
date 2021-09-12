@@ -256,12 +256,16 @@ void Tracking_Reco(TString specialSetting = "")
   
   // central barrel 
   if (Enable::CTTL){
+    float resLGAD_barrel = resLGAD;
+    if(G4TTL::SETTING::optionLYSO){
+      resLGAD_barrel = 35e-1; // https://cds.cern.ch/record/2667167/files/CMS-TDR-020.pdf page 33 bottom
+    }
     for (int i = 0; i < G4TTL::layer[1]; i++){
       kalman->add_phg4hits(Form("G4HIT_CTTL_%d", i),           //      const std::string& phg4hitsNames,
                           PHG4TrackFastSim::Cylinder,  //      const DETECTOR_TYPE phg4dettype,
                           999,                               //      const float radres,
-                          resLGAD,                    //      const float phires,
-                          resLGAD,                    //      const float lonres, *ignored in plane detector*
+                          resLGAD_barrel,                //      const float phires,
+                          resLGAD_barrel,                //      const float lonres, *ignored in plane detector*
                           0.95,                              //      const float eff,
                           0);                                //      const float noise
       kalman -> add_cylinder_state(Form("CTTL_%d",i), G4TTL::positionToVtx[1][i]);

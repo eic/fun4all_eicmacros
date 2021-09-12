@@ -580,6 +580,10 @@ int Fun4All_G4_FullDetectorModular(
   Enable::BECAL_CLUSTER = Enable::BECAL_TOWER && true;
   Enable::BECAL_EVAL    = Enable::BECAL_CLUSTER && false;
   
+
+  Enable::FTTL_CLUSTER = Enable::FTTL && true;
+  Enable::ETTL_CLUSTER = Enable::ETTL && true;
+
   // Other options
   Enable::GLOBAL_RECO = true;
   Enable::GLOBAL_FASTSIM = true;
@@ -694,6 +698,9 @@ int Fun4All_G4_FullDetectorModular(
 
   if (Enable::BECAL_TOWER) BECAL_Towers();
   if (Enable::BECAL_CLUSTER) BECAL_Clusters();
+
+  if (Enable::FTTL_CLUSTER) FTTL_Clustering();
+  if (Enable::ETTL_CLUSTER) ETTL_Clustering();
   
   if (Enable::DSTOUT_COMPRESS) ShowerCompress();
 
@@ -1036,6 +1043,10 @@ void ParseTString(TString &specialSetting)
   else if (specialSetting.Contains("TTLF"))
     G4TTL::SETTING::optionGeo    = 4;
 
+  if (specialSetting.Contains("LYSO")){
+    G4TTL::SETTING::optionLYSO    = true;
+    G4TTL::SETTING::optionBasicGeo    = true;
+  }
   if (specialSetting.Contains("TTLBasicGeo")){
     G4TTL::SETTING::optionBasicGeo    = true;
   } else {
