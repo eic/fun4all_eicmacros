@@ -197,8 +197,7 @@ int make_forward_station(string name, PHG4Reco *g4Reco,
   ttl->set_double_param("rMax", rMax * cm);                    //
   ttl->set_double_param("offset_x", xoffset * cm);                    //
   ttl->set_double_param("tSilicon", tSilicon);                    //
-//   ttl->OverlapCheck(true);
-  ttl->OverlapCheck(false);
+  ttl->OverlapCheck(Enable::OVERLAPCHECK);
   
   g4Reco->registerSubsystem(ttl);
   return 0;
@@ -244,7 +243,7 @@ int make_forward_station_basic(string name, PHG4Reco *g4Reco,
   ttl->get_geometry().set_min_polar_edge(PHG4Sector::Sector_Geometry::ConeEdge());
   ttl->get_geometry().set_N_Sector(1);
   ttl->get_geometry().set_material("G4_AIR");
-  ttl->OverlapCheck(true);
+  ttl->OverlapCheck(Enable::OVERLAPCHECK);
   
   const double cm = PHG4Sector::Sector_Geometry::Unit_cm();
   const double mm = .1 * cm;
@@ -280,7 +279,7 @@ int make_barrel_layer(string name, PHG4Reco *g4Reco,
   ttl->set_double_param("rMin", radius * cm);                    //
   ttl->set_double_param("length", 2.0 * halflength * cm);
   ttl->set_double_param("tSilicon", tSilicon);                    //
-  ttl->OverlapCheck(false);
+  ttl->OverlapCheck(Enable::OVERLAPCHECK);
 
   g4Reco->registerSubsystem(ttl);
   return 0;
@@ -324,7 +323,7 @@ int make_barrel_layer_basic(string name, PHG4Reco *g4Reco,
     cyl->set_double_param("place_z", zOffset);
 
     if (l == 0) cyl->SetActive();  //only the Silicon Sensor is active
-    cyl->OverlapCheck(true);
+    cyl->OverlapCheck(Enable::OVERLAPCHECK);
     g4Reco->registerSubsystem(cyl);
     currRadius = currRadius+thickness[l];
 //     cout << currRadius << endl;
@@ -365,7 +364,7 @@ int make_barrel_layer_LYSO_basic(string name, PHG4Reco *g4Reco,
     cyl->set_double_param("place_z", zOffset);
 
     if (l == 2) cyl->SetActive();  //only the Silicon Sensor is active
-    cyl->OverlapCheck(true);
+    cyl->OverlapCheck(Enable::OVERLAPCHECK);
     g4Reco->registerSubsystem(cyl);
     currRadius = currRadius+thickness[l];
 //     cout << currRadius << endl;
