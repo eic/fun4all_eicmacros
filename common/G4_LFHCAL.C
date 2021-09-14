@@ -98,11 +98,17 @@ TString GetMappingFile(){
   // full HCal Fe-Scint with asymmetric centering around beampipe
   else if (G4LFHCAL::SETTING::asymmetric)
   {
-    if (G4LFHCAL::SETTING::longer)
-      mappinFileName += "/LFHcal/mapping/towerMap_LFHCAL_asymmetric-long.txt";
-    else 
-      mappinFileName += "/LFHcal/mapping/towerMap_LFHCAL_asymmetric.txt";
-      
+    if (Enable::IP6){
+      if (G4LFHCAL::SETTING::longer)
+        mappinFileName += "/LFHcal/mapping/towerMap_LFHCAL_IP6-asymmetric-long.txt";
+      else 
+        mappinFileName += "/LFHcal/mapping/towerMap_LFHCAL_IP6-asymmetric.txt";
+    } else {
+      if (G4LFHCAL::SETTING::longer)
+        mappinFileName += "/LFHcal/mapping/towerMap_LFHCAL_asymmetric-long.txt";
+      else 
+        mappinFileName += "/LFHcal/mapping/towerMap_LFHCAL_asymmetric.txt";      
+    }
   }
   //  PSD like HCal Fe-Scint with enlarged beam pipe opening for Mar 2020 beam pipe
   else

@@ -39,6 +39,7 @@ void AllSiliconSetup(PHG4Reco *g4Reco)
   //allsili->AddAssemblyVolume("BEAMPIPE");  // Beampipe
   allsili->SuperDetector("LBLVTX");
   allsili->OverlapCheck(OverlapCheck);
+//   allsili->OverlapCheck(false);
   allsili->SetActive();                              // this saves hits in the MimosaCore volumes
   if (AbsorberActive) allsili->SetAbsorberActive();  // this saves hits in all volumes (in the absorber node)
   g4Reco->registerSubsystem(allsili);

@@ -44,14 +44,14 @@ namespace G4TRACKING
 
 namespace TRACKING
 {
-  std::string TrackNodeNameInner = "TrackMapInner";
+  std::string TrackNodeNameInner = "InnerTrackMap";
 } // namespace TRACKING
 
 //-----------------------------------------------------------------------------//
 void TrackingInit()
 {
   TRACKING::TrackNodeName = "TrackMap";
-  TRACKING::TrackNodeNameInner = "TrackMapInner";
+  TRACKING::TrackNodeNameInner = "InnerTrackMap";
 }
 //-----------------------------------------------------------------------------//
 void Tracking_Reco(TString specialSetting = "")
@@ -392,15 +392,13 @@ void Tracking_Reco(TString specialSetting = "")
   //-------------------------
   if (Enable::FHCAL) {
     kalman->add_state_name("FHCAL");
-  //   kalman->add_zplane_state("FHCAL", 350);
   }
 
   //-------------------------
   // LFHCAL
   //-------------------------
   if (Enable::LFHCAL) {
-    // kalman->add_state_name("FHCAL");
-    kalman->add_zplane_state("LFHCAL", 350);
+    kalman->add_state_name("LFHCAL");
   }
   //-------------------------
   // CEMC
@@ -415,8 +413,7 @@ void Tracking_Reco(TString specialSetting = "")
   //-------------------------
 
   if (Enable::BECAL){
-    // kalman->add_state_name("BECAL");
-    kalman -> add_cylinder_state("BECAL", 105);
+    kalman->add_state_name("BECAL");
   }
   
   //-------------------------
@@ -450,7 +447,7 @@ void Tracking_Reco(TString specialSetting = "")
   //-------------------------
   if ((Enable::EEMCH ) )
   {
-    // kalman->add_state_name("EEMCG");
+//     kalman->add_state_name("EEMCG");
     kalman->add_zplane_state("EEMCG", -210);
   }
   
@@ -460,7 +457,6 @@ void Tracking_Reco(TString specialSetting = "")
   if ((Enable::EHCAL ) )
   {
     kalman->add_state_name("EHCAL");
-    // kalman->add_zplane_state("EHCAL", -350);
   }
   
   //-------------------------

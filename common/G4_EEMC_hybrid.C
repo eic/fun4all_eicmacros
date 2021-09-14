@@ -115,8 +115,8 @@ void EEMCHSetup(PHG4Reco *g4Reco)
   }
   cout << "setting EEMC crystal mapping: " << mapping_eemc_1.str() << endl;
   eemc_crystal->set_string_param("mappingtower", mapping_eemc_1.str());    
-//   eemc_crystal->OverlapCheck(OverlapCheck);
-  eemc_crystal->OverlapCheck(true);
+  eemc_crystal->OverlapCheck(OverlapCheck);
+//   eemc_crystal->OverlapCheck(true);
   
   g4Reco->registerSubsystem(eemc_crystal);
   
