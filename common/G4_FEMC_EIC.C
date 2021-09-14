@@ -107,10 +107,17 @@ void FEMCSetup(PHG4Reco *g4Reco)
   // asymmetric ECAL around beampipe
   else if (G4FEMC::SETTING::asymmetric)
   {
-    if (G4FEMC::SETTING::readoutsplit)
-      mapping_femc << getenv("CALIBRATIONROOT") << "/ForwardEcal/mapping/towerMap_FEMC_asymmetric_ROS.txt";
-    else
-      mapping_femc << getenv("CALIBRATIONROOT") << "/ForwardEcal/mapping/towerMap_FEMC_asymmetric.txt";
+    if (Enable::IP6){
+      if (G4FEMC::SETTING::readoutsplit)
+        mapping_femc << getenv("CALIBRATIONROOT") << "/ForwardEcal/mapping/towerMap_FEMC_IP6-asymmetric_ROS.txt";
+      else
+        mapping_femc << getenv("CALIBRATIONROOT") << "/ForwardEcal/mapping/towerMap_FEMC_IP6-asymmetric.txt";
+    } else {
+      if (G4FEMC::SETTING::readoutsplit)
+        mapping_femc << getenv("CALIBRATIONROOT") << "/ForwardEcal/mapping/towerMap_FEMC_asymmetric_ROS.txt";
+      else
+        mapping_femc << getenv("CALIBRATIONROOT") << "/ForwardEcal/mapping/towerMap_FEMC_asymmetric.txt";
+    }
   }
   // ECAL surrounding dual readout calorimeter
   else if (G4FEMC::SETTING::FwdSquare)
@@ -186,10 +193,17 @@ void FEMC_Towers()
   // asymmetric ECAL around beampipe
   else if (G4FEMC::SETTING::asymmetric)
   {
-    if (G4FEMC::SETTING::readoutsplit)
-      mapping_femc << getenv("CALIBRATIONROOT") << "/ForwardEcal/mapping/towerMap_FEMC_asymmetric_ROS.txt";
-    else
-      mapping_femc << getenv("CALIBRATIONROOT") << "/ForwardEcal/mapping/towerMap_FEMC_asymmetric.txt";
+    if (Enable::IP6){
+      if (G4FEMC::SETTING::readoutsplit)
+        mapping_femc << getenv("CALIBRATIONROOT") << "/ForwardEcal/mapping/towerMap_FEMC_IP6-asymmetric_ROS.txt";
+      else
+        mapping_femc << getenv("CALIBRATIONROOT") << "/ForwardEcal/mapping/towerMap_FEMC_IP6-asymmetric.txt";
+    } else {
+      if (G4FEMC::SETTING::readoutsplit)
+        mapping_femc << getenv("CALIBRATIONROOT") << "/ForwardEcal/mapping/towerMap_FEMC_asymmetric_ROS.txt";
+      else
+        mapping_femc << getenv("CALIBRATIONROOT") << "/ForwardEcal/mapping/towerMap_FEMC_asymmetric.txt";
+    }
   }
   // ECAL surrounding dual readout calorimeter
   else if (G4FEMC::SETTING::FwdSquare)
