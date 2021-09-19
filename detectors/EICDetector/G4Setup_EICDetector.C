@@ -10,7 +10,7 @@
 #include <G4_CEmc_EIC.C>
 #include <G4_DIRC.C>
 #include <G4_EEMC.C>
-#include <G4_FEMC.C>
+#include <G4_FEMC_EIC.C>
 #include <G4_FHCAL.C>
 #include <G4_FST_EIC.C>
 #include <G4_GEM_EIC.C>
