@@ -624,7 +624,14 @@ int Fun4All_G4_FullDetectorModular(
     G4MAGNET::magfield = magfield;
     //  G4MAGNET::magfield = string(getenv("CALIBRATIONROOT")) + string("/Field/Map/sPHENIX.2d.root");  // default map from the calibration database
   } else {
-    G4MAGNET::magfield_rescale = -1.4 / 1.5;  // make consistent with expected Babar field strength of 1.4T
+    if (G4MAGNET::magfield.find("sphenix3dbigmapxyz") != string::npos)
+    {
+      G4MAGNET::magfield_rescale = 1.;  // 3d fieldmap uses 1.4T
+    }
+    else
+    {
+      G4MAGNET::magfield_rescale = -1.4 / 1.5;  // make consistent with expected Babar field strength of 1.4T
+    }
   }
   //---------------
   // Pythia Decayer
