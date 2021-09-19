@@ -3,6 +3,8 @@
 
 #include <GlobalVariables.C>
 
+#include <G4_hFarFwdBeamLine_EIC.C>
+
 #include <g4calo/RawTowerBuilderByHitIndex.h>
 #include <g4calo/RawTowerDigitizer.h>
 
