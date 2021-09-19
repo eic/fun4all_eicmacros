@@ -21,6 +21,8 @@
 
 #include <fun4all/Fun4AllServer.h>
 
+#include <algorithm>
+
 R__LOAD_LIBRARY(libcalo_reco.so)
 R__LOAD_LIBRARY(libg4calo.so)
 R__LOAD_LIBRARY(libg4eiccalos.so)
@@ -76,7 +78,7 @@ void FEMCInit()
 
   BlackHoleGeometry::max_radius = std::max(BlackHoleGeometry::max_radius, G4FEMC::outer_radius);
   BlackHoleGeometry::max_z = std::max(BlackHoleGeometry::max_z, G4FEMC::Gz0 + G4FEMC::Gdz / 2.);
-  BlackHoleGeometry::min_z = std::min(BlackHoleGeometry::min_z, -10 * cm);
+  BlackHoleGeometry::min_z = std::min(BlackHoleGeometry::min_z, -10.);
 }
 
 void FEMCSetup(PHG4Reco *g4Reco)
