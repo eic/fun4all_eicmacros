@@ -14,7 +14,7 @@
 
 #include <g4main/PHG4Reco.h>
 
-R__LOAD_LIBRARY(libg4detectors.so)
+R__LOAD_LIBRARY(libg4rich.so)
 
 namespace Enable
 {
