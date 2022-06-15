@@ -16,7 +16,7 @@
 
 #include <TSystem.h>
 
-R__LOAD_LIBRARY(libg4detectors.so)
+R__LOAD_LIBRARY(libEICG4ZDC.so)
 
 // This creates the Enable Flag to be used in the main steering macro
 namespace Enable

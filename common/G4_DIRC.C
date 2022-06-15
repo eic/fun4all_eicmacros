@@ -12,7 +12,7 @@
 
 #include <cmath>
 
-R__LOAD_LIBRARY(libg4detectors.so)
+R__LOAD_LIBRARY(libg4eicdirc.so)
 
 /*!
  * \file G4_DIRC.C
